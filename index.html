@@ -1881,8 +1881,9 @@
                     <div class="card-title"><i class="fas fa-table" style="color:var(--primary);"></i> 批量录入物品 <span class="badge">支持 Excel 或文本</span></div>
                     <div class="batch-area">
                         <div class="batch-hint" style="font-size:13px; color:#888; background:#f9f9f9; padding:8px 12px; border-radius:6px; border-left:4px solid var(--primary); margin-bottom:12px;">
-                            <i class="fas fa-info-circle"></i> 每行一条，空格分隔：<code>CN 系列 制品 角色 数量 [状态] [下单版本]</code>
-                            <br>示例：<code>张三 GSC 手办 初音未来 2 已下单 ver.1.0</code>
+                            <i class="fas fa-info-circle"></i> 每行一条，空格分隔：<code>CN 系列 制品 角色 数量 [状态] [下单版本] [到货时间(YYYY-MM-DD)]</code>
+                            <br>示例：<code>张三 GSC 手办 初音未来 2 已下单 ver.1.0 2025-01-01</code>
+                            <br>到货时间可选，如不填则留空。
                         </div>
                         <div class="batch-file-upload" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
                             <label for="batchFileInput" style="display:inline-flex; align-items:center; gap:6px; background:#f0f0f0; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:14px;"><i class="fas fa-file-excel"></i> 选择 Excel 文件</label>
@@ -3459,7 +3460,8 @@
                     let header = json[0] || [];
                     const headerMap = {};
                     const colMap = { 'CN': 'username', '用户': 'username', '系列': 'series', '制品': 'product', '角色': 'character',
-                        '数量': 'quantity', '状态': 'status', '下单版本': 'orderVersion', '版本': 'orderVersion' };
+                        '数量': 'quantity', '状态': 'status', '下单版本': 'orderVersion', '版本': 'orderVersion',
+                        '到货时间': 'arrivalDate', '到货日期': 'arrivalDate' };
                     header.forEach((h, idx) => {
                         const key = String(h).trim();
                         for (let [cn, en] of Object.entries(colMap)) {
@@ -3491,9 +3493,13 @@
                         const status = get('status') || STATUS.ORDERED;
                         const orderVersion = get('orderVersion') || '';
                         if (username && series && product && character) {
-                            lines.push(
-                                `${username} ${series} ${product} ${character} ${quantity} ${status} ${orderVersion}`
-                                );
+                            // 获取到货时间（如果有）
+                            const arrivalDate = get('arrivalDate') || '';
+                            let lineParts = [username, series, product, character, quantity, status, orderVersion];
+                            if (arrivalDate) {
+                                lineParts.push(arrivalDate);
+                        }
+    lines.push(lineParts.join(' '));
                         }
                     }
                     if (lines.length === 0) {
@@ -3526,22 +3532,46 @@
             lines.forEach((line, idx) => {
                 const parts = line.trim().split(/\s+/);
                 if (parts.length < 4) { errorLines.push(`第 ${idx+1} 行: 字段不足`); return; }
+
+                // 尝试检查最后一个字段是否为日期格式 (YYYY-MM-DD)
+                let arrivalDateStr = null;
+                const lastPart = parts[parts.length - 1];
+                if (/^\d{4}-\d{2}-\d{2}$/.test(lastPart)) {
+                    arrivalDateStr = lastPart;
+                    parts.pop(); // 移除日期，剩下的继续解析
+                }
+
                 const username = parts[0];
                 const series = parts[1];
                 const product = parts[2];
                 const character = parts[3];
-                let quantity = 1,
-                    status = STATUS.ORDERED,
-                    orderVersion = '',
-                    pos = 4;
-                if (parts.length > pos && !isNaN(parseInt(parts[pos]))) { quantity = parseInt(parts[pos]);
-                    pos++; }
-                if (parts.length > pos && STATUS_LIST.includes(parts[pos])) { status = parts[pos];
-                    pos++; }
+                let quantity = 1, status = STATUS.ORDERED, orderVersion = '', pos = 4;
+                if (parts.length > pos && !isNaN(parseInt(parts[pos]))) { quantity = parseInt(parts[pos]); pos++; }
+                if (parts.length > pos && STATUS_LIST.includes(parts[pos])) { status = parts[pos]; pos++; }
                 if (parts.length > pos) { orderVersion = parts.slice(pos).join(' '); }
+
+                // 处理到货时间
+                let arrivalDate = null;
+                let storageExpireDate = null;
+                if (arrivalDateStr) {
+                    const d = new Date(arrivalDateStr);
+                    if (!isNaN(d.getTime())) {
+                        arrivalDate = d.getTime();
+                        storageExpireDate = calcExpireDate(arrivalDate);
+                    } else {
+                        errorLines.push(`第 ${idx+1} 行: 到货时间格式无效，应为 YYYY-MM-DD`);
+                        return;
+                    }
+                }
                 if (!username || !series || !product || !character) { errorLines.push(`第 ${idx+1} 行: 缺少必要字段`); return; }
-                itemsToAdd.push({ username, series, product, character, quantity, status, orderVersion, arrivalDate: null,
-                    storageExpireDate: null, shipDate: null, createdAt: Date.now(), picked: false });
+                itemsToAdd.push({
+                    username, series, product, character, quantity, status, orderVersion,
+                    arrivalDate: arrivalDate,
+                    storageExpireDate: storageExpireDate,
+                    shipDate: null,
+                    createdAt: Date.now(),
+                    picked: false
+                });
             });
             if (errorLines.length > 0) {
                 toast(`存在 ${errorLines.length} 行格式错误，请检查`, 'error');
