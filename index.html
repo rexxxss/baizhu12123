@@ -2220,13 +2220,10 @@
         }
 
         function genId() {
-            // 使用 UUID 确保全局唯一（如果浏览器支持）
-            if (window.crypto && window.crypto.randomUUID) {
-                return crypto.randomUUID();
-            } else {
-                // 降级方案
-                return Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 9);
-            }
+            if (!window._idCounter) window._idCounter = 0;
+            window._idCounter++;
+            // 使用时间戳（毫秒）+ 计数器，确保唯一且为数字
+            return Date.now() * 1000 + window._idCounter;
         }
 
         function isValidPhone(phone) {
