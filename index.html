@@ -2140,20 +2140,36 @@
             document.getElementById('loginModal').classList.add('hidden');
         }
 
-        function adminLogin() {
-            const user = document.getElementById('loginCN').value.trim();
-            const pass = document.getElementById('loginPassword').value.trim();
-            if (user === 'admin' && pass === '123456') {
-                isAdminLogged = true;
-                closeLoginModal();
-                document.getElementById('adminEntry').classList.add('logged');
-                toast('登录成功', 'success');
-                showAdminPanel();
-            } else {
-                document.getElementById('loginError').textContent = 'CN或密码错误';
-                toast('登录失败', 'error');
-            }
+        async function adminLogin() {
+    const user = document.getElementById('loginCN').value.trim();
+    const pass = document.getElementById('loginPassword').value.trim();
+    if (!user || !pass) {
+        document.getElementById('loginError').textContent = '请输入用户名和密码';
+        return;
+    }
+    // 将输入的用户名转换为邮箱格式（假设您的 Supabase 用户邮箱为 user@yourdomain.com）
+    const email = user.includes('@') ? user : user + '@qq.com';
+    try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: pass
+        });
+        if (error) {
+            document.getElementById('loginError').textContent = '登录失败：' + error.message;
+            toast('登录失败', 'error');
+            return;
         }
+        // 登录成功
+        isAdminLogged = true;
+        closeLoginModal();
+        document.getElementById('adminEntry').classList.add('logged');
+        toast('登录成功', 'success');
+        showAdminPanel();
+    } catch (err) {
+        document.getElementById('loginError').textContent = '登录异常，请重试';
+        toast('登录异常', 'error');
+    }
+}
 
         function logoutAdmin() {
             isAdminLogged = false;
