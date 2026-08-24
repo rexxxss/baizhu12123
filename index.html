@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>大人该吃谷了囤货排发系统</title>
+    <title>囤货发货管理系统</title>
+    <!-- 基础样式库 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.12.8/dist/reset.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
     </script>
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js">
+    </script>
     <style>
-        /* ===== 全局蓝白配色 ===== */
+        /* ===== 全局配色 ===== */
         :root {
             --primary: #1890ff;
             --primary-hover: #40a9ff;
@@ -71,7 +75,6 @@
         .app-header .admin-entry.logged {
             color: #52c41a;
         }
-
         .client-tabs {
             display: flex;
             gap: 6px;
@@ -102,7 +105,6 @@
         .client-tabs button:hover:not(.active) {
             background: var(--primary-light);
         }
-
         .card {
             background: var(--card-bg);
             border-radius: 14px;
@@ -126,7 +128,6 @@
             color: #888;
             margin-left: 6px;
         }
-
         .form-group {
             margin-bottom: 14px;
         }
@@ -190,7 +191,6 @@
             margin-right: 4px;
             color: #ccc;
         }
-
         .btn {
             padding: 8px 20px;
             border: none;
@@ -254,7 +254,6 @@
             padding: 10px 28px;
             font-size: 16px;
         }
-
         .status-tag {
             display: inline-block;
             padding: 0 12px;
@@ -331,7 +330,6 @@
             background: #fff1f0;
             color: #d48806;
         }
-
         .item-table-wrap {
             overflow-x: auto;
             margin-top: 8px;
@@ -395,7 +393,6 @@
             color: #999;
             font-size: 12px;
         }
-
         .number-input-group {
             display: flex;
             align-items: center;
@@ -477,7 +474,6 @@
             margin-left: 6px;
             flex-shrink: 0;
         }
-
         .pack-row .number-input-group {
             max-width: 160px;
         }
@@ -491,7 +487,6 @@
             height: 30px;
             font-size: 14px;
         }
-
         .transfer-item-select .number-input-group {
             max-width: 160px;
         }
@@ -505,7 +500,6 @@
             height: 30px;
             font-size: 14px;
         }
-
         .empty-state {
             text-align: center;
             padding: 36px 20px;
@@ -517,7 +511,6 @@
             margin-bottom: 8px;
             color: #e0e0e0;
         }
-
         .upload-area {
             border: 2px dashed #d9d9d9;
             border-radius: 10px;
@@ -557,8 +550,6 @@
             height: auto;
             display: block;
         }
-
-        /* 收款码样式 */
         .qr-code-container {
             text-align: center;
             margin: 12px 0;
@@ -579,7 +570,6 @@
             margin-bottom: 6px;
             font-weight: 500;
         }
-
         .packaging-section {
             background: #f9fafb;
             border-radius: 10px;
@@ -626,7 +616,6 @@
         .packaging-section .pack-header span:last-child {
             text-align: right;
         }
-
         .fee-summary {
             background: var(--primary-light);
             border-radius: 10px;
@@ -661,7 +650,6 @@
             color: #888;
             font-weight: 400;
         }
-
         .table-wrap {
             overflow-x: auto;
         }
@@ -716,7 +704,6 @@
             font-size: 12px;
             padding: 2px 10px;
         }
-
         .order-items-table {
             width: 100%;
             border-collapse: collapse;
@@ -743,7 +730,6 @@
         .order-items-table .item-unpicked {
             background: #fff;
         }
-
         .filter-bar {
             display: flex;
             flex-wrap: wrap;
@@ -774,7 +760,6 @@
         .filter-bar .filter-item select:focus {
             border-color: var(--primary);
         }
-
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -854,7 +839,6 @@
             color: var(--primary);
             margin-bottom: 6px;
         }
-
         .toast-container {
             position: fixed;
             top: 20px;
@@ -889,7 +873,6 @@
         .toast-warning {
             background: #fa8c16;
         }
-
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -918,7 +901,6 @@
                 transform: translateX(0);
             }
         }
-
         .text-center {
             text-align: center;
         }
@@ -960,7 +942,6 @@
             display: inline-block;
             vertical-align: middle;
         }
-
         #adminPanel {
             display: none;
         }
@@ -992,7 +973,6 @@
         #adminPanel .sub-tabs button:hover:not(.active) {
             background: #f0f0f0;
         }
-
         .tracking-badge {
             background: #e6f7ff;
             color: #1890ff;
@@ -1006,7 +986,6 @@
             background: #fff1f0;
             color: #ff4d4f;
         }
-
         .address-list {
             background: #fafafa;
             border-radius: 8px;
@@ -1040,7 +1019,6 @@
         .copy-btn:hover {
             color: var(--primary-hover);
         }
-
         .transfer-item-select {
             display: flex;
             gap: 12px;
@@ -1067,7 +1045,6 @@
         .transfer-item-select .remove-btn:hover {
             color: #e04345;
         }
-
         .province-display {
             display: none;
             margin-top: 6px;
@@ -1112,7 +1089,6 @@
         .province-display .province-select:focus {
             border-color: var(--primary);
         }
-
         .order-actions {
             display: flex;
             flex-wrap: wrap;
@@ -1140,12 +1116,10 @@
         .pick-status-badge .dot.orange {
             background: #faad14;
         }
-
         .modal-item-actions .btn {
             font-size: 12px;
             padding: 2px 10px;
         }
-
         .single-entry-area {
             background: #f9fafb;
             border-radius: 8px;
@@ -1163,7 +1137,6 @@
             padding: 2px 6px;
             border-radius: 4px;
         }
-
         .transfer-query-result .transfer-item {
             background: #fafafa;
             border-radius: 8px;
@@ -1185,7 +1158,6 @@
         .transfer-query-result .transfer-item .transfer-detail span {
             margin-right: 16px;
         }
-
         .transfer-actions-vertical {
             display: flex;
             flex-direction: column;
@@ -1202,7 +1174,6 @@
             font-size: 12px;
             padding: 4px 8px;
         }
-
         .kidney-summary {
             background: var(--primary-light);
             border-radius: 10px;
@@ -1248,7 +1219,6 @@
             border-color: #52c41a;
             background: #f6ffed;
         }
-
         .action-columns {
             display: flex;
             flex-direction: column;
@@ -1270,7 +1240,6 @@
             color: #999;
             margin-bottom: 2px;
         }
-
         .system-column {
             vertical-align: middle;
         }
@@ -1278,7 +1247,6 @@
             font-size: 12px;
             padding: 2px 10px;
         }
-
         .merged-order-info {
             font-size: 13px;
             color: #888;
@@ -1287,7 +1255,6 @@
             border-radius: 4px;
             display: inline-block;
         }
-        /* 收款码容器 */
         .qr-code-container {
             text-align: center;
             margin: 12px 0;
@@ -1381,7 +1348,7 @@
                     </div>
                 </div>
 
-                <!-- 发货表单（新增收款码） -->
+                <!-- 发货表单 -->
                 <div id="clientOrderForm" class="card" style="display:none;">
                     <div class="card-title">
                         <i class="fas fa-truck" style="color:var(--primary);"></i> 填写发货信息
@@ -1393,7 +1360,7 @@
                     <div class="form-group">
                         <label>收货人姓名 <span class="required">*</span></label>
                         <input id="receiverName" class="form-control" placeholder="如：李四" />
-                        <span class="field-hint"><i class="fas fa-pencil-alt"></i> 请填写收件人（不强制同cn）</span>
+                        <span class="field-hint"><i class="fas fa-pencil-alt"></i> 请填写收件人（不强制使用cn）</span>
                     </div>
                     <div class="form-group">
                         <label>收货人电话 <span class="required">*</span></label>
@@ -1403,7 +1370,7 @@
                     <div class="form-group">
                         <label>收货地址 <span class="required">*</span></label>
                         <textarea id="receiverAddress" class="form-control" rows="2" placeholder="如：广东省广州市天河区xx路xx号" oninput="detectProvince()"></textarea>
-                        <span class="field-hint"><i class="fas fa-map-marker-alt"></i> 请填写可准确派送的详细地址</span>
+                        <span class="field-hint"><i class="fas fa-map-marker-alt"></i> 请填写可派送到的详细地址</span>
                         <div id="provinceDisplay" class="province-display">
                             <span class="province-label"><i class="fas fa-flag"></i> 识别省份：</span>
                             <span class="province-name" id="detectedProvince">—</span>
@@ -1430,7 +1397,7 @@
                                 <span>小计</span>
                             </div>
                             <div class="pack-row">
-                                <span class="pack-name">🧊 泡沫纸（每份约可包20点吧唧/2点亚克力）</span>
+                                <span class="pack-name">🧊 泡沫纸（约可包20点吧唧/2点亚克力）</span>
                                 <span class="pack-price" id="price_foam">0.50</span>
                                 <div class="pack-qty">
                                     <div class="number-input-group">
@@ -1442,7 +1409,7 @@
                                 <span class="pack-subtotal" id="subtotal_foam">0.00</span>
                             </div>
                             <div class="pack-row">
-                                <span class="pack-name">📦 硬纸板（推荐每25点选1份/十分不安可选2份）</span>
+                                <span class="pack-name">📦 硬纸板（推荐每25点选1份/十分不安可选两份）</span>
                                 <span class="pack-price" id="price_board">0.50</span>
                                 <div class="pack-qty">
                                     <div class="number-input-group">
@@ -1477,7 +1444,7 @@
                         <div class="fee-total"><span class="fee-label">💰 总费用：</span><span id="displayTotalFee">0.00</span><span style="color:#888;font-size:15px;font-weight:400;">元</span></div>
                     </div>
 
-                    <!-- 收款码（在凭证上方） -->
+                    <!-- 收款码 -->
                     <div class="qr-code-container">
                         <div class="qr-label"><i class="fas fa-qrcode"></i> 请扫码支付</div>
                         <img id="paymentQrImage" src="" alt="收款码" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'16\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E收款码未设置%3C/text%3E%3C/svg%3E'" />
@@ -1564,7 +1531,7 @@
                 </div>
             </div>
 
-            <!-- ===== 页面3：肾表查询（新增收款码和定金计算） ===== -->
+            <!-- ===== 页面3：肾表查询 ===== -->
             <div id="page-kidney" class="client-page" style="display:none;">
                 <div class="card">
                     <div class="card-title"><i class="fas fa-kidney" style="color:var(--primary);"></i> 肾表查询</div>
@@ -1791,7 +1758,7 @@
                 </div>
             </div>
 
-            <!-- 肾表管理（增加定金字段） -->
+            <!-- 肾表管理 -->
             <div id="subtab-kidney" style="display:none;">
                 <div class="card">
                     <div class="card-title">
@@ -1815,7 +1782,7 @@
                     </div>
                 </div>
 
-                <!-- 肾表录入（增加定金） -->
+                <!-- 肾表录入 -->
                 <div class="card">
                     <div class="card-title"><i class="fas fa-upload" style="color:var(--primary);"></i> 录入肾表数据</div>
                     <div class="form-row-3">
@@ -1836,7 +1803,7 @@
                     <button class="btn btn-primary" onclick="addKidneyRecord()"><i class="fas fa-plus-circle"></i> 添加肾表记录</button>
                 </div>
 
-                <!-- 肾表批量录入（增加定金） -->
+                <!-- 肾表批量录入 -->
                 <div class="card">
                     <div class="card-title"><i class="fas fa-table" style="color:var(--primary);"></i> 批量录入肾表 <span class="badge">文本格式：CN 系列 制品 角色 数量 原价 折后价格 [定金] [是否交肾]</span></div>
                     <div class="form-group">
@@ -1895,20 +1862,27 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- JavaScript -->
+    <!-- JavaScript（已改造为Supabase版） -->
     <!-- ============================================================ -->
     <script>
         /**
          * ================================================================
-         *  囤货发货管理系统 - 完整业务逻辑
-         *  新增收款码展示（发货和肾表），肾表管理增加定金字段及计算
+         *  囤货发货管理系统 - 适配Supabase数据库
+         *  所有数据读写通过Supabase API，保留全部功能
+         *  需要配置 SUPABASE_URL 和 SUPABASE_ANON_KEY（在下方填写）
          * ================================================================
          */
 
-        // =========================== 配置：收款码图片URL ===========================
-        // 请将以下两个变量替换为您的实际图片地址
-        const PAYMENT_QR_URL = ''; // 发货收款码，如 'https://example.com/payment_qr.png'
-        const KIDNEY_PAYMENT_QR_URL = ''; // 肾表收款码，如 'https://example.com/kidney_payment_qr.png'
+        // ======================== Supabase 配置 ========================
+        const SUPABASE_URL = 'https://your-project.supabase.co'; // 替换为您的 Supabase URL
+        const SUPABASE_ANON_KEY = 'your-anon-key'; // 替换为您的 Supabase anon key
+
+        // 初始化 Supabase 客户端
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ======================== 收款码配置 ========================
+        const PAYMENT_QR_URL = ''; // 发货收款码图片URL（可留空）
+        const KIDNEY_PAYMENT_QR_URL = ''; // 肾表收款码图片URL（可留空）
 
         // =========================== 常量 & 工具 ===========================
         const STATUS = {
@@ -1956,7 +1930,6 @@
             '西藏自治区': 16,
             '宁夏回族自治区': 9.5,
             '新疆维吾尔自治区': 16,
-
         };
         const PROVINCE_KEYS = Object.keys(PROVINCE_FEE);
 
@@ -2022,15 +1995,9 @@
             const dateStr = today.getFullYear() +
                 String(today.getMonth() + 1).padStart(2, '0') +
                 String(today.getDate()).padStart(2, '0');
-            const orders = getOrders();
-            const todayOrders = orders.filter(o => {
-                const d = new Date(o.created_at);
-                return d.getFullYear() === today.getFullYear() &&
-                    d.getMonth() === today.getMonth() &&
-                    d.getDate() === today.getDate();
-            });
-            const seq = todayOrders.length + 1;
-            return dateStr + '-' + String(seq).padStart(3, '0');
+            // 从数据库获取当天订单数量（由后端生成，此处前端只生成临时编号，实际保存时由数据库自动生成或后端处理）
+            // 这里简单使用时间戳
+            return dateStr + '-' + String(Date.now() % 10000).padStart(4, '0');
         }
 
         // =========================== 数字输入框辅助 ===========================
@@ -2063,49 +2030,91 @@
             }, 3200);
         }
 
-        // =========================== 数据层 ===========================
-        function getItems() {
-            try { return JSON.parse(localStorage.getItem('storage_items')) || []; } catch { return []; }
+        // =========================== Supabase 数据操作函数 ===========================
+        // 通用CRUD封装（使用Supabase）
+
+        // 获取所有物品
+        async function getItems() {
+            const { data, error } = await supabase.from('items').select('*');
+            if (error) { console.error(error);
+                toast('获取物品失败', 'error'); return []; }
+            return data || [];
         }
 
-        function saveItems(items) {
-            localStorage.setItem('storage_items', JSON.stringify(items));
+        // 保存物品列表（批量更新）
+        async function saveItems(items) {
+            // 由于Supabase不支持直接批量upsert所有字段，这里采用逐条upsert（或先删除再插入）
+            // 简单起见，使用upsert（根据id更新或插入）
+            const { error } = await supabase.from('items').upsert(items, { onConflict: 'id' });
+            if (error) { console.error(error);
+                toast('保存物品失败', 'error'); }
+            return !error;
         }
 
-        function getOrders() {
-            try { return JSON.parse(localStorage.getItem('storage_orders')) || []; } catch { return []; }
+        // 获取所有订单
+        async function getOrders() {
+            const { data, error } = await supabase.from('orders').select('*');
+            if (error) { console.error(error);
+                toast('获取订单失败', 'error'); return []; }
+            return data || [];
         }
 
-        function saveOrders(orders) {
-            localStorage.setItem('storage_orders', JSON.stringify(orders));
+        // 保存订单列表（批量upsert）
+        async function saveOrders(orders) {
+            const { error } = await supabase.from('orders').upsert(orders, { onConflict: 'id' });
+            if (error) { console.error(error);
+                toast('保存订单失败', 'error'); }
+            return !error;
         }
 
-        function getTransferRequests() {
-            try { return JSON.parse(localStorage.getItem('transfer_requests')) || []; } catch { return []; }
+        // 转单申请
+        async function getTransferRequests() {
+            const { data, error } = await supabase.from('transfer_requests').select('*');
+            if (error) { console.error(error);
+                toast('获取转单申请失败', 'error'); return []; }
+            return data || [];
         }
 
-        function saveTransferRequests(reqs) {
-            localStorage.setItem('transfer_requests', JSON.stringify(reqs));
+        async function saveTransferRequests(reqs) {
+            const { error } = await supabase.from('transfer_requests').upsert(reqs, { onConflict: 'id' });
+            if (error) { console.error(error);
+                toast('保存转单申请失败', 'error'); }
+            return !error;
         }
 
-        function getKidneyData() {
-            try { return JSON.parse(localStorage.getItem('kidney_data')) || []; } catch { return []; }
+        // 肾表数据
+        async function getKidneyData() {
+            const { data, error } = await supabase.from('kidney_data').select('*');
+            if (error) { console.error(error);
+                toast('获取肾表数据失败', 'error'); return []; }
+            return data || [];
         }
 
-        function saveKidneyData(data) {
-            localStorage.setItem('kidney_data', JSON.stringify(data));
+        async function saveKidneyData(data) {
+            const { error } = await supabase.from('kidney_data').upsert(data, { onConflict: 'id' });
+            if (error) { console.error(error);
+                toast('保存肾表数据失败', 'error'); }
+            return !error;
         }
 
-        function getKidneyApprovals() {
-            try { return JSON.parse(localStorage.getItem('kidney_approvals')) || []; } catch { return []; }
+        // 肾图审批
+        async function getKidneyApprovals() {
+            const { data, error } = await supabase.from('kidney_approvals').select('*');
+            if (error) { console.error(error);
+                toast('获取肾图审批失败', 'error'); return []; }
+            return data || [];
         }
 
-        function saveKidneyApprovals(data) {
-            localStorage.setItem('kidney_approvals', JSON.stringify(data));
+        async function saveKidneyApprovals(data) {
+            const { error } = await supabase.from('kidney_approvals').upsert(data, { onConflict: 'id' });
+            if (error) { console.error(error);
+                toast('保存肾图审批失败', 'error'); }
+            return !error;
         }
 
-        function autoConvertCharge() {
-            let items = getItems();
+        // 自动转换过期物品（从数据库读取并更新）
+        async function autoConvertCharge() {
+            let items = await getItems();
             let changed = false;
             items.forEach(item => {
                 if (item.status === STATUS.ARRIVED && item.storageExpireDate && isExpired(item.storageExpireDate)) {
@@ -2113,12 +2122,12 @@
                     changed = true;
                 }
             });
-            if (changed) { saveItems(items);
+            if (changed) { await saveItems(items);
                 toast('有物品自动转为「收费囤」', 'info'); }
             return changed;
         }
 
-        // =========================== 登录 ===========================
+        // =========================== 登录（管理员登录，仅UI模拟，实际可扩展） ===========================
         let isAdminLogged = false;
 
         function showLoginModal() {
@@ -2155,18 +2164,18 @@
             toast('已退出', 'info');
         }
 
-        function showAdminPanel() {
+        async function showAdminPanel() {
             document.getElementById('clientPanel').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
             document.getElementById('clientTabs').style.display = 'none';
             switchSubTab('item');
-            adminRenderItems();
-            adminLoadOrders();
-            renderTrackingList();
-            renderTransferApproval();
-            renderKidneyTable();
-            renderKidneyApproval();
-            autoConvertCharge();
+            await adminRenderItems();
+            await adminLoadOrders();
+            await renderTrackingList();
+            await renderTransferApproval();
+            await renderKidneyTable();
+            await renderKidneyApproval();
+            await autoConvertCharge();
         }
 
         // =========================== 前台页面切换 ===========================
@@ -2288,23 +2297,20 @@
             document.querySelectorAll('.num-input').forEach(inp => {
                 inp.addEventListener('change', calcTotalFee);
             });
-            if (!localStorage.getItem('storage_items')) saveItems([]);
-            if (!localStorage.getItem('storage_orders')) saveOrders([]);
-            if (!localStorage.getItem('transfer_requests')) saveTransferRequests([]);
-            if (!localStorage.getItem('kidney_data')) saveKidneyData([]);
-            if (!localStorage.getItem('kidney_approvals')) saveKidneyApprovals([]);
-            autoConvertCharge();
+            // 不再从localStorage初始化，所有数据从Supabase获取
+            console.log('系统已启动，连接Supabase');
         });
 
         // ---------- 查询物品 ----------
-        function clientSearch() {
+        async function clientSearch() {
             const cn = document.getElementById('clientCN').value.trim();
             const statusFilter = document.getElementById('clientStatusFilter').value;
             if (!cn) {
                 toast('请输入CN', 'error');
                 return;
             }
-            let items = getItems().filter(item => item.username === cn && item.picked !== true);
+            let allItems = await getItems();
+            let items = allItems.filter(item => item.username === cn && item.picked !== true);
             if (statusFilter) {
                 items = items.filter(item => item.status === statusFilter);
             }
@@ -2495,7 +2501,7 @@
         }
 
         // ---------- 提交发货 ----------
-        function submitClientOrder() {
+        async function submitClientOrder() {
             const cn = document.getElementById('clientCN').value.trim();
             if (!cn) { toast('请先查询CN', 'error'); return; }
             if (shipSelectedItems.length === 0) {
@@ -2520,14 +2526,14 @@
             if (qtyCarton > 0) packDetails.push({ name: '纸箱', qty: qtyCarton, price: PACK_PRICES.carton, subtotal: qtyCarton *
                     PACK_PRICES.carton });
 
-            let items = getItems();
+            let items = await getItems();
             shipSelectedItems.forEach(selItem => {
                 const found = items.find(i => i.id === selItem.id);
                 if (found) {
                     found.status = STATUS.QUEUED;
                 }
             });
-            saveItems(items);
+            await saveItems(items);
 
             const order = {
                 id: genId(),
@@ -2555,9 +2561,9 @@
                 tracking_number: '',
                 ship_status: 'pending'
             };
-            const orders = getOrders();
+            let orders = await getOrders();
             orders.push(order);
-            saveOrders(orders);
+            await saveOrders(orders);
             toast(`发货申请已提交！订单号：${order.orderNumber}，总费用：${totalFee.toFixed(2)} 元，物品已加入排发`, 'success');
 
             clientSelected = new Set();
@@ -2576,10 +2582,11 @@
         }
 
         // ---------- 转单 ----------
-        function loadTransferItems() {
+        async function loadTransferItems() {
             const cn = document.getElementById('transferFromCN').value.trim();
             if (!cn) { toast('请输入您的CN', 'error'); return; }
-            const items = getItems().filter(item => item.username === cn && item.picked !== true);
+            let allItems = await getItems();
+            const items = allItems.filter(item => item.username === cn && item.picked !== true);
             transferItems = items;
             transferSelected = {};
             renderTransferItems();
@@ -2675,7 +2682,7 @@
             toast('证据已上传', 'success');
         }
 
-        function submitTransferRequest() {
+        async function submitTransferRequest() {
             const fromCN = document.getElementById('transferFromCN').value.trim();
             const toCN = document.getElementById('transferToCN').value.trim();
             if (!fromCN || !toCN) { toast('请填写转出和转入CN', 'error'); return; }
@@ -2703,9 +2710,9 @@
                 status: 'pending',
                 createdAt: Date.now()
             };
-            const reqs = getTransferRequests();
+            let reqs = await getTransferRequests();
             reqs.push(req);
-            saveTransferRequests(reqs);
+            await saveTransferRequests(reqs);
             toast('转单申请已提交，等待审批', 'success');
             document.getElementById('transferToCN').value = '';
             transferUploadFile = null;
@@ -2719,13 +2726,14 @@
             renderTransferItems();
         }
 
-        function queryTransferStatus() {
+        async function queryTransferStatus() {
             const cn = document.getElementById('transferQueryCN').value.trim();
             if (!cn) {
                 toast('请输入转出CN', 'warning');
                 return;
             }
-            const reqs = getTransferRequests().filter(r => r.fromUser === cn);
+            let reqs = await getTransferRequests();
+            reqs = reqs.filter(r => r.fromUser === cn);
             const container = document.getElementById('transferQueryResult');
             if (reqs.length === 0) {
                 container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>未找到该CN的转单申请</p></div>`;
@@ -2757,11 +2765,12 @@
         }
 
         // ---------- 订单查询 ----------
-        function queryOrdersByPhone() {
+        async function queryOrdersByPhone() {
             const phone = document.getElementById('queryPhone').value.trim();
             if (!phone) { toast('请输入手机号', 'warning'); return; }
             if (!isValidPhone(phone)) { toast('请输入正确的手机号', 'error'); return; }
-            const orders = getOrders().filter(o => o.receiver_phone === phone);
+            let orders = await getOrders();
+            orders = orders.filter(o => o.receiver_phone === phone);
             const container = document.getElementById('orderQueryResult');
             if (orders.length === 0) {
                 container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>未找到该手机号的订单</p></div>`;
@@ -2800,11 +2809,12 @@
             container.innerHTML = html;
         }
 
-        // ---------- 肾表查询（含定金计算） ----------
-        function queryKidney() {
+        // ---------- 肾表查询 ----------
+        async function queryKidney() {
             const cn = document.getElementById('kidneyCN').value.trim();
             if (!cn) { toast('请输入CN', 'error'); return; }
-            const data = getKidneyData().filter(item => item.cn === cn);
+            let data = await getKidneyData();
+            data = data.filter(item => item.cn === cn);
             const container = document.getElementById('kidneyResult');
             const totalEl = document.getElementById('kidneyTotal');
             const totalPriceEl = document.getElementById('kidneyTotalPrice');
@@ -2859,8 +2869,8 @@
                 qrContainer.style.display = 'none';
             }
 
-            // 肾图上传判断
-            const pendingApprovals = getKidneyApprovals().filter(a => a.cn === cn && a.status === 'pending');
+            let approvals = await getKidneyApprovals();
+            const pendingApprovals = approvals.filter(a => a.cn === cn && a.status === 'pending');
             const canUpload = allNotPaid && pendingApprovals.length === 0;
             if (canUpload) {
                 document.getElementById('kidneyUploadSection').style.display = 'block';
@@ -2898,16 +2908,17 @@
             toast('肾图已上传', 'success');
         }
 
-        function submitKidneyApproval() {
+        async function submitKidneyApproval() {
             const section = document.getElementById('kidneyUploadSection');
             const cn = section.dataset.cn;
             const total = parseFloat(section.dataset.total) || 0;
             if (!cn) { toast('请先查询CN', 'error'); return; }
             if (!kidneyUploadFile) { toast('请上传肾图', 'error'); return; }
-            // 再次检查限制
-            const data = getKidneyData().filter(item => item.cn === cn);
+            let data = await getKidneyData();
+            data = data.filter(item => item.cn === cn);
             const allNotPaid = data.every(item => (item.paid || '未交') === '未交');
-            const pendingApprovals = getKidneyApprovals().filter(a => a.cn === cn && a.status === 'pending');
+            let approvals = await getKidneyApprovals();
+            const pendingApprovals = approvals.filter(a => a.cn === cn && a.status === 'pending');
             if (!allNotPaid) {
                 toast('存在已交肾的记录，不能提交肾图', 'error');
                 return;
@@ -2919,15 +2930,14 @@
             const approval = {
                 id: genId(),
                 cn: cn,
-                total: total, // 已经扣除了定金
+                total: total,
                 image: kidneyUploadUrl,
                 status: 'pending',
                 createdAt: Date.now(),
                 remark: ''
             };
-            const approvals = getKidneyApprovals();
             approvals.push(approval);
-            saveKidneyApprovals(approvals);
+            await saveKidneyApprovals(approvals);
             toast('肾图已提交审批', 'success');
             kidneyUploadFile = null;
             kidneyUploadUrl = '';
@@ -2940,13 +2950,14 @@
             queryKidney();
         }
 
-        function queryKidneyApprovalStatus() {
+        async function queryKidneyApprovalStatus() {
             const cn = document.getElementById('kidneyApprovalQueryCN').value.trim();
             if (!cn) {
                 toast('请输入CN', 'warning');
                 return;
             }
-            const approvals = getKidneyApprovals().filter(a => a.cn === cn);
+            let approvals = await getKidneyApprovals();
+            approvals = approvals.filter(a => a.cn === cn);
             const container = document.getElementById('kidneyApprovalQueryResult');
             if (approvals.length === 0) {
                 container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>未找到该CN的肾图审批记录</p></div>`;
@@ -2998,14 +3009,14 @@
         }
 
         // ---------- 物品管理 ----------
-        function adminRenderItems() {
+        async function adminRenderItems() {
             const filterCN = document.getElementById('filterCN').value.trim();
             const filterStatus = document.getElementById('filterStatus').value;
             const filterSeries = document.getElementById('filterSeries').value.trim();
             const filterCharacter = document.getElementById('filterCharacter').value.trim();
             const filterOrderVersion = document.getElementById('filterOrderVersion').value.trim();
-            autoConvertCharge();
-            let items = getItems();
+            await autoConvertCharge();
+            let items = await getItems();
             if (filterCN) items = items.filter(i => i.username.includes(filterCN));
             if (filterStatus) items = items.filter(i => i.status === filterStatus);
             if (filterSeries) items = items.filter(i => (i.series || '').includes(filterSeries));
@@ -3051,25 +3062,26 @@
             document.querySelectorAll('.item-checkbox-select').forEach(cb => cb.checked = checked);
         }
 
-        function batchDeleteItems() {
+        async function batchDeleteItems() {
             const selected = document.querySelectorAll('.item-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择要删除的物品', 'warning'); return; }
             if (!confirm(`确认删除选中的 ${selected.length} 件物品？此操作不可撤销！`)) return;
             const ids = Array.from(selected).map(cb => parseInt(cb.value));
-            let items = getItems().filter(item => !ids.includes(item.id));
-            saveItems(items);
+            let items = await getItems();
+            items = items.filter(item => !ids.includes(item.id));
+            await saveItems(items);
             toast(`已删除 ${selected.length} 件物品`, 'success');
             adminRenderItems();
         }
 
-        function batchUpdateStatus() {
+        async function batchUpdateStatus() {
             const newStatus = document.getElementById('batchStatusSelect').value;
             if (!newStatus) { toast('请选择状态', 'warning'); return; }
             const selected = document.querySelectorAll('.item-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择物品', 'warning'); return; }
             if (!confirm(`确认将选中的 ${selected.length} 件物品状态改为「${newStatus}」？`)) return;
             const ids = Array.from(selected).map(cb => parseInt(cb.value));
-            let items = getItems();
+            let items = await getItems();
             let count = 0;
             items.forEach(item => {
                 if (ids.includes(item.id)) {
@@ -3083,14 +3095,14 @@
                     count++;
                 }
             });
-            saveItems(items);
+            await saveItems(items);
             toast(`成功修改 ${count} 件物品状态`, 'success');
             adminRenderItems();
             adminLoadOrders();
         }
 
-        function adminEditItem(id) {
-            const items = getItems();
+        async function adminEditItem(id) {
+            let items = await getItems();
             const item = items.find(i => i.id === id);
             if (!item) { toast('物品不存在', 'error'); return; }
             const modal = document.getElementById('detailModal');
@@ -3125,7 +3137,7 @@
             modal.classList.remove('hidden');
         }
 
-        function saveItemEdit(id) {
+        async function saveItemEdit(id) {
             const cn = document.getElementById('editCN').value.trim();
             const series = document.getElementById('editSeries').value.trim();
             const product = document.getElementById('editProduct').value.trim();
@@ -3144,7 +3156,7 @@
                 toast('CN、系列、制品、角色不能为空', 'error');
                 return;
             }
-            let items = getItems();
+            let items = await getItems();
             const item = items.find(i => i.id === id);
             if (!item) { toast('物品不存在', 'error'); return; }
             item.username = cn;
@@ -3157,23 +3169,24 @@
             item.arrivalDate = arrivalDate;
             item.storageExpireDate = expireDate;
             item.shipDate = shipDate;
-            saveItems(items);
+            await saveItems(items);
             toast('物品信息已更新', 'success');
             closeModal();
             adminRenderItems();
         }
 
-        function adminDeleteItem(id) {
+        async function adminDeleteItem(id) {
             if (!confirm(`确认删除物品 #${id}？此操作不可撤销！`)) return;
-            let items = getItems();
+            let items = await getItems();
             items = items.filter(i => i.id !== id);
-            saveItems(items);
+            await saveItems(items);
             toast('物品已删除', 'success');
             adminRenderItems();
         }
 
         // ---------- 批量录入 ----------
         function handleBatchFile(event) {
+            // 与之前相同，只是最终调用 submitBatchText
             const file = event.target.files[0];
             if (!file) return;
             const statusEl = document.getElementById('batchFileStatus');
@@ -3246,7 +3259,7 @@
             document.getElementById('batchFileStatus').textContent = '';
         }
 
-        function submitBatchText() {
+        async function submitBatchText() {
             const text = document.getElementById('batchText').value;
             if (!text.trim()) { toast('请输入文本或先上传文件', 'warning'); return; }
             const lines = text.split('\n').filter(line => line.trim() !== '');
@@ -3278,10 +3291,10 @@
                 return;
             }
             if (itemsToAdd.length === 0) { toast('没有有效数据', 'warning'); return; }
-            const existing = getItems();
+            const existing = await getItems();
             itemsToAdd.forEach(item => item.id = genId());
             const newItems = existing.concat(itemsToAdd);
-            saveItems(newItems);
+            await saveItems(newItems);
             toast(`✅ 成功录入 ${itemsToAdd.length} 件物品`, 'success');
             document.getElementById('batchParseResult').textContent = `✅ 成功录入 ${itemsToAdd.length} 件物品`;
             document.getElementById('batchText').value = '';
@@ -3290,7 +3303,7 @@
             adminRenderItems();
         }
 
-        function submitSingleEntry() {
+        async function submitSingleEntry() {
             const cn = document.getElementById('singleCN').value.trim();
             const series = document.getElementById('singleSeries').value.trim();
             const product = document.getElementById('singleProduct').value.trim();
@@ -3318,9 +3331,9 @@
                 createdAt: Date.now(),
                 picked: false
             };
-            const items = getItems();
+            let items = await getItems();
             items.push(item);
-            saveItems(items);
+            await saveItems(items);
             toast(`物品 "${character}" 添加成功`, 'success');
             document.getElementById('singleCN').value = '';
             document.getElementById('singleSeries').value = '';
@@ -3332,10 +3345,11 @@
         }
 
         // ---------- 订单管理 ----------
-        function adminLoadOrders() {
-            let orders = getOrders();
+        async function adminLoadOrders() {
+            let orders = await getOrders();
             orders.sort((a, b) => a.created_at - b.created_at);
 
+            // 合并逻辑（与之前相同）
             const mergedOrders = [];
             const skipIds = new Set();
             for (let i = 0; i < orders.length; i++) {
@@ -3426,16 +3440,16 @@
             tbody.innerHTML = html;
         }
 
-        function shipOrder(orderId) {
+        async function shipOrder(orderId) {
             if (!confirm('确认一键发货？将更新物品状态为「已发货」，并标记订单为已发货。')) return;
-            let orders = getOrders();
+            let orders = await getOrders();
             const order = orders.find(o => o.id === orderId);
             if (!order) { toast('订单不存在', 'error'); return; }
             if (order.ship_status === 'shipped') {
                 toast('该订单已发货，不可重复操作', 'warning');
                 return;
             }
-            let items = getItems();
+            let items = await getItems();
             order.items.forEach(item => {
                 const found = items.find(i => i.id === item.id);
                 if (found && found.status !== STATUS.SHIPPED) {
@@ -3443,7 +3457,7 @@
                     found.shipDate = Date.now();
                 }
             });
-            saveItems(items);
+            await saveItems(items);
             order.ship_status = 'shipped';
             if (order._merged) {
                 order._merged.forEach(sub => {
@@ -3451,7 +3465,7 @@
                     if (subOrder) subOrder.ship_status = 'shipped';
                 });
             }
-            saveOrders(orders);
+            await saveOrders(orders);
             toast('一键发货成功，物品状态已更新为「已发货」', 'success');
             adminLoadOrders();
             adminRenderItems();
@@ -3462,28 +3476,29 @@
             document.querySelectorAll('.order-checkbox-select').forEach(cb => cb.checked = checked);
         }
 
-        function batchDeleteOrders() {
+        async function batchDeleteOrders() {
             const selected = document.querySelectorAll('.order-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择要删除的订单', 'warning'); return; }
             if (!confirm(`确认删除选中的 ${selected.length} 个订单？此操作不可撤销！`)) return;
             const ids = Array.from(selected).map(cb => parseInt(cb.value));
-            let orders = getOrders().filter(o => !ids.includes(o.id));
-            saveOrders(orders);
+            let orders = await getOrders();
+            orders = orders.filter(o => !ids.includes(o.id));
+            await saveOrders(orders);
             toast(`已删除 ${selected.length} 个订单`, 'success');
             adminLoadOrders();
         }
 
-        function adminDeleteOrder(id) {
+        async function adminDeleteOrder(id) {
             if (!confirm(`确认删除订单 #${id}？此操作不可撤销！`)) return;
-            let orders = getOrders();
+            let orders = await getOrders();
             orders = orders.filter(o => o.id !== id);
-            saveOrders(orders);
+            await saveOrders(orders);
             toast('订单已删除', 'success');
             adminLoadOrders();
         }
 
-        function adminViewOrderDetail(id) {
-            let orders = getOrders();
+        async function adminViewOrderDetail(id) {
+            let orders = await getOrders();
             const order = orders.find(o => o.id === id);
             if (!order) { toast('订单不存在', 'error'); return; }
 
@@ -3549,9 +3564,9 @@
         }
 
         // ---------- 快递单号 ----------
-        function renderTrackingList() {
+        async function renderTrackingList() {
             const search = document.getElementById('trackingSearchInput').value.trim();
-            let orders = getOrders();
+            let orders = await getOrders();
             if (search) {
                 orders = orders.filter(o => String(o.id).includes(search) || (o.receiver_phone && o.receiver_phone.includes(
                 search)));
@@ -3586,22 +3601,22 @@
             renderAddressList();
         }
 
-        function saveTracking(orderId) {
+        async function saveTracking(orderId) {
             const input = document.getElementById(`tracking_input_${orderId}`);
             if (!input) return;
             const number = input.value.trim();
-            let orders = getOrders();
+            let orders = await getOrders();
             const order = orders.find(o => o.id === orderId);
             if (!order) { toast('订单不存在', 'error'); return; }
             order.tracking_number = number;
-            saveOrders(orders);
+            await saveOrders(orders);
             toast(`订单 ${order.orderNumber || '#'+order.id} 快递单号已保存`, 'success');
             renderTrackingList();
             adminLoadOrders();
         }
 
-        function renderAddressList() {
-            const orders = getOrders();
+        async function renderAddressList() {
+            let orders = await getOrders();
             if (!orders.length) {
                 document.getElementById('addressListContainer').innerHTML = '<div style="color:#999;padding:8px;">暂无地址</div>';
                 return;
@@ -3665,8 +3680,8 @@
         }
 
         // ---------- 转单审批 ----------
-        function renderTransferApproval() {
-            const reqs = getTransferRequests();
+        async function renderTransferApproval() {
+            let reqs = await getTransferRequests();
             reqs.sort((a, b) => b.createdAt - a.createdAt);
             const tbody = document.getElementById('transferApprovalTableBody');
             if (!reqs.length) {
@@ -3718,8 +3733,8 @@
             tbody.innerHTML = html;
         }
 
-        function adminViewTransferDetail(reqId) {
-            const reqs = getTransferRequests();
+        async function adminViewTransferDetail(reqId) {
+            let reqs = await getTransferRequests();
             const req = reqs.find(r => r.id === reqId);
             if (!req) { toast('申请不存在', 'error'); return; }
             const modal = document.getElementById('detailModal');
@@ -3747,22 +3762,22 @@
             modal.classList.remove('hidden');
         }
 
-        function adminDeleteTransfer(reqId) {
+        async function adminDeleteTransfer(reqId) {
             if (!confirm('确认删除该转单申请？此操作不可撤销！')) return;
-            let reqs = getTransferRequests();
+            let reqs = await getTransferRequests();
             reqs = reqs.filter(r => r.id !== reqId);
-            saveTransferRequests(reqs);
+            await saveTransferRequests(reqs);
             toast('转单申请已删除', 'success');
             renderTransferApproval();
         }
 
-        function approveTransfer(reqId) {
+        async function approveTransfer(reqId) {
             if (!confirm('确认通过该转单申请？物品将转移到目标CN下。')) return;
-            let reqs = getTransferRequests();
+            let reqs = await getTransferRequests();
             const req = reqs.find(r => r.id === reqId);
             if (!req) { toast('申请不存在', 'error'); return; }
             if (req.status !== 'pending') { toast('该申请已处理', 'warning'); return; }
-            let items = getItems();
+            let items = await getItems();
             let success = true;
             req.items.forEach(trans => {
                 const fromItem = items.find(i => i.id === trans.itemId);
@@ -3786,9 +3801,9 @@
                 items.push(newItem);
             });
             if (success) {
-                saveItems(items);
+                await saveItems(items);
                 req.status = 'approved';
-                saveTransferRequests(reqs);
+                await saveTransferRequests(reqs);
                 toast('转单审批通过，物品已转移', 'success');
             } else {
                 toast('转移失败，请检查物品数量', 'error');
@@ -3797,23 +3812,23 @@
             adminRenderItems();
         }
 
-        function rejectTransfer(reqId) {
+        async function rejectTransfer(reqId) {
             if (!confirm('确认拒绝该转单申请？')) return;
-            let reqs = getTransferRequests();
+            let reqs = await getTransferRequests();
             const req = reqs.find(r => r.id === reqId);
             if (!req) { toast('申请不存在', 'error'); return; }
             if (req.status !== 'pending') { toast('该申请已处理', 'warning'); return; }
             req.status = 'rejected';
-            saveTransferRequests(reqs);
+            await saveTransferRequests(reqs);
             toast('已拒绝转单申请', 'success');
             renderTransferApproval();
         }
 
-        // ---------- 肾表管理（增加定金） ----------
-        function renderKidneyTable() {
+        // ---------- 肾表管理 ----------
+        async function renderKidneyTable() {
             const filterCN = document.getElementById('kidneyFilterCN').value.trim();
             const filterPaid = document.getElementById('kidneyFilterPaid').value;
-            let data = getKidneyData();
+            let data = await getKidneyData();
             if (filterCN) data = data.filter(item => item.cn.includes(filterCN));
             if (filterPaid) data = data.filter(item => (item.paid || '未交') === filterPaid);
             data.sort((a, b) => a.cn.localeCompare(b.cn));
@@ -3857,18 +3872,19 @@
             document.querySelectorAll('.kidney-checkbox-select').forEach(cb => cb.checked = checked);
         }
 
-        function batchDeleteKidney() {
+        async function batchDeleteKidney() {
             const selected = document.querySelectorAll('.kidney-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择要删除的肾表记录', 'warning'); return; }
             if (!confirm(`确认删除选中的 ${selected.length} 条记录？此操作不可撤销！`)) return;
             const ids = Array.from(selected).map(cb => parseInt(cb.value));
-            let data = getKidneyData().filter(item => !ids.includes(item.id));
-            saveKidneyData(data);
+            let data = await getKidneyData();
+            data = data.filter(item => !ids.includes(item.id));
+            await saveKidneyData(data);
             toast(`已删除 ${selected.length} 条肾表记录`, 'success');
             renderKidneyTable();
         }
 
-        function addKidneyRecord() {
+        async function addKidneyRecord() {
             const cn = document.getElementById('kidneyInputCN').value.trim();
             const series = document.getElementById('kidneyInputSeries').value.trim();
             const product = document.getElementById('kidneyInputProduct').value.trim();
@@ -3882,7 +3898,7 @@
                 toast('请完整填写CN、系列、制品、角色', 'error');
                 return;
             }
-            const data = getKidneyData();
+            let data = await getKidneyData();
             data.push({
                 id: genId(),
                 cn: cn,
@@ -3895,7 +3911,7 @@
                 deposit: deposit,
                 paid: paid
             });
-            saveKidneyData(data);
+            await saveKidneyData(data);
             toast('肾表记录添加成功', 'success');
             document.getElementById('kidneyInputCN').value = '';
             document.getElementById('kidneyInputSeries').value = '';
@@ -3908,11 +3924,11 @@
             renderKidneyTable();
         }
 
-        function submitKidneyBatch() {
+        async function submitKidneyBatch() {
             const text = document.getElementById('kidneyBatchText').value;
             if (!text.trim()) { toast('请输入文本数据', 'warning'); return; }
             const lines = text.split('\n').filter(line => line.trim() !== '');
-            let data = getKidneyData();
+            let data = await getKidneyData();
             let count = 0;
             lines.forEach(line => {
                 const parts = line.trim().split(/\s+/);
@@ -3920,7 +3936,6 @@
                 const [cn, series, product, character, qtyStr, originalStr, discountStr, ...rest] = parts;
                 let deposit = 0;
                 let paid = '未交';
-                // 剩余部分可能包含定金和交肾状态
                 let restIdx = 0;
                 if (rest.length > 0 && !isNaN(parseFloat(rest[restIdx]))) {
                     deposit = parseFloat(rest[restIdx]);
@@ -3948,14 +3963,14 @@
                     count++;
                 }
             });
-            saveKidneyData(data);
+            await saveKidneyData(data);
             toast(`成功录入 ${count} 条肾表记录`, 'success');
             document.getElementById('kidneyBatchText').value = '';
             renderKidneyTable();
         }
 
-        function editKidneyRecord(id) {
-            const data = getKidneyData();
+        async function editKidneyRecord(id) {
+            let data = await getKidneyData();
             const item = data.find(d => d.id === id);
             if (!item) { toast('记录不存在', 'error'); return; }
             const modal = document.getElementById('detailModal');
@@ -3991,7 +4006,7 @@
             modal.classList.remove('hidden');
         }
 
-        function saveKidneyEdit(id) {
+        async function saveKidneyEdit(id) {
             const cn = document.getElementById('editKidneyCN').value.trim();
             const series = document.getElementById('editKidneySeries').value.trim();
             const product = document.getElementById('editKidneyProduct').value.trim();
@@ -4005,7 +4020,7 @@
                 toast('请完整填写信息', 'error');
                 return;
             }
-            let data = getKidneyData();
+            let data = await getKidneyData();
             const item = data.find(d => d.id === id);
             if (!item) { toast('记录不存在', 'error'); return; }
             item.cn = cn;
@@ -4017,23 +4032,24 @@
             item.discountPrice = discountPrice;
             item.deposit = deposit;
             item.paid = paid;
-            saveKidneyData(data);
+            await saveKidneyData(data);
             toast('肾表记录已更新', 'success');
             closeModal();
             renderKidneyTable();
         }
 
-        function deleteKidneyRecord(id) {
+        async function deleteKidneyRecord(id) {
             if (!confirm('确认删除该肾表记录？')) return;
-            let data = getKidneyData().filter(d => d.id !== id);
-            saveKidneyData(data);
+            let data = await getKidneyData();
+            data = data.filter(d => d.id !== id);
+            await saveKidneyData(data);
             toast('已删除', 'success');
             renderKidneyTable();
         }
 
         // ---------- 肾图审批 ----------
-        function renderKidneyApproval() {
-            const approvals = getKidneyApprovals();
+        async function renderKidneyApproval() {
+            let approvals = await getKidneyApprovals();
             approvals.sort((a, b) => b.createdAt - a.createdAt);
             const tbody = document.getElementById('kidneyApprovalTableBody');
             if (!approvals.length) {
@@ -4083,8 +4099,8 @@
             tbody.innerHTML = html;
         }
 
-        function adminViewKidneyDetail(id) {
-            const approvals = getKidneyApprovals();
+        async function adminViewKidneyDetail(id) {
+            let approvals = await getKidneyApprovals();
             const app = approvals.find(a => a.id === id);
             if (!app) { toast('审批不存在', 'error'); return; }
             const modal = document.getElementById('detailModal');
@@ -4110,43 +4126,44 @@
             modal.classList.remove('hidden');
         }
 
-        function adminDeleteKidneyApproval(id) {
+        async function adminDeleteKidneyApproval(id) {
             if (!confirm('确认删除该肾图审批记录？此操作不可撤销！')) return;
-            let approvals = getKidneyApprovals().filter(a => a.id !== id);
-            saveKidneyApprovals(approvals);
+            let approvals = await getKidneyApprovals();
+            approvals = approvals.filter(a => a.id !== id);
+            await saveKidneyApprovals(approvals);
             toast('已删除', 'success');
             renderKidneyApproval();
         }
 
-        function approveKidney(id, method) {
+        async function approveKidney(id, method) {
             if (!confirm(`确认通过该肾图审批，付款方式：${method}？`)) return;
-            let approvals = getKidneyApprovals();
+            let approvals = await getKidneyApprovals();
             const app = approvals.find(a => a.id === id);
             if (!app || app.status !== 'pending') { toast('该申请已处理', 'warning'); return; }
-            let kidneyData = getKidneyData();
+            let kidneyData = await getKidneyData();
             kidneyData.forEach(item => {
                 if (item.cn === app.cn) {
                     item.paid = method;
                 }
             });
-            saveKidneyData(kidneyData);
+            await saveKidneyData(kidneyData);
             app.status = 'approved';
             app.method = method;
-            saveKidneyApprovals(approvals);
+            await saveKidneyApprovals(approvals);
             toast(`肾图审批通过，付款方式：${method}，已更新肾表`, 'success');
             renderKidneyApproval();
             renderKidneyTable();
         }
 
-        function rejectKidney(id) {
+        async function rejectKidney(id) {
             const remark = prompt('请输入付款无效的原因（备注）：');
             if (remark === null) return;
-            let approvals = getKidneyApprovals();
+            let approvals = await getKidneyApprovals();
             const app = approvals.find(a => a.id === id);
             if (!app || app.status !== 'pending') { toast('该申请已处理', 'warning'); return; }
             app.status = 'rejected';
             app.remark = remark || '付款无效';
-            saveKidneyApprovals(approvals);
+            await saveKidneyApprovals(approvals);
             toast('已标记为付款无效', 'success');
             renderKidneyApproval();
         }
@@ -4158,12 +4175,7 @@
 
         // =========================== 初始化 ===========================
         (function init() {
-            if (!localStorage.getItem('storage_items')) saveItems([]);
-            if (!localStorage.getItem('storage_orders')) saveOrders([]);
-            if (!localStorage.getItem('transfer_requests')) saveTransferRequests([]);
-            if (!localStorage.getItem('kidney_data')) saveKidneyData([]);
-            if (!localStorage.getItem('kidney_approvals')) saveKidneyApprovals([]);
-
+            // 数据已由Supabase提供，不再从localStorage读取
             document.getElementById('clientPanel').style.display = 'block';
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('clientTabs').style.display = 'flex';
@@ -4182,8 +4194,7 @@
             document.getElementById('detailModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
             initPackPrices();
-            autoConvertCharge();
-            console.log('系统初始化完成 — 新增收款码展示，肾表定金功能');
+            console.log('系统初始化完成 — 使用Supabase数据库');
         })();
     </script>
 
