@@ -3314,16 +3314,16 @@
             document.querySelectorAll('.item-checkbox-select').forEach(cb => cb.checked = checked);
         }
 
+        // 批量删除物品
         async function batchDeleteItems() {
-            const selected = document.querySelectorAll('.item-checkbox-select:checked');
-            if (selected.length === 0) { toast('请选择要删除的物品', 'warning'); return; }
-            if (!confirm(`确认删除选中的 ${selected.length} 件物品？此操作不可撤销！`)) return;
-            const ids = Array.from(selected).map(cb => parseInt(cb.value));
-            let items = await getItems();
-            items = items.filter(item => !ids.includes(item.id));
-            await saveItems(items);
-            toast(`已删除 ${selected.length} 件物品`, 'success');
-            adminRenderItems();
+    const selected = document.querySelectorAll('.item-checkbox-select:checked');
+    if (selected.length === 0) { toast('请选择要删除的物品', 'warning'); return; }
+    if (!confirm(`确认删除选中的 ${selected.length} 件物品？此操作不可撤销！`)) return;
+    const ids = Array.from(selected).map(cb => parseInt(cb.value));
+    const { error } = await supabase.from('items').delete().in('id', ids);
+    if (error) { console.error(error); toast('删除失败', 'error'); return; }
+    toast(`已删除 ${selected.length} 件物品`, 'success');
+    adminRenderItems();
         }
 
         async function batchUpdateStatus() {
@@ -3427,18 +3427,19 @@
             adminRenderItems();
         }
 
+
+        // 单个删除物品
         async function adminDeleteItem(id) {
             if (!confirm(`确认删除物品 #${id}？此操作不可撤销！`)) return;
-            let items = await getItems();
-            items = items.filter(i => i.id !== id);
-            await saveItems(items);
+            const { error } = await supabase.from('items').delete().eq('id', id);
+            if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast('物品已删除', 'success');
             adminRenderItems();
         }
 
         // ---------- 批量录入 ----------
         function handleBatchFile(event) {
-            // 与之前相同，只是最终调用 submitBatchText
+            // 最终调用 submitBatchText
             const file = event.target.files[0];
             if (!file) return;
             const statusEl = document.getElementById('batchFileStatus');
@@ -3728,23 +3729,23 @@
             document.querySelectorAll('.order-checkbox-select').forEach(cb => cb.checked = checked);
         }
 
+        // 批量删除订单
         async function batchDeleteOrders() {
             const selected = document.querySelectorAll('.order-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择要删除的订单', 'warning'); return; }
             if (!confirm(`确认删除选中的 ${selected.length} 个订单？此操作不可撤销！`)) return;
             const ids = Array.from(selected).map(cb => parseInt(cb.value));
-            let orders = await getOrders();
-            orders = orders.filter(o => !ids.includes(o.id));
-            await saveOrders(orders);
+            const { error } = await supabase.from('orders').delete().in('id', ids);
+            if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast(`已删除 ${selected.length} 个订单`, 'success');
             adminLoadOrders();
         }
 
+        // 单个删除订单
         async function adminDeleteOrder(id) {
             if (!confirm(`确认删除订单 #${id}？此操作不可撤销！`)) return;
-            let orders = await getOrders();
-            orders = orders.filter(o => o.id !== id);
-            await saveOrders(orders);
+            const { error } = await supabase.from('orders').delete().eq('id', id);
+            if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast('订单已删除', 'success');
             adminLoadOrders();
         }
@@ -4014,11 +4015,11 @@
             modal.classList.remove('hidden');
         }
 
+        // 删除转单申请
         async function adminDeleteTransfer(reqId) {
             if (!confirm('确认删除该转单申请？此操作不可撤销！')) return;
-            let reqs = await getTransferRequests();
-            reqs = reqs.filter(r => r.id !== reqId);
-            await saveTransferRequests(reqs);
+            const { error } = await supabase.from('transfer_requests').delete().eq('id', reqId);
+            if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast('转单申请已删除', 'success');
             renderTransferApproval();
         }
@@ -4124,14 +4125,14 @@
             document.querySelectorAll('.kidney-checkbox-select').forEach(cb => cb.checked = checked);
         }
 
+        // 批量删除肾表记录
         async function batchDeleteKidney() {
             const selected = document.querySelectorAll('.kidney-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择要删除的肾表记录', 'warning'); return; }
             if (!confirm(`确认删除选中的 ${selected.length} 条记录？此操作不可撤销！`)) return;
             const ids = Array.from(selected).map(cb => parseInt(cb.value));
-            let data = await getKidneyData();
-            data = data.filter(item => !ids.includes(item.id));
-            await saveKidneyData(data);
+            const { error } = await supabase.from('kidney_data').delete().in('id', ids);
+            if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast(`已删除 ${selected.length} 条肾表记录`, 'success');
             renderKidneyTable();
         }
@@ -4290,11 +4291,11 @@
             renderKidneyTable();
         }
 
+        // 单个删除肾表记录
         async function deleteKidneyRecord(id) {
             if (!confirm('确认删除该肾表记录？')) return;
-            let data = await getKidneyData();
-            data = data.filter(d => d.id !== id);
-            await saveKidneyData(data);
+            const { error } = await supabase.from('kidney_data').delete().eq('id', id);
+            if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast('已删除', 'success');
             renderKidneyTable();
         }
@@ -4378,11 +4379,11 @@
             modal.classList.remove('hidden');
         }
 
+        // 删除肾图审批记录
         async function adminDeleteKidneyApproval(id) {
             if (!confirm('确认删除该肾图审批记录？此操作不可撤销！')) return;
-            let approvals = await getKidneyApprovals();
-            approvals = approvals.filter(a => a.id !== id);
-            await saveKidneyApprovals(approvals);
+            const { error } = await supabase.from('kidney_approvals').delete().eq('id', id);
+            if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast('已删除', 'success');
             renderKidneyApproval();
         }
