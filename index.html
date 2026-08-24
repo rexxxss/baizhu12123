@@ -2222,8 +2222,8 @@
         function genId() {
             if (!window._idCounter) window._idCounter = 0;
             window._idCounter++;
-            // 使用时间戳（毫秒）+ 计数器，确保唯一且为数字
-            return Date.now() * 1000 + window._idCounter;
+            // 返回一个数字字符串，确保在 bigint 范围内
+            return Date.now().toString() + window._idCounter.toString().padStart(4, '0');
         }
 
         function isValidPhone(phone) {
