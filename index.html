@@ -3418,8 +3418,13 @@
             item.quantity = quantity;
             item.status = status;
             item.orderVersion = orderVersion;
-            item.arrivalDate = arrivalDate;
-            item.storageExpireDate = expireDate;
+            if (arrivalDate) {
+                item.arrivalDate = arrivalDate;
+                item.storageExpireDate = calcExpireDate(arrivalDate);
+            } else {
+                item.arrivalDate = null;
+                item.storageExpireDate = null;
+            }
             item.shipDate = shipDate;
             await saveItems(items);
             toast('物品信息已更新', 'success');
