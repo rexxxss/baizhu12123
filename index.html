@@ -2275,10 +2275,38 @@
 
         // 获取所有物品
         async function getItems() {
-            const { data, error } = await supabase.from('items').select('*').limit(100000);
-            if (error) { console.error(error);
-                toast('获取物品失败', 'error'); return []; }
-            return data || [];
+            let allData = [];
+            let from = 0;
+            const pageSize = 1000;      // 每次取 1000 条，可在 1000～10000 之间调整
+            let hasMore = true;
+
+            while (hasMore) {
+                const { data, error } = await supabase
+                    .from('items')
+                    .select('*')
+                    .range(from, from + pageSize - 1);
+
+                if (error) {
+                    console.error('获取物品分页失败:', error);
+                    toast('获取物品失败，请刷新重试', 'error');
+                    // 返回已获取的部分数据，不丢失已拉取的内容
+                    return allData;
+          }
+
+        if (data && data.length > 0) {
+            allData = allData.concat(data);
+            from += data.length;
+            // 如果本次返回数量小于 pageSize，说明已到最后一页
+            if (data.length < pageSize) {
+                hasMore = false;
+            }
+        } else {
+            // 没有数据则结束循环
+            hasMore = false;
+        }
+    }
+
+    return allData;
         }
 
         // 保存物品列表（批量更新）
