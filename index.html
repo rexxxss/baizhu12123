@@ -3001,7 +3001,7 @@
             if (selectedItems.length === 0) { toast('请至少选择一件物品并填写数量', 'error'); return; }
             if (!transferUploadFile) { toast('请上传转单证据', 'error'); return; }
             const items = selectedItems.map(id => {
-                const item = transferItems.find(i => i.id === parseInt(id));
+                const item = transferItems.find(i => String(i.id) === String(id));
                 return {
                     itemId: item.id,
                     quantity: transferSelected[id],
@@ -3769,8 +3769,8 @@
 
                 let systemHtml = `
                         <div class="action-columns">
-                            <button class="btn btn-sm btn-outline" onclick="adminViewOrderDetail('${order.id}')"><i class="fas fa-eye"></i> 详情</button>
-                            <button class="btn btn-sm btn-danger" onclick="adminDeleteOrder('${order.id}')"><i class="fas fa-trash"></i> 删除</button>
+                            <button class="btn btn-sm btn-outline" onclick="adminViewKidneyDetail('${app.id}')"><i class="fas fa-eye"></i> 详情</button>
+                            <button class="btn btn-sm btn-danger" onclick="adminDeleteKidneyApproval('${app.id}')"><i class="fas fa-trash"></i> 删除</button>
                         </div>
                     `;
 
@@ -4212,8 +4212,8 @@
                             <td><span class="status-tag ${paidClass}">${escHtml(paidLabel)}</span></td>
                             <td>
                                 <div class="actions">
-                                    <button class="btn btn-sm btn-outline" onclick="adminViewOrderDetail('${order.id}')"><i class="fas fa-edit"></i> 编辑</button>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteKidneyRecord(${item.id})"><i class="fas fa-trash"></i> 删除</button>
+                                    <button class="btn btn-sm btn-outline" onclick="editKidneyRecord('${item.id}')"><i class="fas fa-edit"></i> 编辑</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteKidneyRecord('${item.id}')"><i class="fas fa-trash"></i> 删除</button>
                                 </div>
                             </td>
                         </tr>
@@ -4432,12 +4432,12 @@
                     actionHtml = `<span class="text-muted">已处理</span>`;
                 }
 
-                const systemHtml = `
-                        <div class="action-columns">
-                            <button class="btn btn-sm btn-outline" onclick="adminViewOrderDetail('${order.id}')"><i class="fas fa-eye"></i> 详情</button>
-                            <button class="btn btn-sm btn-danger" onclick="adminDeleteKidneyApproval(${app.id})"><i class="fas fa-trash"></i> 删除</button>
-                        </div>
-                    `;
+                cost systemHtml = `
+                    <div class="action-columns">
+                        <button class="btn btn-sm btn-outline" onclick="adminViewTransferDetail('${req.id}')"><i class="fas fa-eye"></i> 详情</button>
+                        <button class="btn btn-sm btn-danger" onclick="adminDeleteTransfer('${req.id}')"><i class="fas fa-trash"></i> 删除</button>
+                </div>
+                `;
 
                 html += `
                         <tr>
