@@ -3349,15 +3349,17 @@
             const selected = document.querySelectorAll('.item-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择要删除的物品', 'warning'); return; }
             if (!confirm(`确认删除选中的 ${selected.length} 件物品？此操作不可撤销！`)) return;
-            const ids = Array.from(selected).map(cb => cb.value);
+            const ids = Array.from(selected).map(cb => parseInt(cb.value));
+    
+            // ✅ 使用 Supabase delete 方法
             const { error } = await supabase.from('items').delete().in('id', ids);
             if (error) {
-                console.error(error);
+                console.error('删除失败:', error);
                 toast('删除失败: ' + error.message, 'error');
-            } else {
-                toast(`已删除 ${ids.length} 件物品`, 'success');
-                adminRenderItems();
+                return;
             }
+            toast(`已删除 ${selected.length} 件物品`, 'success');
+            adminRenderItems();
         }
 
         async function batchUpdateStatus() {
