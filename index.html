@@ -2690,7 +2690,7 @@
                 html += `
                     <tr class="${rowClass}">
                         <td class="col-checkbox">
-                            <input type="checkbox" ${checked} ${disabledAttr} onchange="toggleClientItem(${item.id})" />
+                            <input type="checkbox" ${checked} ${disabledAttr} onchange="toggleClientItem('${item.id}')" />
                         </td>
                         <td>${escHtml(item.series || '-')}</td>
                         <td>${escHtml(item.product || '-')}</td>
@@ -2714,10 +2714,11 @@
             const checked = document.getElementById('selectAllClientItems').checked;
             clientItems.forEach(item => {
                 if (SELECTABLE_STATUS.includes(item.status)) {
+                    const idStr = String(item.id);
                     if (checked) {
-                        clientSelected.add(item.id);
+                        clientSelected.add(idStr);
                     } else {
-                        clientSelected.delete(item.id);
+                        clientSelected.delete(idStr);
                     }
                 }
             });
@@ -2726,12 +2727,13 @@
         }
 
         function toggleClientItem(id) {
-            const item = clientItems.find(i => i.id === id);
+            const idStr = String(id);
+            const item = clientItems.find(i => String(i.id) === idStr);
             if (!item || !SELECTABLE_STATUS.includes(item.status)) return;
-            if (clientSelected.has(id)) {
-                clientSelected.delete(id);
+            if (clientSelected.has(idStr)) {
+                clientSelected.delete(idStr);
             } else {
-                clientSelected.add(id);
+                clientSelected.add(idStr);
             }
             renderClientItemsTable();
             updateClientSelectedCount();
@@ -2749,7 +2751,7 @@
                 toast('请至少选择一件物品（仅已到货/收费囤可选）', 'warning');
                 return;
             }
-            shipSelectedItems = clientItems.filter(item => clientSelected.has(item.id));
+            shipSelectedItems = clientItems.filter(item => clientSelected.has(String(item.id)));
             if (shipSelectedItems.length === 0) {
                 toast('请选择有效的物品', 'warning');
                 return;
