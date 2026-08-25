@@ -2275,7 +2275,7 @@
 
         // 获取所有物品
         async function getItems() {
-            const { data, error } = await supabase.from('items').select('*');
+            const { data, error } = await supabase.from('items').select('*').limit(100000);
             if (error) { console.error(error);
                 toast('获取物品失败', 'error'); return []; }
             return data || [];
@@ -2299,7 +2299,7 @@
 
         // 获取所有订单
         async function getOrders() {
-            const { data, error } = await supabase.from('orders').select('*');
+            const { data, error } = await supabase.from('orders').select('*').limit(100000);
             if (error) { console.error(error);
                 toast('获取订单失败', 'error'); return []; }
             return data || [];
@@ -2320,7 +2320,7 @@
 
         // 转单申请
         async function getTransferRequests() {
-            const { data, error } = await supabase.from('transfer_requests').select('*');
+            const { data, error } = await supabase.from('transfer_requests').select('*').limit(100000);
             if (error) { console.error(error);
                 toast('获取转单申请失败', 'error'); return []; }
             return data || [];
@@ -2340,7 +2340,7 @@
 
         // 肾表数据
         async function getKidneyData() {
-            const { data, error } = await supabase.from('kidney_data').select('*');
+            const { data, error } = await supabase.from('kidney_data').select('*').limit(100000);
             if (error) { console.error(error);
                 toast('获取肾表数据失败', 'error'); return []; }
             return data || [];
@@ -2360,7 +2360,7 @@
 
         // 肾图审批
         async function getKidneyApprovals() {
-            const { data, error } = await supabase.from('kidney_approvals').select('*');
+            const { data, error } = await supabase.from('kidney_approvals').select('*').limit(100000);
             if (error) { console.error(error);
                 toast('获取肾图审批失败', 'error'); return []; }
             return data || [];
@@ -3346,14 +3346,18 @@
 
         // 批量删除物品
         async function batchDeleteItems() {
-    const selected = document.querySelectorAll('.item-checkbox-select:checked');
-    if (selected.length === 0) { toast('请选择要删除的物品', 'warning'); return; }
-    if (!confirm(`确认删除选中的 ${selected.length} 件物品？此操作不可撤销！`)) return;
-    const ids = Array.from(selected).map(cb => parseInt(cb.value));
-    const { error } = await supabase.from('items').delete().in('id', ids);
-    if (error) { console.error(error); toast('删除失败', 'error'); return; }
-    toast(`已删除 ${selected.length} 件物品`, 'success');
-    adminRenderItems();
+            const selected = document.querySelectorAll('.item-checkbox-select:checked');
+            if (selected.length === 0) { toast('请选择要删除的物品', 'warning'); return; }
+            if (!confirm(`确认删除选中的 ${selected.length} 件物品？此操作不可撤销！`)) return;
+            const ids = Array.from(selected).map(cb => cb.value);
+            const { error } = await supabase.from('items').delete().in('id', ids);
+            if (error) {
+                console.error(error);
+                toast('删除失败: ' + error.message, 'error');
+            } else {
+                toast(`已删除 ${ids.length} 件物品`, 'success');
+                adminRenderItems();
+            }
         }
 
         async function batchUpdateStatus() {
