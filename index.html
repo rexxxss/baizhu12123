@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>囤货发货管理系统</title>
+    <title>囤货发货系统</title>
     <!-- 基础样式库 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.12.8/dist/reset.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -3349,9 +3349,8 @@
             const selected = document.querySelectorAll('.item-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择要删除的物品', 'warning'); return; }
             if (!confirm(`确认删除选中的 ${selected.length} 件物品？此操作不可撤销！`)) return;
-            const ids = Array.from(selected).map(cb => parseInt(cb.value));
-    
-            // ✅ 使用 Supabase delete 方法
+            // ✅ 直接使用字符串，不要 parseInt
+            const ids = Array.from(selected).map(cb => cb.value);
             const { error } = await supabase.from('items').delete().in('id', ids);
             if (error) {
                 console.error('删除失败:', error);
@@ -3361,18 +3360,20 @@
             toast(`已删除 ${selected.length} 件物品`, 'success');
             adminRenderItems();
         }
-
+        
         async function batchUpdateStatus() {
             const newStatus = document.getElementById('batchStatusSelect').value;
             if (!newStatus) { toast('请选择状态', 'warning'); return; }
             const selected = document.querySelectorAll('.item-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择物品', 'warning'); return; }
             if (!confirm(`确认将选中的 ${selected.length} 件物品状态改为「${newStatus}」？`)) return;
-            const ids = Array.from(selected).map(cb => parseInt(cb.value));
+            // ✅ 直接使用字符串
+            const ids = Array.from(selected).map(cb => cb.value);
             let items = await getItems();
             let count = 0;
             items.forEach(item => {
-                if (ids.includes(item.id)) {
+                // ✅ 统一转为字符串比较
+                if (ids.includes(String(item.id))) {
                     item.status = newStatus;
                     if (newStatus === STATUS.ARRIVED && !item.arrivalDate) {
                         const now = Date.now();
@@ -3472,7 +3473,7 @@
         // 单个删除物品
         async function adminDeleteItem(id) {
             if (!confirm(`确认删除物品 #${id}？此操作不可撤销！`)) return;
-            const { error } = await supabase.from('items').delete().eq('id', id);
+            const { error } = await supabase.from('items').delete().eq('id', String(id));
             if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast('物品已删除', 'success');
             adminRenderItems();
@@ -3822,7 +3823,8 @@
 
         async function adminViewOrderDetail(id) {
             let orders = await getOrders();
-            const order = orders.find(o => o.id === id);
+            //统一转为字符串比较
+            const order = orders.find(o => String(o.id) === String(id));
             if (!order) { toast('订单不存在', 'error'); return; }
 
             let displayOrders = [];
