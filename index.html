@@ -1682,7 +1682,7 @@
 
                     <!-- 收款码 -->
                     <div class="qr-code-container">
-                        <div class="qr-label"><i class="fas fa-qrcode"></i> 请扫码支付</div>
+                        <div class="qr-label"><i class="fas fa-qrcode"></i> 如未加载出请刷新</div>
                         <img id="paymentQrImage" src="" alt="收款码" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'16\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E收款码未设置%3C/text%3E%3C/svg%3E'" />
                     </div>
 
@@ -3888,16 +3888,31 @@
                     sub.pack_details.map(p => `${p.name}×${p.qty}`).join('、') : '无';
                 const itemsHtml = sub.items && sub.items.length > 0 ?
                     `<table class="order-items-table">
-                        <thead><tr><th>系列</th><th>制品</th><th>角色</th><th>数量</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th style="width:60px;">拣货</th>
+                                <th>系列</th>
+                                <th>制品</th>
+                                <th>角色</th>
+                                <th>数量</th>
+                            </tr>
+                        </thead>
                         <tbody>
-                            ${sub.items.map(it => `
-                                <tr>
-                                    <td>${escHtml(it.series || '-')}</td>
-                                    <td>${escHtml(it.product || '-')}</td>
-                                    <td><strong>${escHtml(it.name)}</strong></td>
-                                    <td>${it.quantity}</td>
-                                </tr>
-                            `).join('')}
+                            ${sub.items.map((it, idx) => {
+                                const isPicked = (order.picked_map && order.picked_map[idx] === true);
+                               return `
+                                    <tr class="${isPicked ? 'item-picked' : 'item-unpicked'}">
+                                        <td style="text-align:center;">
+                                            <input type="checkbox" ${isPicked ? 'checked' : ''} 
+                                                   onchange="toggleItemPick('${order.id}', ${idx})" />
+                                        </td>
+                                        <td>${escHtml(it.series || '-')}</td>
+                                        <td>${escHtml(it.product || '-')}</td>
+                                        <td><strong>${escHtml(it.name)}</strong></td>
+                                        <td>${it.quantity}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
                         </tbody>
                     </table>` : '无';
 
@@ -3908,6 +3923,23 @@
                     </div>
                 `;
             });
+
+            async function toggleItemPick(orderId, index) {
+                let orders = await getOrders();
+                const order = orders.find(o => String(o.id) === String(orderId));
+                if (!order) {
+                    toast('订单不存在', 'error');
+                    return;
+                }
+                if (!order.picked_map || order.picked_map.length !== order.items.length) {
+                    order.picked_map = order.items.map(() => false);
+                }
+                order.picked_map[index] = !order.picked_map[index];
+                await saveOrders(orders);
+                toast('拣货状态已更新', 'success');
+                // 刷新详情弹窗
+                adminViewOrderDetail(orderId);
+            }
 
             const proofHtml = order.proof_url ?
                 `<img src="${order.proof_url}" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid #eee;margin-top:6px;" />` :
