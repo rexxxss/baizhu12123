@@ -3924,23 +3924,6 @@
                 `;
             });
 
-            async function toggleItemPick(orderId, index) {
-                let orders = await getOrders();
-                const order = orders.find(o => String(o.id) === String(orderId));
-                if (!order) {
-                    toast('订单不存在', 'error');
-                    return;
-                }
-                if (!order.picked_map || order.picked_map.length !== order.items.length) {
-                    order.picked_map = order.items.map(() => false);
-                }
-                order.picked_map[index] = !order.picked_map[index];
-                await saveOrders(orders);
-                toast('拣货状态已更新', 'success');
-                // 刷新详情弹窗
-                adminViewOrderDetail(orderId);
-            }
-
             const proofHtml = order.proof_url ?
                 `<img src="${order.proof_url}" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid #eee;margin-top:6px;" />` :
                 '<span style="color:#999;">未上传</span>';
@@ -3950,6 +3933,23 @@
 
             document.getElementById('modalContent').innerHTML = contentHtml;
             modal.classList.remove('hidden');
+        }
+
+        async function toggleItemPick(orderId, index) {
+            let orders = await getOrders();
+            const order = orders.find(o => String(o.id) === String(orderId));
+            if (!order) {
+                toast('订单不存在', 'error');
+                return;
+            }
+            if (!order.picked_map || order.picked_map.length !== order.items.length) {
+                order.picked_map = order.items.map(() => false);
+            }
+            order.picked_map[index] = !order.picked_map[index];
+            await saveOrders(orders);
+            toast('拣货状态已更新', 'success');
+            // 刷新详情弹窗
+            adminViewOrderDetail(orderId);
         }
 
         // ---------- 快递单号 ----------
