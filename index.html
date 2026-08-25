@@ -3795,7 +3795,7 @@
         async function shipOrder(orderId) {
             if (!confirm('确认一键发货？将更新物品状态为「已发货」，并标记订单为已发货。')) return;
             let orders = await getOrders();
-            const order = orders.find(o => o.id === orderId);
+            const order = orders.find(o => String(o.id) === String(id));
             if (!order) { toast('订单不存在', 'error'); return; }
             if (order.ship_status === 'shipped') {
                 toast('该订单已发货，不可重复操作', 'warning');
