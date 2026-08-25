@@ -1967,7 +1967,7 @@
                     </div>
                     <div class="table-wrap">
                         <table class="data-table">
-                            <thead><tr><th>订单号</th><th>CN</th><th>收货人</th><th>手机号</th><th>快递单号</th><th>操作</th></tr></thead>
+                            <thead><tr><th>订单号</th><th>CN</th><th>收货人</th><th>手机号</th><th>快递单号</th><th>录入单号</th><th>操作</th></tr></thead>
                             <tbody id="trackingTableBody"><tr><td colspan="6" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无订单</td></tr></tbody>
                         </table>
                     </div>
@@ -4002,6 +4002,22 @@
             order.tracking_number = number;
             await saveOrders(orders);
             toast(`订单 ${order.orderNumber || '#'+order.id} 快递单号已保存`, 'success');
+            renderTrackingList();
+            adminLoadOrders();
+        }
+
+        async function clearTracking(orderId) {
+            if (!confirm('确认清除该订单的快递单号？')) return;
+            let orders = await getOrders();
+            const order = orders.find(o => String(o.id) === String(orderId));
+            if (!order) {
+                toast('订单不存在', 'error');
+                return;
+            }
+            order.tracking_number = '';
+            await saveOrders(orders);
+            toast('快递单号已清除', 'success');
+            // 刷新列表
             renderTrackingList();
             adminLoadOrders();
         }
