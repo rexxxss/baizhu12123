@@ -2933,11 +2933,11 @@
                             </span>
                             <span>转出数量：</span>
                             <div class="number-input-group">
-                                <button class="btn-num" onclick="adjustTransferQty(${item.id}, -1, ${item.quantity})"><i class="fas fa-minus"></i></button>
-                                <input type="number" class="num-input" id="transfer_qty_${item.id}" min="0" max="${item.quantity}" value="${qty}" onchange="updateTransferQty(${item.id}, this.value)" />
-                                <button class="btn-num" onclick="adjustTransferQty(${item.id}, 1, ${item.quantity})"><i class="fas fa-plus"></i></button>
+                                <button class="btn-num" onclick="adjustTransferQty('${item.id}', -1, ${item.quantity})"><i class="fas fa-minus"></i></button>
+                                <input type="number" class="num-input" id="transfer_qty_${item.id}" min="0" max="${item.quantity}" value="${qty}" onchange="updateTransferQty('${item.id}', this.value)" />
+                                <button class="btn-num" onclick="adjustTransferQty('${item.id}', 1, ${item.quantity})"><i class="fas fa-plus"></i></button>
                             </div>
-                            <span class="remove-btn" onclick="removeTransferItem(${item.id})"><i class="fas fa-times-circle"></i></span>
+                            <span class="remove-btn" onclick="removeTransferItem('${item.id}')"><i class="fas fa-times-circle"></i></span>
                         </div>
                     `;
             });
@@ -3357,8 +3357,8 @@
                             <td class="text-muted">${item.shipDate ? formatDate(item.shipDate) : '-'}</td>
                             <td>
                                 <div class="actions">
-                                    <button class="btn btn-sm btn-outline" onclick="adminEditItem(${item.id})"><i class="fas fa-edit"></i> 编辑</button>
-                                    <button class="btn btn-sm btn-danger" onclick="adminDeleteItem(${item.id})"><i class="fas fa-trash"></i> 删除</button>
+                                    <button class="btn btn-sm btn-outline" onclick="adminEditItem('${item.id}')"><i class="fas fa-edit"></i> 编辑</button>
+                                    <button class="btn btn-sm btn-danger" onclick="adminDeleteItem('${item.id}')"><i class="fas fa-trash"></i> 删除</button>
                                 </div>
                             </td>
                         </tr>
@@ -3762,7 +3762,7 @@
                 const canShip = !allPicked && order.items && order.items.length > 0;
 
                 let actionsHtml = `
-                        <button class="btn btn-sm btn-success" onclick="shipOrder(${order.id})" ${canShip ? '' : 'disabled'}>
+                        <button class="btn btn-sm btn-success" onclick="shipOrder('${order.id}')" ${canShip ? '' : 'disabled'}>
                             <i class="fas fa-shipping-fast"></i> 一键发货
                         </button>
                     `;
@@ -3770,7 +3770,7 @@
                 let systemHtml = `
                         <div class="action-columns">
                             <button class="btn btn-sm btn-outline" onclick="adminViewOrderDetail('${order.id}')"><i class="fas fa-eye"></i> 详情</button>
-                            <button class="btn btn-sm btn-danger" onclick="adminDeleteOrder(${order.id})"><i class="fas fa-trash"></i> 删除</button>
+                            <button class="btn btn-sm btn-danger" onclick="adminDeleteOrder('${order.id}')"><i class="fas fa-trash"></i> 删除</button>
                         </div>
                     `;
 
@@ -3946,7 +3946,7 @@
                             <td>
                                 <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:center;">
                                     <input id="tracking_input_${order.id}" class="form-control" style="width:140px; padding:4px 8px;" placeholder="输入单号" value="${escHtml(order.tracking_number || '')}" />
-                                    <button class="btn btn-sm btn-success" onclick="saveTracking(${order.id})"><i class="fas fa-save"></i> 保存</button>
+                                    <button class="btn btn-sm btn-success" onclick="saveTracking('${order.id}')"><i class="fas fa-save"></i> 保存</button>
                                 </div>
                             </td>
                         </tr>
@@ -4058,8 +4058,8 @@
                 if (canApprove) {
                     actionHtml = `
                             <div class="action-columns">
-                                <button class="btn btn-sm btn-success" onclick="approveTransfer(${req.id})"><i class="fas fa-check"></i> 通过</button>
-                                <button class="btn btn-sm btn-danger" onclick="rejectTransfer(${req.id})"><i class="fas fa-times"></i> 拒绝</button>
+                                <button class="btn btn-sm btn-success" onclick="approveTransfer('${req.id}')"><i class="fas fa-check"></i> 通过</button>
+                                <button class="btn btn-sm btn-danger" onclick="rejectTransfer('${req.id}')"><i class="fas fa-times"></i> 拒绝</button>
                             </div>
                         `;
                 } else {
@@ -4068,7 +4068,7 @@
 
                 const systemHtml = `
                         <div class="action-columns">
-                            <button class="btn btn-sm btn-outline" onclick="adminViewTransferDetail(${req.id})"><i class="fas fa-eye"></i> 详情</button>
+                            <button class="btn btn-sm btn-outline" onclick="adminViewOrderDetail('${order.id}')"><i class="fas fa-eye"></i> 详情</button>
                             <button class="btn btn-sm btn-danger" onclick="adminDeleteTransfer(${req.id})"><i class="fas fa-trash"></i> 删除</button>
                         </div>
                     `;
@@ -4212,7 +4212,7 @@
                             <td><span class="status-tag ${paidClass}">${escHtml(paidLabel)}</span></td>
                             <td>
                                 <div class="actions">
-                                    <button class="btn btn-sm btn-outline" onclick="editKidneyRecord(${item.id})"><i class="fas fa-edit"></i> 编辑</button>
+                                    <button class="btn btn-sm btn-outline" onclick="adminViewOrderDetail('${order.id}')"><i class="fas fa-edit"></i> 编辑</button>
                                     <button class="btn btn-sm btn-danger" onclick="deleteKidneyRecord(${item.id})"><i class="fas fa-trash"></i> 删除</button>
                                 </div>
                             </td>
@@ -4423,9 +4423,9 @@
                 if (canApprove) {
                     actionHtml = `
                             <div class="action-columns">
-                                <button class="btn btn-sm btn-success" onclick="approveKidney(${app.id}, '微信')"><i class="fab fa-weixin"></i> 微信</button>
-                                <button class="btn btn-sm btn-success" onclick="approveKidney(${app.id}, '支付宝')"><i class="fab fa-alipay"></i> 支付宝</button>
-                                <button class="btn btn-sm btn-danger" onclick="rejectKidney(${app.id})"><i class="fas fa-times"></i> 付款无效</button>
+                                <button class="btn btn-sm btn-success" onclick="approveKidney('${app.id}', '微信')"><i class="fab fa-weixin"></i> 微信</button>
+                                <button class="btn btn-sm btn-success" onclick="approveKidney('${app.id}', '支付宝')"><i class="fab fa-alipay"></i> 支付宝</button>
+                                <button class="btn btn-sm btn-danger" onclick="rejectKidney('${app.id}')"><i class="fas fa-times"></i> 付款无效</button>
                             </div>
                         `;
                 } else {
@@ -4434,7 +4434,7 @@
 
                 const systemHtml = `
                         <div class="action-columns">
-                            <button class="btn btn-sm btn-outline" onclick="adminViewKidneyDetail(${app.id})"><i class="fas fa-eye"></i> 详情</button>
+                            <button class="btn btn-sm btn-outline" onclick="adminViewOrderDetail('${order.id}')"><i class="fas fa-eye"></i> 详情</button>
                             <button class="btn btn-sm btn-danger" onclick="adminDeleteKidneyApproval(${app.id})"><i class="fas fa-trash"></i> 删除</button>
                         </div>
                     `;
