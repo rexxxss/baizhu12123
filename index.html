@@ -3957,34 +3957,36 @@
             const search = document.getElementById('trackingSearchInput').value.trim();
             let orders = await getOrders();
             if (search) {
-                orders = orders.filter(o => String(o.id).includes(search) || (o.receiver_phone && o.receiver_phone.includes(
-                search)));
+                orders = orders.filter(o => String(o.id).includes(search) || (o.receiver_phone && o.receiver_phone.includes(search)));
             }
             orders.sort((a, b) => b.created_at - a.created_at);
             const tbody = document.getElementById('trackingTableBody');
             if (!orders.length) {
                 tbody.innerHTML =
-                    `<tr><td colspan="6" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无订单</td></tr>`;
+                    `<tr><td colspan="7" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无订单</td></tr>`;
                 return;
             }
             let html = '';
             orders.forEach(order => {
                 const hasTracking = order.tracking_number && order.tracking_number.trim() !== '';
                 html += `
-                        <tr>
-                            <td><strong>${order.orderNumber || '#'+order.id}</strong></td>
-                            <td>${escHtml(order.username)}</td>
-                            <td>${escHtml(order.receiver_name)}</td>
-                            <td>${escHtml(order.receiver_phone)}</td>
-                            <td>${hasTracking ? `<span class="tracking-badge">${escHtml(order.tracking_number)}</span>` : '<span class="tracking-badge missing">未录入</span>'}</td>
-                            <td>
-                                <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:center;">
-                                    <input id="tracking_input_${order.id}" class="form-control" style="width:140px; padding:4px 8px;" placeholder="输入单号" value="${escHtml(order.tracking_number || '')}" />
-                                    <button class="btn btn-sm btn-success" onclick="saveTracking('${order.id}')"><i class="fas fa-save"></i> 保存</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
+                    <tr>
+                        <td><strong>${order.orderNumber || '#'+order.id}</strong></td>
+                        <td>${escHtml(order.username)}</td>
+                        <td>${escHtml(order.receiver_name)}</td>
+                        <td>${escHtml(order.receiver_phone)}</td>
+                        <td>${hasTracking ? `<span class="tracking-badge">${escHtml(order.tracking_number)}</span>` : '<span class="tracking-badge missing">未录入</span>'}</td>
+                        <td>
+                            <input id="tracking_input_${order.id}" class="form-control" style="width:140px; padding:4px 8px;" placeholder="输入单号" value="${escHtml(order.tracking_number || '')}" />
+                        </td>
+                        <td>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:center;">
+                                <button class="btn btn-sm btn-success" onclick="saveTracking('${order.id}')"><i class="fas fa-save"></i> 保存</button>
+                                <button class="btn btn-sm btn-danger" onclick="clearTracking('${order.id}')"><i class="fas fa-trash"></i> 清除</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
             });
             tbody.innerHTML = html;
             renderAddressList();
