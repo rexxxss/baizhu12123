@@ -3896,6 +3896,9 @@
 
             displayOrders.forEach((sub, idx) => {
                 const title = displayOrders.length > 1 ? `子订单 ${idx+1}` : '';
+                const isBase = sub.isBase || false; 
+                const deleteBtnHtml = (!isBase && displayOrders.length > 1) ? 
+                    `<button class="btn btn-sm btn-danger" onclick="deleteSubOrder('${sub.id}', '${order.id}')" style="float:right;margin-left:8px;">删除此子订单</button>` : '';
                 const packHtml = sub.pack_details && sub.pack_details.length > 0 ?
                     sub.pack_details.map(p => `${p.name}×${p.qty}`).join('、') : '无';
                 const itemsHtml = sub.items && sub.items.length > 0 ?
@@ -3930,7 +3933,7 @@
 
                 contentHtml += `
                     <div class="order-group">
-                        <div class="order-group-title">${title} 包材：${packHtml}</div>
+                        <div class="order-group-title">${title} 包材：${packHtml} ${deleteBtnHtml}</div>
                         <div style="margin-top:6px;">${itemsHtml}</div>
                     </div>
                 `;
@@ -3960,10 +3963,22 @@
             order.picked_map[index] = !order.picked_map[index];
             await saveOrders(orders);
             toast('拣货状态已更新', 'success');
-            // 刷新详情弹窗
             adminViewOrderDetail(orderId);
         }
 
+        async function deleteSubOrder(subOrderId, mainOrderId) {
+            if (!confirm('确认删除该子订单？此操作不可撤销！')) return;
+            const { error } = await supabase.from('orders').delete().eq('id', subOrderId);
+            if (error) {
+                console.error(error);
+                toast('删除失败', 'error');
+                return;
+            }
+            toast('子订单已删除', 'success');
+            adminViewOrderDetail(mainOrderId);
+            adminLoadOrders();
+        }
+        
         // ---------- 快递单号 ----------
         async function renderTrackingList() {
             const search = document.getElementById('trackingSearchInput').value.trim();
@@ -4077,16 +4092,22 @@
             let html = '';
             for (let key in addrMap) {
                 const a = addrMap[key];
-                const full = `${a.name} ${a.phone} ${a.address}`;
+                const displayText = `${a.name} ${a.phone} ${a.address}`;
                 html += `
-                        <div class="address-item">
-                            <span class="addr-text">${escHtml(full)}</span>
-                            <span class="copy-btn" onclick="copyToClipboard('${escHtml(full)}')"><i class="fas fa-copy"></i> 复制</span>
-                        </div>
-                    `;
+                    <div class="address-item">
+                        <span class="addr-text">${escHtml(displayText)}</span>
+                        <span class="copy-btn" onclick="copySingleAddress('${escHtml(a.name)}', '${escHtml(a.phone)}', '${escHtml(a.address)}')"><i class="fas fa-copy"></i> 复制</span>
+                    </div>
+                `;
             }
             document.getElementById('addressListContainer').innerHTML = html;
             window._allOrders = orders;
+        }
+
+        function copySingleAddress(name, phone, address) {
+            const text = `${name}\t${phone}\t${address}\t是\t\t`;
+            copyToClipboard(text);
+        }
         }
 
         function copyToClipboard(text) {
@@ -4119,12 +4140,12 @@
                     o.receiver_phone === a.phone
                 );
                 if (matched) cn = matched.username || '';
-                return `${a.name}\t${a.phone}\t${a.address}\t是\t\t${cn}`;
+                return `${a.name}\t${a.phone}\t${a.address}\t日用品\t\t${cn}`;
             });
             const allText = rows.join('\n');
-
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(allText).then(() => toast(`已复制 ${addresses.length} 个地址到剪贴板`, 'success'))
+                navigator.clipboard.writeText(allText)
+                    .then(() => toast(`已复制 ${addresses.length} 个地址（制表符分隔，粘贴到Excel可自动分列）`, 'success'))
                     .catch(() => toast('复制失败', 'error'));
             } else {
                 const ta = document.createElement('textarea');
@@ -4133,7 +4154,7 @@
                 ta.select();
                 document.execCommand('copy');
                 ta.remove();
-                toast(`已复制 ${addresses.length} 个地址到剪贴板`, 'success');
+                toast(`已复制 ${addresses.length} 个地址（制表符分隔）`, 'success');
             }
         }
 
