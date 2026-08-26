@@ -2826,83 +2826,96 @@
 
         // ---------- 提交发货 ----------
         async function submitClientOrder() {
-            const cn = document.getElementById('clientCN').value.trim();
-            if (!cn) { toast('请先查询CN', 'error'); return; }
-            if (shipSelectedItems.length === 0) {
-                toast('请先选择物品', 'error');
+            const btn = document.querySelector('#clientOrderForm .btn-primary.btn-lg');
+            if (btn && btn.disabled) {
+                toast('正在提交中，请稍候...', 'warning');
                 return;
             }
-            const receiverName = document.getElementById('receiverName').value.trim();
-            const receiverPhone = document.getElementById('receiverPhone').value.trim();
-            const receiverAddress = document.getElementById('receiverAddress').value.trim();
-            if (!isValidPhone(receiverPhone)) { toast('请输入正确的11位手机号', 'error'); return; }
-            const qtyFoam = parseInt(document.getElementById('qty_foam').value) || 0;
-            const qtyBoard = parseInt(document.getElementById('qty_board').value) || 0;
-            const qtyCarton = parseInt(document.getElementById('qty_carton').value) || 0;
-            if (!receiverName || !receiverPhone || !receiverAddress) { toast('请完整填写收货信息', 'error'); return; }
-            if (!clientUploadFile) { toast('请上传凭证', 'error'); return; }
-            const totalFee = calcTotalFee();
-            const packDetails = [];
-            if (qtyFoam > 0) packDetails.push({ name: '泡沫纸', qty: qtyFoam, price: PACK_PRICES.foam, subtotal: qtyFoam *
-                    PACK_PRICES.foam });
-            if (qtyBoard > 0) packDetails.push({ name: '硬纸板', qty: qtyBoard, price: PACK_PRICES.board, subtotal: qtyBoard *
-                    PACK_PRICES.board });
-            if (qtyCarton > 0) packDetails.push({ name: '纸箱', qty: qtyCarton, price: PACK_PRICES.carton, subtotal: qtyCarton *
-                    PACK_PRICES.carton });
-
-            let items = await getItems();
-            shipSelectedItems.forEach(selItem => {
-                const found = items.find(i => i.id === selItem.id);
-                if (found) {
-                    found.status = STATUS.QUEUED;
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
+            }
+            try {
+                const cn = document.getElementById('clientCN').value.trim();
+                if (!cn) { toast('请先查询CN', 'error'); return; }
+                if (shipSelectedItems.length === 0) {
+                    toast('请先选择物品', 'error');
+                    return;
                 }
-            });
-            await saveItems(items);
+                const receiverName = document.getElementById('receiverName').value.trim();
+                const receiverPhone = document.getElementById('receiverPhone').value.trim();
+                const receiverAddress = document.getElementById('receiverAddress').value.trim();
+                if (!isValidPhone(receiverPhone)) { toast('请输入正确的11位手机号', 'error'); return; }
+                const qtyFoam = parseInt(document.getElementById('qty_foam').value) || 0;
+                const qtyBoard = parseInt(document.getElementById('qty_board').value) || 0;
+                const qtyCarton = parseInt(document.getElementById('qty_carton').value) || 0;
+                if (!receiverName || !receiverPhone || !receiverAddress) { toast('请完整填写收货信息', 'error'); return; }
+                if (!clientUploadFile) { toast('请上传凭证', 'error'); return; }
+                const totalFee = calcTotalFee();
+                const packDetails = [];
+                if (qtyFoam > 0) packDetails.push({ name: '泡沫纸', qty: qtyFoam, price: PACK_PRICES.foam, subtotal: qtyFoam * PACK_PRICES.foam });
+                if (qtyBoard > 0) packDetails.push({ name: '硬纸板', qty: qtyBoard, price: PACK_PRICES.board, subtotal: qtyBoard * PACK_PRICES.board });
+                if (qtyCarton > 0) packDetails.push({ name: '纸箱', qty: qtyCarton, price: PACK_PRICES.carton, subtotal: qtyCarton * PACK_PRICES.carton });
 
-            const order = {
-                id: genId(),
-                orderNumber: generateOrderNumber(),
-                username: cn,
-                receiver_name: receiverName,
-                receiver_phone: receiverPhone,
-                receiver_address: receiverAddress,
-                province: detectedProvince || '',
-                base_fee: baseFee,
-                pack_details: packDetails,
-                pack_total: packDetails.reduce((sum, p) => sum + p.subtotal, 0),
-                total_fee: totalFee,
-                items: shipSelectedItems.map(item => ({
-                    id: item.id,
-                    name: item.character || item.product || '未命名',
-                    quantity: item.quantity,
-                    series: item.series || '',
-                    product: item.product || ''
-                })),
-                proof_url: clientUploadUrl || '',
-                created_at: Date.now(),
-                status: 'pending',
-                picked_map: shipSelectedItems.map(() => false),
-                tracking_number: '',
-                ship_status: 'pending'
-            };
-            let orders = await getOrders();
-            orders.push(order);
-            await saveOrders(orders);
-            toast(`发货申请已提交！订单号：${order.orderNumber}，总费用：${totalFee.toFixed(2)} 元，物品已加入排发`, 'success');
+                let items = await getItems();
+                shipSelectedItems.forEach(selItem => {
+                    const found = items.find(i => i.id === selItem.id);
+                    if (found) {
+                        found.status = STATUS.QUEUED;
+                    }
+                });
+                await saveItems(items);
 
-            clientSelected = new Set();
-            shipSelectedItems = [];
-            renderClientItemsTable();
-            updateClientSelectedCount();
-            hideShipForm();
-            clientUploadFile = null;
-            clientUploadUrl = '';
-            document.getElementById('fileNameDisplay').style.display = 'none';
-            document.getElementById('previewContainer').style.display = 'none';
-            document.getElementById('uploadArea').classList.remove('has-file');
-            document.getElementById('uploadArea').querySelector('.upload-text').textContent = '点击上传凭证（图片）';
-            document.getElementById('fileInput').value = '';
-            resetShipFormFields();
+                const order = {
+                    id: genId(),
+                    orderNumber: generateOrderNumber(),
+                    username: cn,
+                    receiver_name: receiverName,
+                    receiver_phone: receiverPhone,
+                    receiver_address: receiverAddress,
+                    province: detectedProvince || '',
+                    base_fee: baseFee,
+                    pack_details: packDetails,
+                    pack_total: packDetails.reduce((sum, p) => sum + p.subtotal, 0),
+                    total_fee: totalFee,
+                    items: shipSelectedItems.map(item => ({
+                        id: item.id,
+                        name: item.character || item.product || '未命名',
+                        quantity: item.quantity,
+                        series: item.series || '',
+                        product: item.product || ''
+                    })),
+                    proof_url: clientUploadUrl || '',
+                    created_at: Date.now(),
+                    status: 'pending',
+                    picked_map: shipSelectedItems.map(() => false),
+                    tracking_number: '',
+                    ship_status: 'pending'
+                };
+                let orders = await getOrders();
+                orders.push(order);
+                await saveOrders(orders);
+                toast(`发货申请已提交！订单号：${order.orderNumber}，总费用：${totalFee.toFixed(2)} 元，物品已加入排发`, 'success');
+
+                clientSelected = new Set();
+                shipSelectedItems = [];
+                renderClientItemsTable();
+                updateClientSelectedCount();
+                hideShipForm();
+                clientUploadFile = null;
+                clientUploadUrl = '';
+                document.getElementById('fileNameDisplay').style.display = 'none';
+                document.getElementById('previewContainer').style.display = 'none';
+                document.getElementById('uploadArea').classList.remove('has-file');
+                document.getElementById('uploadArea').querySelector('.upload-text').textContent = '点击上传凭证（图片）';
+                document.getElementById('fileInput').value = '';
+                resetShipFormFields();
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> 提交发货申请';
+                }
+            }
         }
 
         // ---------- 转单 ----------
@@ -3866,14 +3879,22 @@
         async function adminViewOrderDetail(id) {
             console.log('点击详情，传入的 id:', id, '类型:', typeof id);
             let orders = await getOrders();
-            //统一转为字符串比较
             const order = orders.find(o => String(o.id) === String(id));
-            console.log('找到的订单：', order);
             if (!order) { toast('订单不存在', 'error'); return; }
 
+            // 重新计算合并订单（相同CN、相同地址、未发货）
+            const sameAddressOrders = orders.filter(o =>
+                o.username === order.username &&
+                o.receiver_address === order.receiver_address &&
+                o.ship_status !== 'shipped'
+            );
             let displayOrders = [];
-            if (order._merged) {
-                displayOrders = order._merged;
+            if (sameAddressOrders.length > 1) {
+                sameAddressOrders.sort((a, b) => a.created_at - b.created_at);
+                displayOrders = sameAddressOrders.map((o, index) => ({
+                    ...o,
+                    isBase: index === 0
+                }));
             } else {
                 displayOrders = [order];
             }
@@ -3883,21 +3904,21 @@
                 `<i class="fas fa-receipt" style="color:var(--primary);"></i> 订单 ${order.orderNumber || '#'+order.id} 详情`;
 
             let contentHtml = `
-                    <div class="detail-row"><span class="label">订单号</span><span class="value">${order.orderNumber || '#'+order.id}</span></div>
-                    <div class="detail-row"><span class="label">CN</span><span class="value">${escHtml(order.username)}</span></div>
-                    <div class="detail-row"><span class="label">收货人</span><span class="value">${escHtml(order.receiver_name)}</span></div>
-                    <div class="detail-row"><span class="label">电话</span><span class="value">${escHtml(order.receiver_phone)}</span></div>
-                    <div class="detail-row"><span class="label">地址</span><span class="value">${escHtml(order.receiver_address)}</span></div>
-                    <div class="detail-row"><span class="label">省份</span><span class="value">${escHtml(order.province || '未识别')}</span></div>
-                    <div class="detail-row"><span class="label">总费用</span><span class="value" style="font-weight:700;color:var(--primary);">${order.total_fee.toFixed(2)} 元</span></div>
-                    <div class="detail-row"><span class="label">提交时间</span><span class="value">${formatTime(order.created_at)}</span></div>
-                    <div class="detail-row"><span class="label">发货状态</span><span class="value">${order.ship_status === 'shipped' ? '已发货' : '待发货'}</span></div>
-                `;
+                <div class="detail-row"><span class="label">订单号</span><span class="value">${order.orderNumber || '#'+order.id}</span></div>
+                <div class="detail-row"><span class="label">CN</span><span class="value">${escHtml(order.username)}</span></div>
+                <div class="detail-row"><span class="label">收货人</span><span class="value">${escHtml(order.receiver_name)}</span></div>
+                <div class="detail-row"><span class="label">电话</span><span class="value">${escHtml(order.receiver_phone)}</span></div>
+                <div class="detail-row"><span class="label">地址</span><span class="value">${escHtml(order.receiver_address)}</span></div>
+                <div class="detail-row"><span class="label">省份</span><span class="value">${escHtml(order.province || '未识别')}</span></div>
+                <div class="detail-row"><span class="label">总费用</span><span class="value" style="font-weight:700;color:var(--primary);">${order.total_fee.toFixed(2)} 元</span></div>
+                <div class="detail-row"><span class="label">提交时间</span><span class="value">${formatTime(order.created_at)}</span></div>
+                <div class="detail-row"><span class="label">发货状态</span><span class="value">${order.ship_status === 'shipped' ? '已发货' : '待发货'}</span></div>
+            `;
 
             displayOrders.forEach((sub, idx) => {
                 const title = displayOrders.length > 1 ? `子订单 ${idx+1}` : '';
-                const isBase = sub.isBase || false; 
-                const deleteBtnHtml = (!isBase && displayOrders.length > 1) ? 
+                const isBase = sub.isBase || false;
+                const deleteBtnHtml = (!isBase && displayOrders.length > 1) ?
                     `<button class="btn btn-sm btn-danger" onclick="deleteSubOrder('${sub.id}', '${order.id}')" style="float:right;margin-left:8px;">删除此子订单</button>` : '';
                 const packHtml = sub.pack_details && sub.pack_details.length > 0 ?
                     sub.pack_details.map(p => `${p.name}×${p.qty}`).join('、') : '无';
@@ -3913,13 +3934,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            ${sub.items.map((it, idx) => {
-                                const isPicked = (order.picked_map && order.picked_map[idx] === true);
-                               return `
+                            ${sub.items.map((it, itemIdx) => {
+                                const isPicked = (sub.picked_map && sub.picked_map[itemIdx] === true);
+                                return `
                                     <tr class="${isPicked ? 'item-picked' : 'item-unpicked'}">
                                         <td style="text-align:center;">
                                             <input type="checkbox" ${isPicked ? 'checked' : ''} 
-                                                   onchange="toggleItemPick('${order.id}', ${idx})" />
+                                                   onchange="toggleItemPick('${sub.id}', ${itemIdx})" />
                                         </td>
                                         <td>${escHtml(it.series || '-')}</td>
                                         <td>${escHtml(it.product || '-')}</td>
@@ -3943,8 +3964,8 @@
                 `<img src="${order.proof_url}" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid #eee;margin-top:6px;" />` :
                 '<span style="color:#999;">未上传</span>';
             contentHtml += `
-                    <div style="margin-top:12px;"><div style="font-weight:600;">🧾 邮费凭证</div>${proofHtml}</div>
-                `;
+                <div style="margin-top:12px;"><div style="font-weight:600;">🧾 邮费凭证</div>${proofHtml}</div>
+            `;
 
             document.getElementById('modalContent').innerHTML = contentHtml;
             modal.classList.remove('hidden');
@@ -4105,7 +4126,7 @@
         }
 
         function copySingleAddress(name, phone, address) {
-            const text = `${name}\t${phone}\t${address}\t是\t\t`;
+            const text = `${name}\t${phone}\t${address}\t日用品\t\t`;
             copyToClipboard(text);
         }
 
