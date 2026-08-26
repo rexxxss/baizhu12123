@@ -1965,9 +1965,21 @@
                         <div class="filter-item"><label>搜索</label><input id="trackingSearchInput" class="form-control" style="width:200px; padding:4px 8px;" placeholder="订单号/手机号" oninput="renderTrackingList()" /></div>
                         <button class="btn btn-sm btn-outline" onclick="renderTrackingList()"><i class="fas fa-sync-alt"></i> 刷新</button>
                     </div>
+                    <div id="trackingSummary"></div>
                     <div class="table-wrap">
                         <table class="data-table">
-                            <thead><tr><th>订单号</th><th>CN</th><th>收货人</th><th>手机号</th><th>快递单号</th><th>录入单号</th><th>操作</th></tr></thead>
+                            <thead>
+                                <tr>
+                                    <th>CN</th>
+                                    <th>收货人</th>
+                                    <th>手机号</th>
+                                    <th>快递单号</th>
+                                    <th>用户付费</th>
+                                    <th>实际邮费</th>
+                                    <th>录入单号</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
                             <tbody id="trackingTableBody"><tr><td colspan="6" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无订单</td></tr></tbody>
                         </table>
                     </div>
@@ -3963,19 +3975,31 @@
             const tbody = document.getElementById('trackingTableBody');
             if (!orders.length) {
                 tbody.innerHTML =
-                    `<tr><td colspan="7" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无订单</td></tr>`;
+                    `<tr><td colspan="8" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无订单</td></tr>`;
+                document.getElementById('trackingSummary').innerHTML = '';
                 return;
             }
+
+            let totalUserFee = 0;
+            let totalActualFee = 0;
             let html = '';
             orders.forEach(order => {
                 const hasTracking = order.tracking_number && order.tracking_number.trim() !== '';
+                const userFee = order.total_fee || 0;
+                const actualFee = order.actual_shipping_fee || 0;
+                totalUserFee += userFee;
+                totalActualFee += actualFee;
+
                 html += `
                     <tr>
-                        <td><strong>${order.orderNumber || '#'+order.id}</strong></td>
                         <td>${escHtml(order.username)}</td>
                         <td>${escHtml(order.receiver_name)}</td>
                         <td>${escHtml(order.receiver_phone)}</td>
                         <td>${hasTracking ? `<span class="tracking-badge">${escHtml(order.tracking_number)}</span>` : '<span class="tracking-badge missing">未录入</span>'}</td>
+                        <td>${userFee.toFixed(2)}</td>
+                        <td>
+                            <input id="actual_fee_input_${order.id}" class="form-control" style="width:100px; padding:4px 8px;" type="number" step="0.01" value="${actualFee || ''}" placeholder="0.00" />
+                        </td>
                         <td>
                             <input id="tracking_input_${order.id}" class="form-control" style="width:140px; padding:4px 8px;" placeholder="输入单号" value="${escHtml(order.tracking_number || '')}" />
                         </td>
@@ -3988,35 +4012,49 @@
                     </tr>
                 `;
             });
+
             tbody.innerHTML = html;
+
+            // 计算并显示盈亏
+            const balance = totalUserFee - totalActualFee;
+            const summaryHtml = `
+                <div style="background:var(--primary-light); border-radius:8px; padding:12px 16px; margin-bottom:12px; border:1px solid var(--primary-border); display:flex; flex-wrap:wrap; gap:20px; align-items:center;">
+                    <span><strong>用户付费总计：</strong><span style="color:var(--primary); font-weight:700;">${totalUserFee.toFixed(2)}</span> 元</span>
+                    <span><strong>实际邮费总计：</strong><span style="color:#fa8c16; font-weight:700;">${totalActualFee.toFixed(2)}</span> 元</span>
+                    <span><strong>盈亏：</strong><span style="color:${balance >= 0 ? '#52c41a' : '#ff4d4f'}; font-weight:700;">${balance >= 0 ? '赚 ' : '亏 '}${Math.abs(balance).toFixed(2)}</span> 元</span>
+                </div>
+            `;
+            document.getElementById('trackingSummary').innerHTML = summaryHtml;
+            
             renderAddressList();
         }
 
         async function saveTracking(orderId) {
-            const input = document.getElementById(`tracking_input_${orderId}`);
-            if (!input) return;
-            const number = input.value.trim();
+            const trackingInput = document.getElementById(`tracking_input_${orderId}`);
+            const feeInput = document.getElementById(`actual_fee_input_${orderId}`);
+            if (!trackingInput) { toast('输入框不存在', 'error'); return; }
+            const number = trackingInput.value.trim();
+            const fee = parseFloat(feeInput ? feeInput.value : 0) || 0;
             let orders = await getOrders();
             const order = orders.find(o => String(o.id) === String(orderId));
             if (!order) { toast('订单不存在', 'error'); return; }
             order.tracking_number = number;
+            order.actual_shipping_fee = fee;
             await saveOrders(orders);
-            toast(`订单 ${order.orderNumber || '#'+order.id} 快递单号已保存`, 'success');
+            toast(`订单 ${order.orderNumber || '#'+order.id} 已保存`, 'success');
             renderTrackingList();
             adminLoadOrders();
         }
 
         async function clearTracking(orderId) {
-            if (!confirm('确认清除该订单的快递单号？')) return;
+            if (!confirm('确认清除该订单的快递单号和实际邮费？')) return;
             let orders = await getOrders();
             const order = orders.find(o => String(o.id) === String(orderId));
-            if (!order) {
-                toast('订单不存在', 'error');
-                return;
-            }
+            if (!order) { toast('订单不存在', 'error'); return; }
             order.tracking_number = '';
+            order.actual_shipping_fee = 0;
             await saveOrders(orders);
-            toast('快递单号已清除', 'success');
+            toast('已清除', 'success');
             // 刷新列表
             renderTrackingList();
             adminLoadOrders();
@@ -4048,6 +4086,7 @@
                     `;
             }
             document.getElementById('addressListContainer').innerHTML = html;
+            window._allOrders = orders;
         }
 
         function copyToClipboard(text) {
@@ -4066,12 +4105,24 @@
 
         function copyAllAddresses() {
             const addrMap = window._addressMap || {};
-            const addresses = Object.values(addrMap).map(a => `${a.name} ${a.phone} ${a.address}`);
+            const addresses = Object.values(addrMap);
             if (addresses.length === 0) {
                 toast('没有地址可复制', 'warning');
                 return;
             }
-            const allText = addresses.join('\n');
+            const orders = window._allOrders || [];
+            const rows = addresses.map(a => {
+                let cn = '';
+                const matched = orders.find(o =>
+                    o.receiver_address === a.address &&
+                    o.receiver_name === a.name &&
+                    o.receiver_phone === a.phone
+                );
+                if (matched) cn = matched.username || '';
+                return `${a.name}\t${a.phone}\t${a.address}\t是\t\t${cn}`;
+            });
+            const allText = rows.join('\n');
+
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(allText).then(() => toast(`已复制 ${addresses.length} 个地址到剪贴板`, 'success'))
                     .catch(() => toast('复制失败', 'error'));
