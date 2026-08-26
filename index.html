@@ -2481,6 +2481,7 @@
             isAdminLogged = false;
             document.getElementById('adminEntry').classList.remove('logged');
             document.getElementById('adminPanel').style.display = 'none';
+            window._lastOrderSubmitTime = 0;
             document.getElementById('clientPanel').style.display = 'block';
             document.getElementById('clientTabs').style.display = 'flex';
             toast('已退出', 'info');
@@ -2826,6 +2827,10 @@
 
         // ---------- 提交发货 ----------
         async function submitClientOrder() {
+            if (window._lastOrderSubmitTime && Date.now() - window._lastOrderSubmitTime < 5000) {
+                toast('提交过于频繁，请稍后再试', 'warning');
+                return;
+            }
             const btn = document.querySelector('#clientOrderForm .btn-primary.btn-lg');
             if (btn && btn.disabled) {
                 toast('正在提交中，请稍候...', 'warning');
@@ -2910,6 +2915,7 @@
                 document.getElementById('uploadArea').querySelector('.upload-text').textContent = '点击上传凭证（图片）';
                 document.getElementById('fileInput').value = '';
                 resetShipFormFields();
+                window._lastOrderSubmitTime = Date.now();
             } finally {
                 if (btn) {
                     btn.disabled = false;
@@ -3877,12 +3883,10 @@
         }
 
         async function adminViewOrderDetail(id) {
-            console.log('点击详情，传入的 id:', id, '类型:', typeof id);
             let orders = await getOrders();
             const order = orders.find(o => String(o.id) === String(id));
             if (!order) { toast('订单不存在', 'error'); return; }
 
-            // 重新计算合并订单（相同CN、相同地址、未发货）
             const sameAddressOrders = orders.filter(o =>
                 o.username === order.username &&
                 o.receiver_address === order.receiver_address &&
@@ -3891,10 +3895,7 @@
             let displayOrders = [];
             if (sameAddressOrders.length > 1) {
                 sameAddressOrders.sort((a, b) => a.created_at - b.created_at);
-                displayOrders = sameAddressOrders.map((o, index) => ({
-                    ...o,
-                    isBase: index === 0
-                }));
+                displayOrders = sameAddressOrders.map((o, index) => ({ ...o, isBase: index === 0 }));
             } else {
                 displayOrders = [order];
             }
@@ -3917,22 +3918,29 @@
 
             displayOrders.forEach((sub, idx) => {
                 const title = displayOrders.length > 1 ? `子订单 ${idx+1}` : '';
+                const orderNumber = sub.orderNumber ? `#${sub.orderNumber}` : `#${sub.id}`;
                 const isBase = sub.isBase || false;
                 const deleteBtnHtml = (!isBase && displayOrders.length > 1) ?
                     `<button class="btn btn-sm btn-danger" onclick="deleteSubOrder('${sub.id}', '${order.id}')" style="float:right;margin-left:8px;">删除此子订单</button>` : '';
-                const packHtml = sub.pack_details && sub.pack_details.length > 0 ?
-                    sub.pack_details.map(p => `${p.name}×${p.qty}`).join('、') : '无';
+
+                // 包材明细表格
+                let packHtml = '无';
+                if (sub.pack_details && sub.pack_details.length > 0) {
+                    packHtml = `
+                        <table class="order-items-table" style="margin-top:4px; width:auto;">
+                            <thead><tr><th>包材类型</th><th>单价(元)</th><th>份数</th><th>小计(元)</th></tr></thead>
+                            <tbody>
+                                ${sub.pack_details.map(p => `
+                                    <tr><td>${escHtml(p.name)}</td><td>${p.price.toFixed(2)}</td><td>${p.qty}</td><td>${p.subtotal.toFixed(2)}</td></tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+
                 const itemsHtml = sub.items && sub.items.length > 0 ?
                     `<table class="order-items-table">
-                        <thead>
-                            <tr>
-                                <th style="width:60px;">拣货</th>
-                                <th>系列</th>
-                                <th>制品</th>
-                                <th>角色</th>
-                                <th>数量</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th style="width:60px;">拣货</th><th>系列</th><th>制品</th><th>角色</th><th>数量</th></tr></thead>
                         <tbody>
                             ${sub.items.map((it, itemIdx) => {
                                 const isPicked = (sub.picked_map && sub.picked_map[itemIdx] === true);
@@ -3953,9 +3961,17 @@
                     </table>` : '无';
 
                 contentHtml += `
-                    <div class="order-group">
-                        <div class="order-group-title">${title} 包材：${packHtml} ${deleteBtnHtml}</div>
-                        <div style="margin-top:6px;">${itemsHtml}</div>
+                    <div class="order-group" style="margin-top:16px; background:#f9fafb; padding:12px; border:1px solid #e8e8e8; border-radius:8px;">
+                        <div class="order-group-title" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span><strong>${title} ${orderNumber}</strong> ${deleteBtnHtml}</span>
+                        </div>
+                        <div style="margin-top:6px; font-weight:600; color:#666;">📦 包材明细</div>
+                        ${packHtml}
+                        <div style="margin-top:8px; font-weight:600; color:#666;">🧾 物品清单</div>
+                        ${itemsHtml}
+                        <div style="margin-top:4px; text-align:right; font-size:13px; color:#888;">
+                            子订单费用：<strong>${sub.total_fee.toFixed(2)}</strong> 元
+                        </div>
                     </div>
                 `;
             });
@@ -3963,9 +3979,7 @@
             const proofHtml = order.proof_url ?
                 `<img src="${order.proof_url}" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid #eee;margin-top:6px;" />` :
                 '<span style="color:#999;">未上传</span>';
-            contentHtml += `
-                <div style="margin-top:12px;"><div style="font-weight:600;">🧾 邮费凭证</div>${proofHtml}</div>
-            `;
+            contentHtml += `<div style="margin-top:12px;"><div style="font-weight:600;">🧾 邮费凭证</div>${proofHtml}</div>`;
 
             document.getElementById('modalContent').innerHTML = contentHtml;
             modal.classList.remove('hidden');
