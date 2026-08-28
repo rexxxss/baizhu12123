@@ -3923,19 +3923,13 @@
                 const deleteBtnHtml = (!isBase && displayOrders.length > 1) ?
                     `<button class="btn btn-sm btn-danger" onclick="deleteSubOrder('${sub.id}', '${order.id}')" style="float:right;margin-left:8px;">删除此子订单</button>` : '';
 
-                // 包材明细表格
-                let packHtml = '无';
+                // 包材：文本加粗，置于物品清单上方
+                let packHtml = '';
                 if (sub.pack_details && sub.pack_details.length > 0) {
-                    packHtml = `
-                        <table class="order-items-table" style="margin-top:4px; width:auto;">
-                            <thead><tr><th>包材类型</th><th>单价(元)</th><th>份数</th><th>小计(元)</th></tr></thead>
-                            <tbody>
-                                ${sub.pack_details.map(p => `
-                                    <tr><td>${escHtml(p.name)}</td><td>${p.price.toFixed(2)}</td><td>${p.qty}</td><td>${p.subtotal.toFixed(2)}</td></tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    `;
+                    const packNames = sub.pack_details.map(p => `${p.name}×${p.qty}`).join('、');
+                    packHtml = `<div style="font-weight:bold; margin-bottom:4px;">包材：${packNames}</div>`;
+                } else {
+                    packHtml = `<div style="font-weight:bold; margin-bottom:4px;">包材：无</div>`;
                 }
 
                 const itemsHtml = sub.items && sub.items.length > 0 ?
@@ -3965,7 +3959,6 @@
                         <div class="order-group-title" style="display:flex; justify-content:space-between; align-items:center;">
                             <span><strong>${title} ${orderNumber}</strong> ${deleteBtnHtml}</span>
                         </div>
-                        <div style="margin-top:6px; font-weight:600; color:#666;">📦 包材明细</div>
                         ${packHtml}
                         <div style="margin-top:8px; font-weight:600; color:#666;">🧾 物品清单</div>
                         ${itemsHtml}
