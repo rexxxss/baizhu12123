@@ -1275,242 +1275,205 @@
             margin-bottom: 6px;
             font-weight: 500;
         }
-        /* ===== 移动端适配（覆盖原有样式） ===== */
-@media (max-width: 768px) {
-  /* 头部 */
-  .app-header {
-    flex-wrap: wrap;
-    padding: 8px 12px;
-  }
-  .app-header .brand {
-    font-size: 18px;
-  }
-  .app-header .admin-entry {
-    font-size: 16px;
-  }
-
-  /* 前台导航标签 */
-  .client-tabs {
-    padding: 6px 8px;
-    gap: 4px;
-  }
-  .client-tabs button {
-    padding: 6px 12px;
-    font-size: 13px;
-    flex: 1 0 auto;
-  }
-
-  /* 卡片内边距 */
-  .card {
-    padding: 12px 14px;
-  }
-  .card-title {
-    font-size: 15px;
-  }
-
-  /* 表单行：强制单列 */
-  .form-row,
-  .form-row-3 {
-    grid-template-columns: 1fr !important;
-    gap: 10px;
-  }
-
-  /* 表格容器保持横向滚动，表格不换行 */
-  .table-wrap,
-  .item-table-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .data-table,
-  .item-data-table {
-    min-width: 600px; /* 保证表格内容不被压缩 */
-    font-size: 12px;
-  }
-  .data-table th,
-  .data-table td,
-  .item-data-table th,
-  .item-data-table td {
-    padding: 4px 6px;
-    white-space: nowrap;
-  }
-
-  /* 数字输入框缩小 */
-  .number-input-group {
-    max-width: 140px;
-  }
-  .number-input-group .btn-num {
-    width: 30px;
-    height: 30px;
-    font-size: 14px;
-  }
-  .number-input-group .num-input {
-    width: 44px;
-    height: 30px;
-    font-size: 13px;
-  }
-
-  /* 包材行 */
-  .pack-row {
-    grid-template-columns: 1fr 60px 1fr 80px;
-    gap: 6px;
-  }
-  .pack-row .number-input-group {
-    max-width: 120px;
-  }
-  .pack-row .number-input-group .btn-num {
-    width: 26px;
-    height: 26px;
-    font-size: 12px;
-  }
-  .pack-row .number-input-group .num-input {
-    width: 36px;
-    height: 26px;
-    font-size: 12px;
-  }
-
-  /* 费用汇总 */
-  .fee-summary {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-    padding: 12px;
-  }
-  .fee-summary .fee-item {
-    font-size: 13px;
-  }
-  .fee-summary .fee-total {
-    font-size: 16px;
-  }
-
-  /* 按钮（大按钮缩小） */
-  .btn-lg {
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-
-  /* 转单选择项 */
-  .transfer-item-select {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .transfer-item-select .number-input-group {
-    max-width: 100%;
-  }
-  .transfer-item-select .item-info {
-    font-size: 13px;
-  }
-
-  /* 省份识别 */
-  .province-display {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-  }
-
-  /* 弹窗 */
-  .modal-box {
-    max-width: 100%;
-    padding: 16px;
-    margin: 10px;
-  }
-  .modal-box .detail-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .modal-box .detail-row .label {
-    width: 100%;
-    font-weight: 600;
-  }
-
-  /* 操作列（订单、转单审批等） */
-  .order-actions,
-  .action-columns {
-    flex-direction: column;
-    gap: 4px;
-    align-items: stretch;
-  }
-  .action-columns .btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  /* 订单合并信息 */
-  .merged-order-info {
-    display: block;
-    font-size: 12px;
-  }
-
-  /* 肾表汇总 */
-  .kidney-summary {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-    font-size: 14px;
-  }
-  .kidney-summary .total-amount {
-    font-size: 18px;
-  }
-
-  /* 收款码图片 */
-  .qr-code-container img {
-    max-width: 150px;
-  }
-
-  /* 后台子标签 */
-  #adminPanel .sub-tabs button {
-    padding: 4px 10px;
-    font-size: 13px;
-  }
-
-  /* 一些列表项 */
-  .address-list .address-item {
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-  .address-list .address-item .addr-text {
-    width: 100%;
-    margin-right: 0;
-  }
-}
-
-/* 针对更小屏幕（如手机竖屏） */
-@media (max-width: 480px) {
-  .client-tabs button {
-    font-size: 12px;
-    padding: 4px 8px;
-  }
-  .data-table,
-  .item-data-table {
-    min-width: 500px;
-    font-size: 11px;
-  }
-  .card {
-    padding: 10px 12px;
-  }
-  .btn {
-    font-size: 13px;
-    padding: 6px 14px;
-  }
-  .pack-row {
-    grid-template-columns: 1fr 50px 1fr 60px;
-  }
-  .number-input-group {
-    max-width: 110px;
-  }
-  .number-input-group .btn-num {
-    width: 26px;
-    height: 26px;
-    font-size: 12px;
-  }
-  .number-input-group .num-input {
-    width: 36px;
-    height: 26px;
-    font-size: 12px;
-  }
-  .modal-box {
-    padding: 12px;
-  }
-}
+        /* ===== 移动端适配 ===== */
+        @media (max-width: 768px) {
+            .app-header {
+                flex-wrap: wrap;
+                padding: 8px 12px;
+            }
+            .app-header .brand {
+                font-size: 18px;
+            }
+            .app-header .admin-entry {
+                font-size: 16px;
+            }
+            .client-tabs {
+                padding: 6px 8px;
+                gap: 4px;
+            }
+            .client-tabs button {
+                padding: 6px 12px;
+                font-size: 13px;
+                flex: 1 0 auto;
+            }
+            .card {
+                padding: 12px 14px;
+            }
+            .card-title {
+                font-size: 15px;
+            }
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr !important;
+                gap: 10px;
+            }
+            .table-wrap,
+            .item-table-wrap {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .data-table,
+            .item-data-table {
+                min-width: 600px;
+                font-size: 12px;
+            }
+            .data-table th,
+            .data-table td,
+            .item-data-table th,
+            .item-data-table td {
+                padding: 4px 6px;
+                white-space: nowrap;
+            }
+            .number-input-group {
+                max-width: 140px;
+            }
+            .number-input-group .btn-num {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+            .number-input-group .num-input {
+                width: 44px;
+                height: 30px;
+                font-size: 13px;
+            }
+            .pack-row {
+                grid-template-columns: 1fr 60px 1fr 80px;
+                gap: 6px;
+            }
+            .pack-row .number-input-group {
+                max-width: 120px;
+            }
+            .pack-row .number-input-group .btn-num {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+            .pack-row .number-input-group .num-input {
+                width: 36px;
+                height: 26px;
+                font-size: 12px;
+            }
+            .fee-summary {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+                padding: 12px;
+            }
+            .fee-summary .fee-item {
+                font-size: 13px;
+            }
+            .fee-summary .fee-total {
+                font-size: 16px;
+            }
+            .btn-lg {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            .transfer-item-select {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .transfer-item-select .number-input-group {
+                max-width: 100%;
+            }
+            .transfer-item-select .item-info {
+                font-size: 13px;
+            }
+            .province-display {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+            .modal-box {
+                max-width: 100%;
+                padding: 16px;
+                margin: 10px;
+            }
+            .modal-box .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .modal-box .detail-row .label {
+                width: 100%;
+                font-weight: 600;
+            }
+            .order-actions,
+            .action-columns {
+                flex-direction: column;
+                gap: 4px;
+                align-items: stretch;
+            }
+            .action-columns .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .merged-order-info {
+                display: block;
+                font-size: 12px;
+            }
+            .kidney-summary {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+                font-size: 14px;
+            }
+            .kidney-summary .total-amount {
+                font-size: 18px;
+            }
+            .qr-code-container img {
+                max-width: 150px;
+            }
+            #adminPanel .sub-tabs button {
+                padding: 4px 10px;
+                font-size: 13px;
+            }
+            .address-list .address-item {
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .address-list .address-item .addr-text {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+        @media (max-width: 480px) {
+            .client-tabs button {
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+            .data-table,
+            .item-data-table {
+                min-width: 500px;
+                font-size: 11px;
+            }
+            .card {
+                padding: 10px 12px;
+            }
+            .btn {
+                font-size: 13px;
+                padding: 6px 14px;
+            }
+            .pack-row {
+                grid-template-columns: 1fr 50px 1fr 60px;
+            }
+            .number-input-group {
+                max-width: 110px;
+            }
+            .number-input-group .btn-num {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+            .number-input-group .num-input {
+                width: 36px;
+                height: 26px;
+                font-size: 12px;
+            }
+            .modal-box {
+                padding: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1674,10 +1637,12 @@
                         </div>
                     </div>
 
+                    <!-- 邮费汇总（含预存） -->
                     <div class="fee-summary" id="feeSummary">
                         <div class="fee-item"><span class="fee-label">📬 基础邮费：</span><span class="fee-value" id="displayBaseFee">0.00</span><span style="color:#888;font-size:13px;">元（默认1kg首重，超重需补邮）</span></div>
                         <div class="fee-item"><span class="fee-label">📦 包材费用：</span><span class="fee-value" id="displayPackFee">0.00</span><span style="color:#888;font-size:13px;">元</span></div>
-                        <div class="fee-total"><span class="fee-label">💰 总费用：</span><span id="displayTotalFee">0.00</span><span style="color:#888;font-size:15px;font-weight:400;">元</span></div>
+                        <div class="fee-item" id="prepaidFeeRow" style="display:none;"><span class="fee-label">💰 预存邮费：</span><span class="fee-value" id="displayPrepaidFee" style="color:#52c41a;">0.00</span><span style="color:#888;font-size:13px;">元</span></div>
+                        <div class="fee-total"><span class="fee-label">🧾 总费用：</span><span id="displayTotalFee">0.00</span><span style="color:#888;font-size:15px;font-weight:400;">元</span></div>
                     </div>
 
                     <!-- 收款码 -->
@@ -1829,6 +1794,8 @@
                 <button data-subtab="batch" onclick="switchSubTab('batch')"><i class="fas fa-upload"></i> 批量录入</button>
                 <button data-subtab="order" onclick="switchSubTab('order')"><i class="fas fa-list-ul"></i> 订单管理</button>
                 <button data-subtab="tracking" onclick="switchSubTab('tracking')"><i class="fas fa-tag"></i> 快递单号</button>
+                <!-- 新增：邮费预存（放在快递单号和转单审批之间） -->
+                <button data-subtab="prepaid" onclick="switchSubTab('prepaid')"><i class="fas fa-coins"></i> 邮费预存</button>
                 <button data-subtab="transfer" onclick="switchSubTab('transfer')"><i class="fas fa-exchange-alt"></i> 转单审批</button>
                 <button data-subtab="kidney" onclick="switchSubTab('kidney')"><i class="fas fa-kidney"></i> 肾表管理</button>
                 <button data-subtab="kidneyApproval" onclick="switchSubTab('kidneyApproval')"><i class="fas fa-check-double"></i> 肾图审批</button>
@@ -1994,6 +1961,45 @@
                 </div>
             </div>
 
+            <!-- ===== 新增：邮费预存管理 ===== -->
+            <div id="subtab-prepaid" style="display:none;">
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-coins" style="color:var(--primary);"></i> 邮费预存管理 <span class="badge">可录入、编辑、删除</span></div>
+                    <!-- 单格录入 -->
+                    <div class="single-entry-area" style="margin-top:0;">
+                        <div class="entry-hint"><i class="fas fa-edit"></i> 录入预存邮费：<strong>CN</strong> 和 <strong>预存金额</strong></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>CN <span class="required">*</span></label><input id="prepaidCN" class="form-control" placeholder="如：张三" /></div>
+                            <div class="form-group"><label>预存金额 (元) <span class="required">*</span></label><input id="prepaidAmount" class="form-control" type="number" step="0.01" placeholder="0.00" /></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="addPrepaidRecord()"><i class="fas fa-plus-circle"></i> 添加预存</button>
+                        <button class="btn btn-outline" onclick="document.getElementById('prepaidCN').value=''; document.getElementById('prepaidAmount').value=''"><i class="fas fa-undo"></i> 清空</button>
+                    </div>
+                    <!-- 批量录入 -->
+                    <div style="margin-top:16px; background:#f9fafb; border-radius:8px; padding:16px; border:1px solid #f0f0f0;">
+                        <div class="entry-hint" style="font-size:13px; color:#888; margin-bottom:8px;">
+                            <i class="fas fa-table"></i> 批量录入：每行一条，<code>CN 金额</code>（空格分隔）
+                            <br>示例：<code>张三 50.00</code>
+                        </div>
+                        <textarea id="prepaidBatchText" class="form-control" rows="4" placeholder="每行一条：CN 金额"></textarea>
+                        <button class="btn btn-primary mt-8" onclick="submitPrepaidBatch()"><i class="fas fa-save"></i> 批量提交</button>
+                    </div>
+                    <!-- 列表 -->
+                    <div style="margin-top:16px;">
+                        <div class="flex-between" style="margin-bottom:8px;">
+                            <span style="font-weight:600;">预存记录 <span id="prepaidCount" class="badge">共 0 条</span></span>
+                            <button class="btn btn-sm btn-danger" onclick="batchDeletePrepaid()"><i class="fas fa-trash"></i> 批量删除</button>
+                        </div>
+                        <div class="table-wrap" style="max-height:400px; overflow-y:auto;">
+                            <table class="data-table">
+                                <thead><tr><th class="col-checkbox"><input type="checkbox" id="selectAllPrepaid" onchange="toggleAllPrepaid()" /></th><th>CN</th><th>预存金额 (元)</th><th>操作</th></tr></thead>
+                                <tbody id="prepaidTableBody"><tr><td colspan="4" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无预存记录</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 转单审批 -->
             <div id="subtab-transfer" style="display:none;">
                 <div class="card">
@@ -2111,27 +2117,27 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- JavaScript（已改造为Supabase版） -->
+    <!-- JavaScript（已改造为Supabase版，新增邮费预存功能） -->
     <!-- ============================================================ -->
     <script>
         /**
          * ================================================================
          *  囤货发货管理系统 - 适配Supabase数据库
          *  所有数据读写通过Supabase API，保留全部功能
-         *  需要配置 SUPABASE_URL 和 SUPABASE_ANON_KEY（在下方填写）
+         *  新增：邮费预存系统（prepaid_shipping表）
+         *  修复：物品编辑保存时「物品不存在」的bug
          * ================================================================
          */
 
         // ======================== Supabase 配置 ========================
-        const SUPABASE_URL = 'https://snwvisjyfwttimkmowod.supabase.co'; // 替换为您的 Supabase URL
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNud3Zpc2p5Znd0dGlta21vd29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1NTU5ODQsImV4cCI6MjEwMzEzMTk4NH0.ZgeZ86rOY4089h3Z2Aiy7QKRPzanilOvkxK5L143Rkw'; // 替换为您的 Supabase anon key
+        const SUPABASE_URL = 'https://snwvisjyfwttimkmowod.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNud3Zpc2p5Znd0dGlta21vd29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1NTU5ODQsImV4cCI6MjEwMzEzMTk4NH0.ZgeZ86rOY4089h3Z2Aiy7QKRPzanilOvkxK5L143Rkw';
 
-        // 初始化 Supabase 客户端
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ======================== 收款码配置 ========================
-        const PAYMENT_QR_URL = 'https://github.com/rexxxss/baizhu12123/blob/main/ufei.jpg?raw=true'; // 邮费收款码图片URL（可留空）
-        const KIDNEY_PAYMENT_QR_URL = 'https://github.com/rexxxss/baizhu12123/blob/main/shentu.jpg?raw=true'; // 肾表收款码图片URL（可留空）
+        const PAYMENT_QR_URL = 'https://github.com/rexxxss/baizhu12123/blob/main/ufei.jpg?raw=true';
+        const KIDNEY_PAYMENT_QR_URL = 'https://github.com/rexxxss/baizhu12123/blob/main/shentu.jpg?raw=true';
 
         // =========================== 常量 & 工具 ===========================
         const STATUS = {
@@ -2234,7 +2240,6 @@
         function genId() {
             if (!window._idCounter) window._idCounter = 0;
             window._idCounter++;
-            // 返回一个数字字符串，确保在 bigint 范围内
             return Date.now().toString() + window._idCounter.toString().padStart(4, '0');
         }
 
@@ -2247,8 +2252,6 @@
             const dateStr = today.getFullYear() +
                 String(today.getMonth() + 1).padStart(2, '0') +
                 String(today.getDate()).padStart(2, '0');
-            // 从数据库获取当天订单数量（由后端生成，此处前端只生成临时编号，实际保存时由数据库自动生成或后端处理）
-            // 这里简单使用时间戳
             return dateStr + '-' + String(Date.now() % 10000).padStart(4, '0');
         }
 
@@ -2283,61 +2286,41 @@
         }
 
         // =========================== Supabase 数据操作函数 ===========================
-        // 通用CRUD封装（使用Supabase）
-
-        // 获取所有物品
+        // --- 物品 ---
         async function getItems() {
             let allData = [];
             let from = 0;
-            const pageSize = 1000;      // 每次取 1000 条，可在 1000～10000 之间调整
+            const pageSize = 1000;
             let hasMore = true;
-
             while (hasMore) {
                 const { data, error } = await supabase
                     .from('items')
                     .select('*')
                     .range(from, from + pageSize - 1);
-
-                if (error) {
-                    console.error('获取物品分页失败:', error);
-                    toast('获取物品失败，请刷新重试', 'error');
-                    // 返回已获取的部分数据，不丢失已拉取的内容
-                    return allData;
-          }
-
-        if (data && data.length > 0) {
-            allData = allData.concat(data);
-            from += data.length;
-            // 如果本次返回数量小于 pageSize，说明已到最后一页
-            if (data.length < pageSize) {
-                hasMore = false;
-            }
-        } else {
-            // 没有数据则结束循环
-            hasMore = false;
-        }
-    }
-
-    return allData;
-        }
-
-        // 保存物品列表（批量更新）
-        async function saveItems(items) {
-            // 按 id 去重，保留最后出现的（或任意，因为同一 id 理应相同）
-            const uniqueMap = new Map();
-            items.forEach(item => {
-                if (item && item.id) {
-                    uniqueMap.set(item.id, item); // 后出现的覆盖先出现的
+                if (error) { console.error('获取物品分页失败:', error);
+                    toast('获取物品失败，请刷新重试', 'error'); return allData; }
+                if (data && data.length > 0) {
+                    allData = allData.concat(data);
+                    from += data.length;
+                    if (data.length < pageSize) hasMore = false;
+                } else {
+                    hasMore = false;
                 }
-            });
+            }
+            return allData;
+        }
+
+        async function saveItems(items) {
+            const uniqueMap = new Map();
+            items.forEach(item => { if (item && item.id) uniqueMap.set(item.id, item); });
             const uniqueItems = Array.from(uniqueMap.values());
             const { error } = await supabase.from('items').upsert(uniqueItems, { onConflict: 'id' });
             if (error) { console.error(error);
-                toast('保存物品失败', 'error'); }
-            return !error;
+                toast('保存物品失败', 'error'); return false; }
+            return true;
         }
 
-        // 获取所有订单
+        // --- 订单 ---
         async function getOrders() {
             const { data, error } = await supabase.from('orders').select('*').limit(100000);
             if (error) { console.error(error);
@@ -2345,20 +2328,17 @@
             return data || [];
         }
 
-        // 保存订单列表（批量upsert）
         async function saveOrders(orders) {
             const uniqueMap = new Map();
-            orders.forEach(order => {
-                if (order && order.id) uniqueMap.set(order.id, order);
-            });
+            orders.forEach(order => { if (order && order.id) uniqueMap.set(order.id, order); });
             const uniqueOrders = Array.from(uniqueMap.values());
             const { error } = await supabase.from('orders').upsert(uniqueOrders, { onConflict: 'id' });
             if (error) { console.error(error);
-                toast('保存订单失败', 'error'); }
-            return !error;
+                toast('保存订单失败', 'error'); return false; }
+            return true;
         }
 
-        // 转单申请
+        // --- 转单申请 ---
         async function getTransferRequests() {
             const { data, error } = await supabase.from('transfer_requests').select('*').limit(100000);
             if (error) { console.error(error);
@@ -2368,17 +2348,15 @@
 
         async function saveTransferRequests(reqs) {
             const uniqueMap = new Map();
-            reqs.forEach(req => {
-                if (req && req.id) uniqueMap.set(req.id, req);
-            });
+            reqs.forEach(req => { if (req && req.id) uniqueMap.set(req.id, req); });
             const uniqueReqs = Array.from(uniqueMap.values());
             const { error } = await supabase.from('transfer_requests').upsert(uniqueReqs, { onConflict: 'id' });
             if (error) { console.error(error);
-                toast('保存转单申请失败', 'error'); }
-            return !error;
+                toast('保存转单申请失败', 'error'); return false; }
+            return true;
         }
 
-        // 肾表数据
+        // --- 肾表数据 ---
         async function getKidneyData() {
             const { data, error } = await supabase.from('kidney_data').select('*').limit(100000);
             if (error) { console.error(error);
@@ -2388,17 +2366,15 @@
 
         async function saveKidneyData(data) {
             const uniqueMap = new Map();
-            data.forEach(item => {
-                if (item && item.id) uniqueMap.set(item.id, item);
-            });
+            data.forEach(item => { if (item && item.id) uniqueMap.set(item.id, item); });
             const uniqueData = Array.from(uniqueMap.values());
             const { error } = await supabase.from('kidney_data').upsert(uniqueData, { onConflict: 'id' });
             if (error) { console.error(error);
-               toast('保存肾表数据失败', 'error'); }
-            return !error;
+                toast('保存肾表数据失败', 'error'); return false; }
+            return true;
         }
 
-        // 肾图审批
+        // --- 肾图审批 ---
         async function getKidneyApprovals() {
             const { data, error } = await supabase.from('kidney_approvals').select('*').limit(100000);
             if (error) { console.error(error);
@@ -2408,17 +2384,40 @@
 
         async function saveKidneyApprovals(data) {
             const uniqueMap = new Map();
-            data.forEach(item => {
-                if (item && item.id) uniqueMap.set(item.id, item);
-            });
+            data.forEach(item => { if (item && item.id) uniqueMap.set(item.id, item); });
             const uniqueData = Array.from(uniqueMap.values());
             const { error } = await supabase.from('kidney_approvals').upsert(uniqueData, { onConflict: 'id' });
             if (error) { console.error(error);
-                toast('保存肾图审批失败', 'error'); }
-            return !error;
+                toast('保存肾图审批失败', 'error'); return false; }
+            return true;
         }
 
-        // 自动转换过期物品（从数据库读取并更新）
+        // ===== 新增：邮费预存 =====
+        async function getPrepaidShipping() {
+            const { data, error } = await supabase.from('prepaid_shipping').select('*').limit(100000);
+            if (error) { console.error('获取邮费预存失败:', error);
+                toast('获取邮费预存失败', 'error'); return []; }
+            return data || [];
+        }
+
+        async function savePrepaidShipping(data) {
+            const uniqueMap = new Map();
+            data.forEach(item => { if (item && item.id) uniqueMap.set(item.id, item); });
+            const uniqueData = Array.from(uniqueMap.values());
+            const { error } = await supabase.from('prepaid_shipping').upsert(uniqueData, { onConflict: 'id' });
+            if (error) { console.error(error);
+                toast('保存邮费预存失败', 'error'); return false; }
+            return true;
+        }
+
+        async function deletePrepaidShipping(ids) {
+            const { error } = await supabase.from('prepaid_shipping').delete().in('id', ids);
+            if (error) { console.error(error);
+                toast('删除预存记录失败', 'error'); return false; }
+            return true;
+        }
+
+        // 自动转换过期物品
         async function autoConvertCharge() {
             let items = await getItems();
             let changed = false;
@@ -2433,7 +2432,7 @@
             return changed;
         }
 
-        // =========================== 登录（管理员登录，仅UI模拟，实际可扩展） ===========================
+        // =========================== 登录 ===========================
         let isAdminLogged = false;
 
         function showLoginModal() {
@@ -2447,35 +2446,33 @@
         }
 
         async function adminLogin() {
-    const user = document.getElementById('loginCN').value.trim();
-    const pass = document.getElementById('loginPassword').value.trim();
-    if (!user || !pass) {
-        document.getElementById('loginError').textContent = '请输入用户名和密码';
-        return;
-    }
-    // 将输入的用户名转换为邮箱格式（假设您的 Supabase 用户邮箱为 user@yourdomain.com）
-    const email = user.includes('@') ? user : user + '@qq.com';
-    try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: pass
-        });
-        if (error) {
-            document.getElementById('loginError').textContent = '登录失败：' + error.message;
-            toast('登录失败', 'error');
-            return;
+            const user = document.getElementById('loginCN').value.trim();
+            const pass = document.getElementById('loginPassword').value.trim();
+            if (!user || !pass) {
+                document.getElementById('loginError').textContent = '请输入用户名和密码';
+                return;
+            }
+            const email = user.includes('@') ? user : user + '@qq.com';
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: pass
+                });
+                if (error) {
+                    document.getElementById('loginError').textContent = '登录失败：' + error.message;
+                    toast('登录失败', 'error');
+                    return;
+                }
+                isAdminLogged = true;
+                closeLoginModal();
+                document.getElementById('adminEntry').classList.add('logged');
+                toast('登录成功', 'success');
+                showAdminPanel();
+            } catch (err) {
+                document.getElementById('loginError').textContent = '登录异常，请重试';
+                toast('登录异常', 'error');
+            }
         }
-        // 登录成功
-        isAdminLogged = true;
-        closeLoginModal();
-        document.getElementById('adminEntry').classList.add('logged');
-        toast('登录成功', 'success');
-        showAdminPanel();
-    } catch (err) {
-        document.getElementById('loginError').textContent = '登录异常，请重试';
-        toast('登录异常', 'error');
-    }
-}
 
         function logoutAdmin() {
             isAdminLogged = false;
@@ -2498,6 +2495,7 @@
             await renderTransferApproval();
             await renderKidneyTable();
             await renderKidneyApproval();
+            await renderPrepaidTable();
             await autoConvertCharge();
         }
 
@@ -2522,6 +2520,7 @@
         let transferItems = [];
         let transferSelected = {};
         let shipSelectedItems = [];
+        let prepaidAmountCache = 0; // 缓存预存邮费
 
         // ---------- 收款码初始化 ----------
         function initQrCodes() {
@@ -2531,7 +2530,7 @@
             if (kidneyImg) kidneyImg.src = KIDNEY_PAYMENT_QR_URL || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'16\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E肾表收款码未设置%3C/text%3E%3C/svg%3E';
         }
 
-        // 省份识别
+        // ---------- 省份识别 ----------
         function detectProvince() {
             const addr = document.getElementById('receiverAddress').value.trim();
             const display = document.getElementById('provinceDisplay');
@@ -2569,6 +2568,7 @@
                 display.style.display = 'flex';
                 selectEl.value = '';
             }
+            // 重新计算总费用（含预存）
             calcTotalFee();
         }
 
@@ -2588,6 +2588,16 @@
             calcTotalFee();
         }
 
+        // ---------- 费用计算（含预存邮费） ----------
+        let cachedPrepaid = 0;
+
+        async function fetchPrepaidForCN(cn) {
+            if (!cn) { cachedPrepaid = 0; return; }
+            const data = await getPrepaidShipping();
+            const record = data.find(item => item.cn === cn);
+            cachedPrepaid = record ? (record.amount || 0) : 0;
+        }
+
         function calcTotalFee() {
             const qtyFoam = parseInt(document.getElementById('qty_foam').value) || 0;
             const qtyBoard = parseInt(document.getElementById('qty_board').value) || 0;
@@ -2599,11 +2609,23 @@
             document.getElementById('subtotal_foam').textContent = foamFee.toFixed(2);
             document.getElementById('subtotal_board').textContent = boardFee.toFixed(2);
             document.getElementById('subtotal_carton').textContent = cartonFee.toFixed(2);
-            const total = baseFee + packTotal;
+
+            const prepaid = cachedPrepaid || 0;
+            const total = baseFee + packTotal - prepaid;
+            const finalTotal = Math.max(total, 0);
+
             document.getElementById('displayBaseFee').textContent = baseFee.toFixed(2);
             document.getElementById('displayPackFee').textContent = packTotal.toFixed(2);
-            document.getElementById('displayTotalFee').textContent = total.toFixed(2);
-            return total;
+
+            const prepaidRow = document.getElementById('prepaidFeeRow');
+            if (prepaid > 0) {
+                prepaidRow.style.display = 'flex';
+                document.getElementById('displayPrepaidFee').textContent = prepaid.toFixed(2);
+            } else {
+                prepaidRow.style.display = 'none';
+            }
+            document.getElementById('displayTotalFee').textContent = finalTotal.toFixed(2);
+            return finalTotal;
         }
 
         function initPackPrices() {
@@ -2620,7 +2642,6 @@
             document.querySelectorAll('.num-input').forEach(inp => {
                 inp.addEventListener('change', calcTotalFee);
             });
-            // 不再从localStorage初始化，所有数据从Supabase获取
             console.log('系统已启动，连接Supabase');
         });
 
@@ -2632,6 +2653,10 @@
                 toast('请输入CN', 'error');
                 return;
             }
+            // 获取预存邮费
+            await fetchPrepaidForCN(cn);
+            calcTotalFee();
+
             let allItems = await getItems();
             let items = allItems.filter(item => item.username === cn && item.picked !== true);
             if (statusFilter) {
@@ -2667,6 +2692,7 @@
             document.getElementById('provinceDisplay').style.display = 'none';
             detectedProvince = '';
             baseFee = 0;
+            cachedPrepaid = 0;
             calcTotalFee();
         }
 
@@ -2769,6 +2795,12 @@
                 toast('请选择有效的物品', 'warning');
                 return;
             }
+            // 重新获取预存邮费（确保最新）
+            const cn = document.getElementById('clientCN').value.trim();
+            fetchPrepaidForCN(cn).then(() => {
+                calcTotalFee();
+            });
+
             const form = document.getElementById('clientOrderForm');
             form.style.display = 'block';
             document.getElementById('shipSelectedCountDisplay').textContent = shipSelectedItems.length;
@@ -2791,6 +2823,7 @@
             document.getElementById('provinceDisplay').style.display = 'none';
             detectedProvince = '';
             baseFee = 0;
+            cachedPrepaid = 0;
             calcTotalFee();
             clientUploadFile = null;
             clientUploadUrl = '';
@@ -2825,7 +2858,7 @@
             toast('凭证已上传', 'success');
         }
 
-        // ---------- 提交发货 ----------
+        // ---------- 提交发货（含预存邮费逻辑） ----------
         async function submitClientOrder() {
             if (window._lastOrderSubmitTime && Date.now() - window._lastOrderSubmitTime < 5000) {
                 toast('提交过于频繁，请稍后再试', 'warning');
@@ -2856,7 +2889,12 @@
                 const qtyCarton = parseInt(document.getElementById('qty_carton').value) || 0;
                 if (!receiverName || !receiverPhone || !receiverAddress) { toast('请完整填写收货信息', 'error'); return; }
                 if (!clientUploadFile) { toast('请上传凭证', 'error'); return; }
+
+                // 获取预存邮费
+                await fetchPrepaidForCN(cn);
+                const prepaid = cachedPrepaid || 0;
                 const totalFee = calcTotalFee();
+
                 const packDetails = [];
                 if (qtyFoam > 0) packDetails.push({ name: '泡沫纸', qty: qtyFoam, price: PACK_PRICES.foam, subtotal: qtyFoam * PACK_PRICES.foam });
                 if (qtyBoard > 0) packDetails.push({ name: '硬纸板', qty: qtyBoard, price: PACK_PRICES.board, subtotal: qtyBoard * PACK_PRICES.board });
@@ -2882,6 +2920,7 @@
                     base_fee: baseFee,
                     pack_details: packDetails,
                     pack_total: packDetails.reduce((sum, p) => sum + p.subtotal, 0),
+                    prepaid_amount: prepaid,
                     total_fee: totalFee,
                     items: shipSelectedItems.map(item => ({
                         id: item.id,
@@ -2900,7 +2939,7 @@
                 let orders = await getOrders();
                 orders.push(order);
                 await saveOrders(orders);
-                toast(`发货申请已提交！订单号：${order.orderNumber}，总费用：${totalFee.toFixed(2)} 元，物品已加入排发`, 'success');
+                toast(`发货申请已提交！订单号：${order.orderNumber}，总费用：${totalFee.toFixed(2)} 元（预存${prepaid.toFixed(2)}元已抵扣）`, 'success');
 
                 clientSelected = new Set();
                 shipSelectedItems = [];
@@ -3204,7 +3243,6 @@
             totalDepositEl.textContent = totalDeposit.toFixed(2);
             totalAmountEl.textContent = finalAmount.toFixed(2);
 
-            // 显示/隐藏肾表收款码
             const qrContainer = document.getElementById('kidneyQrContainer');
             if (KIDNEY_PAYMENT_QR_URL) {
                 qrContainer.style.display = 'block';
@@ -3339,13 +3377,14 @@
             currentSubTab = subtab;
             document.querySelectorAll('#adminPanel .sub-tabs button[data-subtab]').forEach(b => b.classList.remove('active'));
             document.querySelector(`#adminPanel .sub-tabs button[data-subtab="${subtab}"]`).classList.add('active');
-            ['item', 'batch', 'order', 'tracking', 'transfer', 'kidney', 'kidneyApproval'].forEach(id => {
+            ['item', 'batch', 'order', 'tracking', 'prepaid', 'transfer', 'kidney', 'kidneyApproval'].forEach(id => {
                 document.getElementById(`subtab-${id}`).style.display = id === subtab ? 'block' : 'none';
             });
             if (subtab === 'item') { adminRenderItems(); }
             if (subtab === 'order') { adminLoadOrders(); }
             if (subtab === 'tracking') { renderTrackingList();
                 renderAddressList(); }
+            if (subtab === 'prepaid') { renderPrepaidTable(); }
             if (subtab === 'transfer') { renderTransferApproval(); }
             if (subtab === 'kidney') { renderKidneyTable(); }
             if (subtab === 'kidneyApproval') { renderKidneyApproval(); }
@@ -3405,35 +3444,28 @@
             document.querySelectorAll('.item-checkbox-select').forEach(cb => cb.checked = checked);
         }
 
-        // 批量删除物品
         async function batchDeleteItems() {
             const selected = document.querySelectorAll('.item-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择要删除的物品', 'warning'); return; }
             if (!confirm(`确认删除选中的 ${selected.length} 件物品？此操作不可撤销！`)) return;
-            // ✅ 直接使用字符串，不要 parseInt
             const ids = Array.from(selected).map(cb => cb.value);
             const { error } = await supabase.from('items').delete().in('id', ids);
-            if (error) {
-                console.error('删除失败:', error);
-                toast('删除失败: ' + error.message, 'error');
-                return;
-            }
+            if (error) { console.error('删除失败:', error);
+                toast('删除失败: ' + error.message, 'error'); return; }
             toast(`已删除 ${selected.length} 件物品`, 'success');
             adminRenderItems();
         }
-        
+
         async function batchUpdateStatus() {
             const newStatus = document.getElementById('batchStatusSelect').value;
             if (!newStatus) { toast('请选择状态', 'warning'); return; }
             const selected = document.querySelectorAll('.item-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择物品', 'warning'); return; }
             if (!confirm(`确认将选中的 ${selected.length} 件物品状态改为「${newStatus}」？`)) return;
-            // ✅ 直接使用字符串
             const ids = Array.from(selected).map(cb => cb.value);
             let items = await getItems();
             let count = 0;
             items.forEach(item => {
-                // ✅ 统一转为字符串比较
                 if (ids.includes(String(item.id))) {
                     item.status = newStatus;
                     if (newStatus === STATUS.ARRIVED && !item.arrivalDate) {
@@ -3451,6 +3483,7 @@
             adminLoadOrders();
         }
 
+        // ===== 修复：物品编辑保存bug（id加引号作为字符串传递） =====
         async function adminEditItem(id) {
             let items = await getItems();
             const item = items.find(i => String(i.id) === String(id));
@@ -3482,7 +3515,8 @@
                         <div class="form-group"><label>囤货到期</label><input id="editExpireDate" class="form-control" type="datetime-local" value="${item.storageExpireDate ? new Date(item.storageExpireDate).toISOString().slice(0,16) : ''}" /></div>
                     </div>
                     <div class="form-group"><label>发货时间</label><input id="editShipDate" class="form-control" type="datetime-local" value="${item.shipDate ? new Date(item.shipDate).toISOString().slice(0,16) : ''}" /></div>
-                    <button class="btn btn-primary w-full mt-12" onclick="saveItemEdit(${id})"><i class="fas fa-save"></i> 保存修改</button>
+                    <!-- 修复：id 加引号作为字符串传递 -->
+                    <button class="btn btn-primary w-full mt-12" onclick="saveItemEdit('${id}')"><i class="fas fa-save"></i> 保存修改</button>
                 `;
             modal.classList.remove('hidden');
         }
@@ -3530,19 +3564,17 @@
             adminRenderItems();
         }
 
-
-        // 单个删除物品
         async function adminDeleteItem(id) {
             if (!confirm(`确认删除物品 #${id}？此操作不可撤销！`)) return;
             const { error } = await supabase.from('items').delete().eq('id', String(id));
-            if (error) { console.error(error); toast('删除失败', 'error'); return; }
+            if (error) { console.error(error);
+                toast('删除失败', 'error'); return; }
             toast('物品已删除', 'success');
             adminRenderItems();
         }
 
         // ---------- 批量录入 ----------
         function handleBatchFile(event) {
-            // 最终调用 submitBatchText
             const file = event.target.files[0];
             if (!file) return;
             const statusEl = document.getElementById('batchFileStatus');
@@ -3590,13 +3622,12 @@
                         const status = get('status') || STATUS.ORDERED;
                         const orderVersion = get('orderVersion') || '';
                         if (username && series && product && character) {
-                            // 获取到货时间（如果有）
                             const arrivalDate = get('arrivalDate') || '';
                             let lineParts = [username, series, product, character, quantity, status, orderVersion];
                             if (arrivalDate) {
                                 lineParts.push(arrivalDate);
-                        }
-    lines.push(lineParts.join(' '));
+                            }
+                            lines.push(lineParts.join(' '));
                         }
                     }
                     if (lines.length === 0) {
@@ -3630,24 +3661,27 @@
                 const parts = line.trim().split(/\s+/);
                 if (parts.length < 4) { errorLines.push(`第 ${idx+1} 行: 字段不足`); return; }
 
-                // 尝试检查最后一个字段是否为日期格式 (YYYY-MM-DD)
                 let arrivalDateStr = null;
                 const lastPart = parts[parts.length - 1];
                 if (/^\d{4}-\d{2}-\d{2}$/.test(lastPart)) {
                     arrivalDateStr = lastPart;
-                    parts.pop(); // 移除日期，剩下的继续解析
+                    parts.pop();
                 }
 
                 const username = parts[0];
                 const series = parts[1];
                 const product = parts[2];
                 const character = parts[3];
-                let quantity = 1, status = STATUS.ORDERED, orderVersion = '', pos = 4;
-                if (parts.length > pos && !isNaN(parseInt(parts[pos]))) { quantity = parseInt(parts[pos]); pos++; }
-                if (parts.length > pos && STATUS_LIST.includes(parts[pos])) { status = parts[pos]; pos++; }
+                let quantity = 1,
+                    status = STATUS.ORDERED,
+                    orderVersion = '',
+                    pos = 4;
+                if (parts.length > pos && !isNaN(parseInt(parts[pos]))) { quantity = parseInt(parts[pos]);
+                    pos++; }
+                if (parts.length > pos && STATUS_LIST.includes(parts[pos])) { status = parts[pos];
+                    pos++; }
                 if (parts.length > pos) { orderVersion = parts.slice(pos).join(' '); }
 
-                // 处理到货时间
                 let arrivalDate = null;
                 let storageExpireDate = null;
                 if (arrivalDateStr) {
@@ -3734,7 +3768,6 @@
             let orders = await getOrders();
             orders.sort((a, b) => a.created_at - b.created_at);
 
-            // 合并逻辑（与之前相同）
             const mergedOrders = [];
             const skipIds = new Set();
             for (let i = 0; i < orders.length; i++) {
@@ -3861,23 +3894,23 @@
             document.querySelectorAll('.order-checkbox-select').forEach(cb => cb.checked = checked);
         }
 
-        // 批量删除订单
         async function batchDeleteOrders() {
             const selected = document.querySelectorAll('.order-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择要删除的订单', 'warning'); return; }
             if (!confirm(`确认删除选中的 ${selected.length} 个订单？此操作不可撤销！`)) return;
             const ids = Array.from(selected).map(cb => cb.value);
             const { error } = await supabase.from('orders').delete().in('id', ids);
-            if (error) { console.error(error); toast('删除失败', 'error'); return; }
+            if (error) { console.error(error);
+                toast('删除失败', 'error'); return; }
             toast(`已删除 ${selected.length} 个订单`, 'success');
             adminLoadOrders();
         }
 
-        // 单个删除订单
         async function adminDeleteOrder(id) {
             if (!confirm(`确认删除订单 #${id}？此操作不可撤销！`)) return;
             const { error } = await supabase.from('orders').delete().eq('id', String(id));
-            if (error) { console.error(error); toast('删除失败', 'error'); return; }
+            if (error) { console.error(error);
+                toast('删除失败', 'error'); return; }
             toast('订单已删除', 'success');
             adminLoadOrders();
         }
@@ -3923,7 +3956,6 @@
                 const deleteBtnHtml = (!isBase && displayOrders.length > 1) ?
                     `<button class="btn btn-sm btn-danger" onclick="deleteSubOrder('${sub.id}', '${order.id}')" style="float:right;margin-left:8px;">删除此子订单</button>` : '';
 
-                // 包材：文本加粗，置于物品清单上方
                 let packHtml = '';
                 if (sub.pack_details && sub.pack_details.length > 0) {
                     const packNames = sub.pack_details.map(p => `${p.name}×${p.qty}`).join('、');
@@ -4006,7 +4038,7 @@
             adminViewOrderDetail(mainOrderId);
             adminLoadOrders();
         }
-        
+
         // ---------- 快递单号 ----------
         async function renderTrackingList() {
             const search = document.getElementById('trackingSearchInput').value.trim();
@@ -4058,7 +4090,6 @@
 
             tbody.innerHTML = html;
 
-            // 计算并显示盈亏
             const balance = totalUserFee - totalActualFee;
             const summaryHtml = `
                 <div style="background:var(--primary-light); border-radius:8px; padding:12px 16px; margin-bottom:12px; border:1px solid var(--primary-border); display:flex; flex-wrap:wrap; gap:20px; align-items:center;">
@@ -4068,7 +4099,7 @@
                 </div>
             `;
             document.getElementById('trackingSummary').innerHTML = summaryHtml;
-            
+
             renderAddressList();
         }
 
@@ -4098,7 +4129,6 @@
             order.actual_shipping_fee = 0;
             await saveOrders(orders);
             toast('已清除', 'success');
-            // 刷新列表
             renderTrackingList();
             adminLoadOrders();
         }
@@ -4185,6 +4215,156 @@
             }
         }
 
+        // ===== 新增：邮费预存管理 =====
+        async function renderPrepaidTable() {
+            const data = await getPrepaidShipping();
+            data.sort((a, b) => a.cn.localeCompare(b.cn));
+            document.getElementById('prepaidCount').textContent = `共 ${data.length} 条`;
+            const tbody = document.getElementById('prepaidTableBody');
+            if (!data.length) {
+                tbody.innerHTML =
+                    `<tr><td colspan="4" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无预存记录</td></tr>`;
+                return;
+            }
+            let html = '';
+            data.forEach(item => {
+                html += `
+                        <tr>
+                            <td class="col-checkbox"><input type="checkbox" class="prepaid-checkbox-select" value="${item.id}" /></td>
+                            <td>${escHtml(item.cn)}</td>
+                            <td>${item.amount.toFixed(2)}</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="btn btn-sm btn-outline" onclick="editPrepaidRecord('${item.id}')"><i class="fas fa-edit"></i> 编辑</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deletePrepaidRecord('${item.id}')"><i class="fas fa-trash"></i> 删除</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function toggleAllPrepaid() {
+            const checked = document.getElementById('selectAllPrepaid').checked;
+            document.querySelectorAll('.prepaid-checkbox-select').forEach(cb => cb.checked = checked);
+        }
+
+        async function batchDeletePrepaid() {
+            const selected = document.querySelectorAll('.prepaid-checkbox-select:checked');
+            if (selected.length === 0) { toast('请选择要删除的记录', 'warning'); return; }
+            if (!confirm(`确认删除选中的 ${selected.length} 条预存记录？此操作不可撤销！`)) return;
+            const ids = Array.from(selected).map(cb => cb.value);
+            const ok = await deletePrepaidShipping(ids);
+            if (ok) {
+                toast(`已删除 ${selected.length} 条记录`, 'success');
+                renderPrepaidTable();
+            }
+        }
+
+        async function addPrepaidRecord() {
+            const cn = document.getElementById('prepaidCN').value.trim();
+            const amount = parseFloat(document.getElementById('prepaidAmount').value);
+            if (!cn) { toast('请输入CN', 'error'); return; }
+            if (isNaN(amount) || amount <= 0) { toast('请输入有效的预存金额（大于0）', 'error'); return; }
+            // 检查是否已存在
+            let data = await getPrepaidShipping();
+            const existing = data.find(item => item.cn === cn);
+            if (existing) {
+                if (!confirm(`CN "${cn}" 已有预存 ${existing.amount.toFixed(2)} 元，是否覆盖？`)) return;
+                existing.amount = amount;
+                await savePrepaidShipping(data);
+                toast(`已更新 ${cn} 的预存金额为 ${amount.toFixed(2)} 元`, 'success');
+            } else {
+                data.push({
+                    id: genId(),
+                    cn: cn,
+                    amount: amount
+                });
+                await savePrepaidShipping(data);
+                toast(`已为 ${cn} 添加预存 ${amount.toFixed(2)} 元`, 'success');
+            }
+            document.getElementById('prepaidCN').value = '';
+            document.getElementById('prepaidAmount').value = '';
+            renderPrepaidTable();
+        }
+
+        async function submitPrepaidBatch() {
+            const text = document.getElementById('prepaidBatchText').value;
+            if (!text.trim()) { toast('请输入文本数据', 'warning'); return; }
+            const lines = text.split('\n').filter(line => line.trim() !== '');
+            let data = await getPrepaidShipping();
+            let count = 0;
+            let errors = [];
+            lines.forEach((line, idx) => {
+                const parts = line.trim().split(/\s+/);
+                if (parts.length < 2) { errors.push(`第 ${idx+1} 行: 字段不足`); return; }
+                const cn = parts[0];
+                const amount = parseFloat(parts[1]);
+                if (!cn || isNaN(amount) || amount <= 0) {
+                    errors.push(`第 ${idx+1} 行: CN或金额无效`);
+                    return;
+                }
+                // 检查是否已存在，存在则覆盖
+                const existing = data.find(item => item.cn === cn);
+                if (existing) {
+                    existing.amount = amount;
+                } else {
+                    data.push({ id: genId(), cn: cn, amount: amount });
+                }
+                count++;
+            });
+            if (errors.length > 0) {
+                toast(`存在 ${errors.length} 行错误: ${errors.join('; ')}`, 'error');
+                return;
+            }
+            await savePrepaidShipping(data);
+            toast(`成功录入/更新 ${count} 条预存记录`, 'success');
+            document.getElementById('prepaidBatchText').value = '';
+            renderPrepaidTable();
+        }
+
+        async function editPrepaidRecord(id) {
+            let data = await getPrepaidShipping();
+            const item = data.find(d => d.id === id);
+            if (!item) { toast('记录不存在', 'error'); return; }
+            const modal = document.getElementById('detailModal');
+            document.getElementById('detailModalTitle').innerHTML =
+                `<i class="fas fa-edit" style="color:var(--primary);"></i> 编辑预存记录`;
+            const content = document.getElementById('modalContent');
+            content.innerHTML = `
+                    <div class="form-group"><label>CN</label><input id="editPrepaidCN" class="form-control" value="${escHtml(item.cn)}" /></div>
+                    <div class="form-group"><label>预存金额 (元)</label><input id="editPrepaidAmount" class="form-control" type="number" step="0.01" value="${item.amount}" /></div>
+                    <button class="btn btn-primary w-full mt-12" onclick="savePrepaidEdit('${id}')"><i class="fas fa-save"></i> 保存修改</button>
+                `;
+            modal.classList.remove('hidden');
+        }
+
+        async function savePrepaidEdit(id) {
+            const cn = document.getElementById('editPrepaidCN').value.trim();
+            const amount = parseFloat(document.getElementById('editPrepaidAmount').value);
+            if (!cn) { toast('请输入CN', 'error'); return; }
+            if (isNaN(amount) || amount <= 0) { toast('请输入有效的预存金额', 'error'); return; }
+            let data = await getPrepaidShipping();
+            const item = data.find(d => d.id === id);
+            if (!item) { toast('记录不存在', 'error'); return; }
+            item.cn = cn;
+            item.amount = amount;
+            await savePrepaidShipping(data);
+            toast('预存记录已更新', 'success');
+            closeModal();
+            renderPrepaidTable();
+        }
+
+        async function deletePrepaidRecord(id) {
+            if (!confirm('确认删除该预存记录？')) return;
+            const ok = await deletePrepaidShipping([id]);
+            if (ok) {
+                toast('已删除', 'success');
+                renderPrepaidTable();
+            }
+        }
+
         // ---------- 转单审批 ----------
         async function renderTransferApproval() {
             let reqs = await getTransferRequests();
@@ -4268,11 +4448,11 @@
             modal.classList.remove('hidden');
         }
 
-        // 删除转单申请
         async function adminDeleteTransfer(reqId) {
             if (!confirm('确认删除该转单申请？此操作不可撤销！')) return;
             const { error } = await supabase.from('transfer_requests').delete().eq('id', reqId);
-            if (error) { console.error(error); toast('删除失败', 'error'); return; }
+            if (error) { console.error(error);
+                toast('删除失败', 'error'); return; }
             toast('转单申请已删除', 'success');
             renderTransferApproval();
         }
@@ -4378,14 +4558,14 @@
             document.querySelectorAll('.kidney-checkbox-select').forEach(cb => cb.checked = checked);
         }
 
-        // 批量删除肾表记录
         async function batchDeleteKidney() {
             const selected = document.querySelectorAll('.kidney-checkbox-select:checked');
             if (selected.length === 0) { toast('请选择要删除的肾表记录', 'warning'); return; }
             if (!confirm(`确认删除选中的 ${selected.length} 条记录？此操作不可撤销！`)) return;
             const ids = Array.from(selected).map(cb => cb.value);
             const { error } = await supabase.from('kidney_data').delete().in('id', ids);
-            if (error) { console.error(error); toast('删除失败', 'error'); return; }
+            if (error) { console.error(error);
+                toast('删除失败', 'error'); return; }
             toast(`已删除 ${selected.length} 条肾表记录`, 'success');
             renderKidneyTable();
         }
@@ -4507,7 +4687,7 @@
                             </select>
                         </div>
                     </div>
-                    <button class="btn btn-primary w-full mt-12" onclick="saveKidneyEdit(${id})"><i class="fas fa-save"></i> 保存修改</button>
+                    <button class="btn btn-primary w-full mt-12" onclick="saveKidneyEdit('${id}')"><i class="fas fa-save"></i> 保存修改</button>
                 `;
             modal.classList.remove('hidden');
         }
@@ -4544,11 +4724,11 @@
             renderKidneyTable();
         }
 
-        // 单个删除肾表记录
         async function deleteKidneyRecord(id) {
             if (!confirm('确认删除该肾表记录？')) return;
             const { error } = await supabase.from('kidney_data').delete().eq('id', id);
-            if (error) { console.error(error); toast('删除失败', 'error'); return; }
+            if (error) { console.error(error);
+                toast('删除失败', 'error'); return; }
             toast('已删除', 'success');
             renderKidneyTable();
         }
@@ -4632,11 +4812,11 @@
             modal.classList.remove('hidden');
         }
 
-        // 删除肾图审批记录
         async function adminDeleteKidneyApproval(id) {
             if (!confirm('确认删除该肾图审批记录？此操作不可撤销！')) return;
             const { error } = await supabase.from('kidney_approvals').delete().eq('id', id);
-            if (error) { console.error(error); toast('删除失败', 'error'); return; }
+            if (error) { console.error(error);
+                toast('删除失败', 'error'); return; }
             toast('已删除', 'success');
             renderKidneyApproval();
         }
@@ -4681,26 +4861,25 @@
 
         // =========================== 初始化 ===========================
         (function init() {
-            // 数据已由Supabase提供，不再从localStorage读取
             document.getElementById('clientPanel').style.display = 'block';
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('clientTabs').style.display = 'flex';
 
             document.getElementById('clientCN').addEventListener('keydown', e => { if (e.key === 'Enter') clientSearch(); });
             document.getElementById('queryPhone').addEventListener('keydown', e => { if (e.key === 'Enter')
-                queryOrdersByPhone(); });
+                    queryOrdersByPhone(); });
             document.getElementById('transferFromCN').addEventListener('keydown', e => { if (e.key === 'Enter')
-                loadTransferItems(); });
+                    loadTransferItems(); });
             document.getElementById('transferQueryCN').addEventListener('keydown', e => { if (e.key === 'Enter')
-                queryTransferStatus(); });
+                    queryTransferStatus(); });
             document.getElementById('kidneyCN').addEventListener('keydown', e => { if (e.key === 'Enter') queryKidney(); });
             document.getElementById('kidneyApprovalQueryCN').addEventListener('keydown', e => { if (e.key === 'Enter')
-                queryKidneyApprovalStatus(); });
+                    queryKidneyApprovalStatus(); });
 
             document.getElementById('detailModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
             initPackPrices();
-            console.log('系统初始化完成 — 使用Supabase数据库');
+            console.log('系统初始化完成 — 使用Supabase数据库，新增邮费预存功能');
         })();
     </script>
 
