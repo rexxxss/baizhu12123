@@ -2404,9 +2404,12 @@
             const uniqueMap = new Map();
             data.forEach(item => { if (item && item.id) uniqueMap.set(item.id, item); });
             const uniqueData = Array.from(uniqueMap.values());
-            const { error } = await supabase.from('prepaid_shipping').upsert(uniqueData, { onConflict: 'id' });
-            if (error) { console.error(error);
-                toast('保存邮费预存失败', 'error'); return false; }
+            const { data: result, error } = await supabase.from('prepaid_shipping').upsert(uniqueData, { onConflict: 'id' });
+            if (error) {
+                console.error('保存预存失败详情:', error);
+                toast('保存邮费预存失败: ' + error.message, 'error');
+                return false;
+            }
             return true;
         }
 
@@ -2618,12 +2621,9 @@
             document.getElementById('displayPackFee').textContent = packTotal.toFixed(2);
 
             const prepaidRow = document.getElementById('prepaidFeeRow');
-            if (prepaid > 0) {
-                prepaidRow.style.display = 'flex';
-                document.getElementById('displayPrepaidFee').textContent = prepaid.toFixed(2);
-            } else {
-                prepaidRow.style.display = 'none';
-            }
+            prepaidRow.style.display = 'flex';
+            document.getElementById('displayPrepaidFee').textContent = prepaid.toFixed(2);
+
             document.getElementById('displayTotalFee').textContent = finalTotal.toFixed(2);
             return finalTotal;
         }
