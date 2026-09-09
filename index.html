@@ -1648,7 +1648,7 @@
                     <!-- 收款码 -->
                     <div class="qr-code-container">
                         <div class="qr-label"><i class="fas fa-qrcode"></i> 如未加载出请刷新</div>
-                        <img id="paymentQrImage" src="" alt="收款码" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'16\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E收款码未设置%3C/text%3E%3C/svg%3E'" />
+                        <img id="paymentQrImage" src="" alt="收款码" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'16\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E未加载出请刷新%3C/text%3E%3C/svg%3E'" />
                     </div>
 
                     <div class="form-group" style="margin-top:12px;">
@@ -1753,7 +1753,7 @@
                     <!-- 肾表收款码 -->
                     <div class="qr-code-container" id="kidneyQrContainer" style="display:none;">
                         <div class="qr-label"><i class="fas fa-qrcode"></i> 肾表付款码</div>
-                        <img id="kidneyPaymentQrImage" src="" alt="肾表收款码" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'16\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E肾表收款码未设置%3C/text%3E%3C/svg%3E'" />
+                        <img id="kidneyPaymentQrImage" src="" alt="肾表收款码" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'16\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E肾表未加载出请刷新%3C/text%3E%3C/svg%3E'" />
                     </div>
 
                     <!-- 肾图上传 -->
@@ -2529,8 +2529,8 @@
         function initQrCodes() {
             const paymentImg = document.getElementById('paymentQrImage');
             const kidneyImg = document.getElementById('kidneyPaymentQrImage');
-            if (paymentImg) paymentImg.src = PAYMENT_QR_URL || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'16\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E收款码未设置%3C/text%3E%3C/svg%3E';
-            if (kidneyImg) kidneyImg.src = KIDNEY_PAYMENT_QR_URL || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'16\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E肾表收款码未设置%3C/text%3E%3C/svg%3E';
+            if (paymentImg) paymentImg.src = PAYMENT_QR_URL || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'16\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E未加载出请刷新%3C/text%3E%3C/svg%3E';
+            if (kidneyImg) kidneyImg.src = KIDNEY_PAYMENT_QR_URL || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'16\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E肾表未加载出请刷新%3C/text%3E%3C/svg%3E';
         }
 
         // ---------- 省份识别 ----------
@@ -2893,13 +2893,19 @@
                 // 获取预存邮费
                 await fetchPrepaidForCN(cn);
                 const prepaid = cachedPrepaid || 0;
-                const totalFee = calcTotalFee();
-
+                // 计算包材总费用
                 const packDetails = [];
                 if (qtyFoam > 0) packDetails.push({ name: '泡沫纸', qty: qtyFoam, price: PACK_PRICES.foam, subtotal: qtyFoam * PACK_PRICES.foam });
                 if (qtyBoard > 0) packDetails.push({ name: '硬纸板', qty: qtyBoard, price: PACK_PRICES.board, subtotal: qtyBoard * PACK_PRICES.board });
                 if (qtyCarton > 0) packDetails.push({ name: '纸箱', qty: qtyCarton, price: PACK_PRICES.carton, subtotal: qtyCarton * PACK_PRICES.carton });
+                const packTotal = packDetails.reduce((sum, p) => sum + p.subtotal, 0);
+                
+                // 计算总费用（基础邮费 + 包材 - 预存）
+                const totalBeforePrepaid = baseFee + packTotal;
+                const usedPrepaid = Math.min(prepaid, totalBeforePrepaid);
+                const totalFee = Math.max(totalBeforePrepaid - usedPrepaid, 0);
 
+                // 更新物品状态
                 let items = await getItems();
                 shipSelectedItems.forEach(selItem => {
                     const found = items.find(i => i.id === selItem.id);
@@ -2909,6 +2915,7 @@
                 });
                 await saveItems(items);
 
+                // 创建订单
                 const order = {
                     id: genId(),
                     orderNumber: generateOrderNumber(),
@@ -2919,8 +2926,8 @@
                     province: detectedProvince || '',
                     base_fee: baseFee,
                     pack_details: packDetails,
-                    pack_total: packDetails.reduce((sum, p) => sum + p.subtotal, 0),
-                    prepaid_amount: prepaid,
+                    pack_total: packTotal,
+                    prepaid_amount: usedPrepaid,   // 实际使用的预存金额
                     total_fee: totalFee,
                     items: shipSelectedItems.map(item => ({
                         id: item.id,
@@ -2936,11 +2943,31 @@
                     tracking_number: '',
                     ship_status: 'pending'
                 };
+
                 let orders = await getOrders();
                 orders.push(order);
                 await saveOrders(orders);
-                toast(`发货申请已提交！订单号：${order.orderNumber}，总费用：${totalFee.toFixed(2)} 元（预存${prepaid.toFixed(2)}元已抵扣）`, 'success');
 
+                // ===== 扣减预存邮费 =====
+                if (usedPrepaid > 0) {
+                    let prepaidData = await getPrepaidShipping();
+                    const prepaidRecord = prepaidData.find(item => item.cn === cn);
+                    if (prepaidRecord) {
+                        const newAmount = prepaidRecord.amount - usedPrepaid;
+                        if (newAmount <= 0) {
+                            // 剩余为0或负数，删除记录
+                            await deletePrepaidShipping([prepaidRecord.id]);
+                        } else {
+                            prepaidRecord.amount = newAmount;
+                            await savePrepaidShipping(prepaidData);
+                        }
+                        toast(`✅ 已使用预存邮费 ${usedPrepaid.toFixed(2)} 元，剩余 ${newAmount > 0 ? newAmount.toFixed(2) : '0.00'} 元`, 'success');
+                    }
+                }
+
+                toast(`发货申请已提交！订单号：${order.orderNumber}，总费用：${totalFee.toFixed(2)} 元${usedPrepaid > 0 ? '（预存已抵扣）' : ''}`, 'success');
+
+                // 重置界面
                 clientSelected = new Set();
                 shipSelectedItems = [];
                 renderClientItemsTable();
