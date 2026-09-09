@@ -2893,17 +2893,20 @@
                 // 获取预存邮费
                 await fetchPrepaidForCN(cn);
                 const prepaid = cachedPrepaid || 0;
+                console.log('当前预存金额:', prepaid);
+
                 // 计算包材总费用
                 const packDetails = [];
                 if (qtyFoam > 0) packDetails.push({ name: '泡沫纸', qty: qtyFoam, price: PACK_PRICES.foam, subtotal: qtyFoam * PACK_PRICES.foam });
                 if (qtyBoard > 0) packDetails.push({ name: '硬纸板', qty: qtyBoard, price: PACK_PRICES.board, subtotal: qtyBoard * PACK_PRICES.board });
                 if (qtyCarton > 0) packDetails.push({ name: '纸箱', qty: qtyCarton, price: PACK_PRICES.carton, subtotal: qtyCarton * PACK_PRICES.carton });
                 const packTotal = packDetails.reduce((sum, p) => sum + p.subtotal, 0);
-                
+        
                 // 计算总费用（基础邮费 + 包材 - 预存）
                 const totalBeforePrepaid = baseFee + packTotal;
                 const usedPrepaid = Math.min(prepaid, totalBeforePrepaid);
                 const totalFee = Math.max(totalBeforePrepaid - usedPrepaid, 0);
+                console.log(`基础邮费: ${baseFee}, 包材: ${packTotal}, 使用预存: ${usedPrepaid}, 最终费用: ${totalFee}`);
 
                 // 更新物品状态
                 let items = await getItems();
@@ -2927,7 +2930,7 @@
                     base_fee: baseFee,
                     pack_details: packDetails,
                     pack_total: packTotal,
-                    prepaid_amount: usedPrepaid,   // 实际使用的预存金额
+                    prepaid_amount: usedPrepaid,
                     total_fee: totalFee,
                     items: shipSelectedItems.map(item => ({
                         id: item.id,
@@ -2946,23 +2949,48 @@
 
                 let orders = await getOrders();
                 orders.push(order);
-                await saveOrders(orders);
+                const orderSaved = await saveOrders(orders);
+                if (!orderSaved) {
+                    toast('订单保存失败，请检查网络或联系管理员', 'error');
+                    return; // 终止后续操作
+                }
 
-                // ===== 扣减预存邮费 =====
+                // ===== 扣减预存邮费（订单已成功保存） =====
                 if (usedPrepaid > 0) {
-                    let prepaidData = await getPrepaidShipping();
-                    const prepaidRecord = prepaidData.find(item => item.cn === cn);
-                    if (prepaidRecord) {
-                        const newAmount = prepaidRecord.amount - usedPrepaid;
-                        if (newAmount <= 0) {
-                            // 剩余为0或负数，删除记录
-                            await deletePrepaidShipping([prepaidRecord.id]);
+                    try {
+                        let prepaidData = await getPrepaidShipping();
+                        console.log('预存记录列表:', prepaidData);
+                        const prepaidRecord = prepaidData.find(item => item.cn === cn);
+                        console.log('找到的预存记录:', prepaidRecord);
+                        if (prepaidRecord) {
+                            const newAmount = prepaidRecord.amount - usedPrepaid;
+                            if (newAmount <= 0) {
+                                // 删除记录
+                                const deleted = await deletePrepaidShipping([prepaidRecord.id]);
+                                if (deleted) {
+                                    toast(`✅ 已使用预存邮费 ${usedPrepaid.toFixed(2)} 元，预存已用完`, 'success');
+                                } else {
+                                    toast('⚠️ 预存扣减失败（删除记录失败），请手动检查', 'error');
+                                }
+                            } else {
+                                prepaidRecord.amount = newAmount;
+                                const saved = await savePrepaidShipping(prepaidData);
+                                if (saved) {
+                                    toast(`✅ 已使用预存邮费 ${usedPrepaid.toFixed(2)} 元，剩余 ${newAmount.toFixed(2)} 元`, 'success');
+                                } else {
+                                    toast('⚠️ 预存扣减失败（更新记录失败），请手动检查', 'error');
+                                }
+                            }
                         } else {
-                            prepaidRecord.amount = newAmount;
-                            await savePrepaidShipping(prepaidData);
+                            console.warn('未找到该CN的预存记录，无法扣减');
+                            toast('⚠️ 未查询到预存记录，请核对CN', 'warning');
                         }
-                        toast(`✅ 已使用预存邮费 ${usedPrepaid.toFixed(2)} 元，剩余 ${newAmount > 0 ? newAmount.toFixed(2) : '0.00'} 元`, 'success');
+                    } catch (err) {
+                        console.error('预存扣减异常:', err);
+                        toast('预存扣减发生异常，请手动检查', 'error');
                     }
+                } else {
+                    console.log('usedPrepaid为0，不扣减预存');
                 }
 
                 toast(`发货申请已提交！订单号：${order.orderNumber}，总费用：${totalFee.toFixed(2)} 元${usedPrepaid > 0 ? '（预存已抵扣）' : ''}`, 'success');
