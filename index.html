@@ -2001,7 +2001,7 @@
             container.innerHTML = html;
         }
 
-        // ---------- 订单查询（★ 改为排发状态 + 单号状态配色） ----------
+        // ---------- 订单查询 ----------
         async function queryOrdersByPhone() {
             const phone = document.getElementById('queryPhone').value.trim();
             if (!phone) { toast('请输入手机号', 'warning'); return; }
@@ -2015,25 +2015,38 @@
             }
             orders.sort((a, b) => b.created_at - a.created_at);
             let html = '';
-            orders.forEach(order => {
+             orders.forEach(order => {
                 const hasTracking = !!(order.tracking_number && order.tracking_number.trim() !== '');
                 const isShipped = order.ship_status === 'shipped';
+
+                // 排发状态二次判定
+                let statusText, statusClass;
+                if (!isShipped) {
+                    statusText = '待发货';
+                    statusClass = 's5'; 
+                } else if (hasTracking) {
+                    statusText = '已发货';
+                    statusClass = 'shipped'; 
+                } else {
+                    statusText = '已打包';
+                    statusClass = 'shipping';
+                }
+
                 const itemsBrief = order.items ? order.items.map(it => `${escHtml(it.name)}×${it.quantity}`).join('、') : '无';
                 html += `
                     <div class="order-item" style="background:#fafafa;border-radius:8px;padding:12px 16px;margin-bottom:10px;border:1px solid #f0f0f0;">
                         <div class="order-header" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
-                            <span class="order-id" style="font-weight:600;color:#fa8c16;">${order.orderNumber || '#'+order.id}</span>
                             <span>
-                                排发状态：<span class="status-tag ${isShipped ? 'shipped' : 's5'}">${isShipped ? '已发货' : '待发货'}</span>
+                                排发状态：<span class="status-tag ${statusClass}">${statusText}</span>
                                 <span class="tracking-badge ${hasTracking ? 'uploaded' : 'missing'}"><i class="fas ${hasTracking ? 'fa-check-circle' : 'fa-times-circle'}"></i> 单号：${hasTracking ? '已上传' : '未上传'}</span>
                             </span>
+                            <span class="order-id" style="font-weight:600;color:#000;">${order.orderNumber || '#'+order.id}</span>
                         </div>
                         <div class="order-detail" style="font-size:13px;color:#666;">
                             <span><i class="fas fa-user"></i> ${escHtml(order.receiver_name)}</span>
                             <span><i class="fas fa-map-marker-alt"></i> ${escHtml(order.receiver_address)}</span>
                             <span><i class="fas fa-box"></i> ${itemsBrief}</span>
                             ${hasTracking ? `<span><i class="fas fa-tag"></i> 单号：${escHtml(order.tracking_number)}</span>` : ''}
-                            <span><i class="fas fa-truck"></i> 排发状态：${isShipped ? '已发货' : '待发货'}</span>
                         </div>
                     </div>`;
             });
