@@ -1751,7 +1751,10 @@
                 if (shipSelectedItems.length === 0) { toast('请先选择物品', 'error'); return; }
                 const receiverName = document.getElementById('receiverName').value.trim();
                 const receiverPhone = document.getElementById('receiverPhone').value.trim();
-                const receiverAddress = document.getElementById('receiverAddress').value.trim();
+                const receiverAddress = document.getElementById('receiverAddress').value
+                    .replace(/[\r\n\t]+/g, ' ')
+                    .replace(/[ \u3000]+/g, ' ')
+                    .trim();
                 if (!isValidPhone(receiverPhone)) { toast('请输入正确的11位手机号', 'error'); return; }
                 const qtyFoam = parseInt(document.getElementById('qty_foam').value) || 0;
                 const qtyBoard = parseInt(document.getElementById('qty_board').value) || 0;
