@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>一键式囤货发货系统</title>
+    <title>一键式囤货查询发货系统</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5.12.8/dist/reset.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -99,6 +99,10 @@
         }
         .status-tag.s1 { background: #e6f7ff; color: #1890ff; }
         .status-tag.s2 { background: #f6ffed; color: #52c41a; }
+        /* ★ 新增：已到货 = 橙黄色 */
+        .status-tag.arrived { background: #fffbe6; color: #d48806; }
+        /* ★ 新增：已加入排发 = 紫色 */
+        .status-tag.queued { background: #efdbff; color: #531dab; }
         .status-tag.s3 { background: #fff7e6; color: #fa8c16; }
         .status-tag.s4 { background: #f9f0ff; color: #722ed1; }
         .status-tag.s5 { background: #fff1f0; color: #ff4d4f; }
@@ -613,7 +617,7 @@
             <button data-tab="kidney" onclick="switchClientTab('kidney')"><i class="fas fa-kidney"></i> 肾表查询</button>
         </div>
 
-        <!-- ===== 客户面板 ===== -->
+        <!-- ===== 用户面板 ===== -->
         <div id="clientPanel">
             <!-- 页面1：物品查询与排发 -->
             <div id="page-item" class="client-page">
@@ -1026,7 +1030,6 @@
                     <div style="margin-top:16px;">
                         <div class="card-title" style="margin-bottom:4px;">
                             <i class="fas fa-address-book" style="color:var(--primary);"></i> 所有收货地址
-                            <span class="badge">点击复制</span>
                             <button class="btn btn-sm btn-primary" style="margin-left:auto;" onclick="copyAllAddresses()"><i class="fas fa-copy"></i> 复制所有地址</button>
                         </div>
                         <div id="addressListContainer" class="address-list"></div>
@@ -1207,8 +1210,14 @@
 
         function getStatusClass(status) {
             const map = {
-                '已下单': 's1', '已到货': 's2', '收费囤': 's3', '已加入排发': 'shipping',
-                '已排发': 's4', '拆地址': 's5', '已发货': 'shipped', '已掉落': 's7'
+                '已下单': 's1',
+                '已到货': 'arrived',      // ★ 橙黄色
+                '收费囤': 's3',
+                '已加入排发': 'queued',    // ★ 紫色
+                '已排发': 's4',
+                '拆地址': 's5',
+                '已发货': 'shipped',
+                '已掉落': 's7'
             };
             return map[status] || 's6';
         }
@@ -2023,10 +2032,10 @@
                 let statusText, statusClass;
                 if (!isShipped) {
                     statusText = '待发货';
-                    statusClass = 's5'; 
+                    statusClass = 's5';
                 } else if (hasTracking) {
                     statusText = '已发货';
-                    statusClass = 'shipped'; 
+                    statusClass = 'shipped';
                 } else {
                     statusText = '已打包';
                     statusClass = 'shipping';
@@ -2546,7 +2555,7 @@
             adminRenderItems();
         }
 
-        // ---------- 订单管理（★ 移除拣货状态判断） ----------
+        // ---------- 订单管理 ----------
         async function adminLoadOrders() {
             let orders = await getOrders();
             orders.sort((a, b) => a.created_at - b.created_at);
@@ -2678,7 +2687,7 @@
             adminLoadOrders();
         }
 
-        // ---------- 订单详情（★ 保留复选框但无实际逻辑） ----------
+        // ---------- 订单详情 ----------
         async function adminViewOrderDetail(id) {
             let orders = await getOrders();
             const order = orders.find(o => String(o.id) === String(id));
@@ -2861,10 +2870,15 @@
             adminLoadOrders();
         }
 
+        // ★ 改造：只显示未录入快递单号的订单地址，且复制内容不含CN
         async function renderAddressList() {
             let orders = await getOrders();
+            // 过滤：已录入快递单号的订单不再显示地址
+            orders = orders.filter(o => !(o.tracking_number && o.tracking_number.trim() !== ''));
             if (!orders.length) {
-                document.getElementById('addressListContainer').innerHTML = '<div style="color:#999;padding:8px;">暂无地址</div>';
+                document.getElementById('addressListContainer').innerHTML = '<div style="color:#999;padding:8px;">暂无待发货地址（已录入单号的地址不再显示）</div>';
+                window._addressMap = {};
+                window._addressList = [];
                 return;
             }
             const addrMap = {};
@@ -2875,21 +2889,26 @@
                 }
             });
             window._addressMap = addrMap;
+            const list = Object.values(addrMap);
+            window._addressList = list;
+
             let html = '';
-            for (let key in addrMap) {
-                const a = addrMap[key];
+            list.forEach((a, idx) => {
                 html += `
                     <div class="address-item">
                         <span class="addr-text">${escHtml(`${a.name} ${a.phone} ${a.address}`)}</span>
-                        <span class="copy-btn" onclick="copySingleAddress('${escHtml(a.name)}', '${escHtml(a.phone)}', '${escHtml(a.address)}')"><i class="fas fa-copy"></i> 复制</span>
+                        <span class="copy-btn" onclick="copySingleAddress(${idx})"><i class="fas fa-copy"></i> 复制</span>
                     </div>`;
-            }
+            });
             document.getElementById('addressListContainer').innerHTML = html;
             window._allOrders = orders;
         }
 
-        function copySingleAddress(name, phone, address) {
-            copyToClipboard(`${name}\t${phone}\t${address}\t日用品\t\t`);
+        function copySingleAddress(idx) {
+            const list = window._addressList || [];
+            const a = list[idx];
+            if (!a) { toast('地址不存在', 'error'); return; }
+            copyToClipboard(`${a.name}\t${a.phone}\t${a.address}`);
         }
 
         function copyToClipboard(text) {
@@ -2907,20 +2926,12 @@
         }
 
         function copyAllAddresses() {
-            const addrMap = window._addressMap || {};
-            const addresses = Object.values(addrMap);
-            if (addresses.length === 0) { toast('没有地址可复制', 'warning'); return; }
-            const orders = window._allOrders || [];
-            const rows = addresses.map(a => {
-                const matched = orders.find(o =>
-                    o.receiver_address === a.address && o.receiver_name === a.name && o.receiver_phone === a.phone
-                );
-                return `${a.name}\t${a.phone}\t${a.address}\t日用品\t\t${matched ? (matched.username || '') : ''}`;
-            });
-            const allText = rows.join('\n');
+            const list = window._addressList || [];
+            if (list.length === 0) { toast('没有地址可复制', 'warning'); return; }
+            const allText = list.map(a => `${a.name}\t${a.phone}\t${a.address}`).join('\n');
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(allText)
-                    .then(() => toast(`已复制 ${addresses.length} 个地址（制表符分隔，粘贴到Excel可自动分列）`, 'success'))
+                    .then(() => toast(`已复制 ${list.length} 个地址（制表符分隔，粘贴到Excel可自动分列）`, 'success'))
                     .catch(() => toast('复制失败', 'error'));
             } else {
                 const ta = document.createElement('textarea');
@@ -2929,7 +2940,7 @@
                 ta.select();
                 document.execCommand('copy');
                 ta.remove();
-                toast(`已复制 ${addresses.length} 个地址（制表符分隔）`, 'success');
+                toast(`已复制 ${list.length} 个地址（制表符分隔）`, 'success');
             }
         }
 
@@ -3460,7 +3471,7 @@
             initPackPrices();
             initQrCodes();
             calcTotalFee();
-            console.log('系统初始化完成 — Supabase 数据库，已移除拣货逻辑，前台展示排发状态');
+            console.log('系统初始化完成 — 已接入Supabase 数据库');
         });
     </script>
 </body>
