@@ -99,10 +99,7 @@
         }
         .status-tag.s1 { background: #e6f7ff; color: #1890ff; }
         .status-tag.s2 { background: #f6ffed; color: #52c41a; }
-        /* ★ 新增：已到货 = 橙黄色 */
         .status-tag.arrived { background: #fffbe6; color: #d48806; }
-        /* ★ 新增：已加入排发 = 紫色 */
-        .status-tag.queued { background: #efdbff; color: #531dab; }
         .status-tag.s3 { background: #fff7e6; color: #fa8c16; }
         .status-tag.s4 { background: #f9f0ff; color: #722ed1; }
         .status-tag.s5 { background: #fff1f0; color: #ff4d4f; }
@@ -632,7 +629,6 @@
                                 <option value="已到货">已到货</option>
                                 <option value="收费囤">收费囤</option>
                                 <option value="已加入排发">已加入排发</option>
-                                <option value="已排发">已排发</option>
                                 <option value="拆地址">拆地址</option>
                                 <option value="已发货">已发货</option>
                                 <option value="已掉落">已掉落</option>
@@ -893,7 +889,6 @@
                                 <option value="已到货">已到货</option>
                                 <option value="收费囤">收费囤</option>
                                 <option value="已加入排发">已加入排发</option>
-                                <option value="已排发">已排发</option>
                                 <option value="拆地址">拆地址</option>
                                 <option value="已发货">已发货</option>
                                 <option value="已掉落">已掉落</option>
@@ -904,7 +899,7 @@
                     </div>
                     <div class="filter-bar">
                         <div class="filter-item"><label>CN</label><input id="filterCN" class="form-control" style="width:120px; padding:4px 8px;" placeholder="筛选" oninput="adminRenderItems()" /></div>
-                        <div class="filter-item"><label>状态</label><select id="filterStatus" class="form-control" style="width:130px; padding:4px 8px;" onchange="adminRenderItems()"><option value="">全部</option><option value="已下单">已下单</option><option value="已到货">已到货</option><option value="收费囤">收费囤</option><option value="已加入排发">已加入排发</option><option value="已排发">已排发</option><option value="拆地址">拆地址</option><option value="已发货">已发货</option><option value="已掉落">已掉落</option></select></div>
+                        <div class="filter-item"><label>状态</label><select id="filterStatus" class="form-control" style="width:130px; padding:4px 8px;" onchange="adminRenderItems()"><option value="">全部</option><option value="已下单">已下单</option><option value="已到货">已到货</option><option value="收费囤">收费囤</option><option value="已加入排发">已加入排发</option><option value="拆地址">拆地址</option><option value="已发货">已发货</option><option value="已掉落">已掉落</option></select></div>
                         <div class="filter-item"><label>系列</label><input id="filterSeries" class="form-control" style="width:120px; padding:4px 8px;" placeholder="系列" oninput="adminRenderItems()" /></div>
                         <div class="filter-item"><label>角色</label><input id="filterCharacter" class="form-control" style="width:120px; padding:4px 8px;" placeholder="角色" oninput="adminRenderItems()" /></div>
                         <div class="filter-item"><label>下单版本</label><input id="filterOrderVersion" class="form-control" style="width:120px; padding:4px 8px;" placeholder="版本" oninput="adminRenderItems()" /></div>
@@ -959,7 +954,7 @@
                         <div class="form-row-3">
                             <div class="form-group"><label>角色 <span class="required">*</span></label><input id="singleCharacter" class="form-control" placeholder="如：初音未来" /></div>
                             <div class="form-group"><label>数量 <span class="required">*</span></label><input id="singleQuantity" class="form-control" type="number" min="1" value="1" /></div>
-                            <div class="form-group"><label>状态</label><select id="singleStatus" class="form-control"><option value="已下单" selected>已下单</option><option value="已到货">已到货</option><option value="收费囤">收费囤</option><option value="已加入排发">已加入排发</option><option value="已排发">已排发</option><option value="拆地址">拆地址</option><option value="已发货">已发货</option><option value="已掉落">已掉落</option></select></div>
+                            <div class="form-group"><label>状态</label><select id="singleStatus" class="form-control"><option value="已下单" selected>已下单</option><option value="已到货">已到货</option><option value="收费囤">收费囤</option><option value="已加入排发">已加入排发</option><option value="拆地址">拆地址</option><option value="已发货">已发货</option><option value="已掉落">已掉落</option></select></div>
                         </div>
                         <div class="form-group" style="margin-top:4px;">
                             <label>下单版本</label>
@@ -1191,10 +1186,10 @@
 
         // =========================== 常量 & 工具 ===========================
         const STATUS = {
-            ORDERED: '已下单', ARRIVED: '已到货', CHARGE: '收费囤', SHIPPING: '已排发',
+            ORDERED: '已下单', ARRIVED: '已到货', CHARGE: '收费囤',
             SPLIT_ADDR: '拆地址', SHIPPED: '已发货', DROPPED: '已掉落', QUEUED: '已加入排发'
         };
-        const STATUS_LIST = ['已下单', '已到货', '收费囤', '已加入排发', '已排发', '拆地址', '已发货', '已掉落'];
+        const STATUS_LIST = ['已下单', '已到货', '收费囤', '已加入排发', '拆地址', '已发货', '已掉落'];
         const SELECTABLE_STATUS = ['已到货', '收费囤'];
 
         const PROVINCE_FEE = {
@@ -1211,12 +1206,11 @@
         function getStatusClass(status) {
             const map = {
                 '已下单': 's1',
-                '已到货': 'arrived',      // ★ 橙黄色
-                '收费囤': 's3',
-                '已加入排发': 'queued',    // ★ 紫色
-                '已排发': 's4',
-                '拆地址': 's5',
-                '已发货': 'shipped',
+                '已到货': 'arrived',
+                '收费囤': 's5',
+                '已加入排发': 's4', 
+                '拆地址': 'shipped', 
+                '已发货': 's3',
                 '已掉落': 's7'
             };
             return map[status] || 's6';
@@ -2038,10 +2032,10 @@
                     statusClass = 's5';
                 } else if (hasTracking) {
                     statusText = '已发货';
-                    statusClass = 'shipped';
+                    statusClass = 's3';
                 } else {
                     statusText = '已打包';
-                    statusClass = 'shipping';
+                    statusClass = 's3';
                 }
 
                 const itemsBrief = order.items ? order.items.map(it => `${escHtml(it.name)}×${it.quantity}`).join('、') : '无';
