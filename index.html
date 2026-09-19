@@ -347,21 +347,6 @@
         .transfer-query-result .transfer-item .transfer-detail span { margin-right: 16px; }
         .transfer-actions-vertical { display: flex; flex-direction: column; gap: 4px; align-items: center; }
         .transfer-actions-vertical .btn { width: 100%; justify-content: center; font-size: 12px; padding: 4px 8px; }
-        .kidney-summary {
-            background: var(--primary-light); border-radius: 10px; padding: 14px 18px; margin-top: 14px;
-            border: 1px solid var(--primary-border); font-size: 16px; font-weight: 600;
-            color: var(--text-color); display: flex; justify-content: space-between;
-            align-items: center; flex-wrap: wrap;
-        }
-        .kidney-summary .total-amount { color: var(--primary); font-size: 20px; }
-        .kidney-upload-area {
-            border: 2px dashed #d9d9d9; border-radius: 10px; padding: 16px; text-align: center;
-            cursor: pointer; transition: all .2s; background: #fafafa; margin-top: 12px;
-        }
-        .kidney-upload-area:hover { border-color: var(--primary); background: var(--primary-light); }
-        .kidney-upload-area .upload-icon { font-size: 26px; color: #ccc; display: block; }
-        .kidney-upload-area .file-name { color: var(--primary); font-weight: 500; }
-        .kidney-upload-area.has-file { border-color: #52c41a; background: #f6ffed; }
         .action-columns { display: flex; flex-direction: column; gap: 4px; align-items: center; }
         .action-columns .btn { font-size: 12px; padding: 4px 8px; width: 100%; justify-content: center; }
         .system-column { vertical-align: middle; }
@@ -375,7 +360,7 @@
             .app-header .brand { font-size: 15.5px; gap: 6px; line-height: 1.3; }
             .app-header .brand i { font-size: 17px; }
             .app-header .admin-entry { font-size: 17px; padding: 6px 9px; }
-            .client-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 6px; border-radius: 12px; margin-bottom: 12px; }
+            .client-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; padding: 6px; border-radius: 12px; margin-bottom: 12px; }
             .client-tabs button {
                 padding: 9px 4px; font-size: 12.5px; border-radius: 9px; display: flex;
                 align-items: center; justify-content: center; gap: 4px; white-space: nowrap;
@@ -507,8 +492,8 @@
             .province-display .province-select { flex: 1; min-width: 120px; font-size: 15px; padding: 6px 8px; }
 
             /* 上传区 */
-            .upload-area, .kidney-upload-area { padding: 20px 14px; border-radius: 10px; }
-            .upload-area .upload-icon, .kidney-upload-area .upload-icon { font-size: 30px; margin-bottom: 4px; }
+            .upload-area { padding: 20px 14px; border-radius: 10px; }
+            .upload-area .upload-icon { font-size: 30px; margin-bottom: 4px; }
             .upload-preview { max-width: 130px; max-height: 130px; }
 
             /* 收款码 */
@@ -554,11 +539,6 @@
             .address-list .address-item { display: flex; align-items: flex-start; gap: 6px; padding: 8px 0; font-size: 12.5px; line-height: 1.55; }
             .address-list .address-item .addr-text { width: auto; flex: 1; margin-right: 0; word-break: break-all; }
             .address-list .address-item .copy-btn { flex-shrink: 0; padding: 4px 8px; border-radius: 6px; background: var(--primary-light); font-size: 12px; }
-
-            /* 肾表汇总 */
-            .kidney-summary { padding: 14px 15px; border-radius: 10px; gap: 7px; font-size: 13.5px; flex-direction: column; align-items: stretch; }
-            .kidney-summary > span { display: flex; align-items: baseline; justify-content: space-between; }
-            .kidney-summary .total-amount { font-size: 19px; }
 
             /* Toast */
             .toast-container { top: 12px; left: 12px; right: 12px; align-items: stretch; }
@@ -611,7 +591,6 @@
         <div class="client-tabs" id="clientTabs">
             <button class="active" data-tab="item" onclick="switchClientTab('item')"><i class="fas fa-box"></i> 物品查询与排发</button>
             <button data-tab="transfer" onclick="switchClientTab('transfer')"><i class="fas fa-exchange-alt"></i> 转单申请</button>
-            <button data-tab="kidney" onclick="switchClientTab('kidney')"><i class="fas fa-kidney"></i> 肾表查询</button>
         </div>
 
         <!-- ===== 用户面板 ===== -->
@@ -818,47 +797,6 @@
                     <div id="transferQueryResult" class="transfer-query-result mt-8"></div>
                 </div>
             </div>
-
-            <!-- 页面3：肾表查询 -->
-            <div id="page-kidney" class="client-page" style="display:none;">
-                <div class="card">
-                    <div class="card-title"><i class="fas fa-kidney" style="color:var(--primary);"></i> 肾表查询</div>
-                    <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end;">
-                        <div style="flex:1; min-width:160px;"><input id="kidneyCN" class="form-control" placeholder="输入CN" /></div>
-                        <button class="btn btn-primary" onclick="queryKidney()"><i class="fas fa-search"></i> 查询</button>
-                        <button class="btn btn-outline" onclick="document.getElementById('kidneyCN').value=''; document.getElementById('kidneyResult').innerHTML=''; document.getElementById('kidneyTotal').innerHTML=''"><i class="fas fa-undo"></i> 清空</button>
-                    </div>
-                    <div id="kidneyResult" style="margin-top:12px;"></div>
-                    <div id="kidneyTotal" class="kidney-summary" style="display:none;">
-                        <span>折后总价：<span id="kidneyTotalPrice" style="color:var(--primary);">0.00</span> 元</span>
-                        <span>定金总额：<span id="kidneyTotalDeposit" style="color:#fa8c16;">0.00</span> 元</span>
-                        <span>需付金额：<span class="total-amount" id="kidneyTotalAmount">0.00</span> 元</span>
-                    </div>
-                    <div class="qr-code-container" id="kidneyQrContainer" style="display:none;">
-                        <div class="qr-label"><i class="fas fa-qrcode"></i> 肾表付款码</div>
-                        <img id="kidneyPaymentQrImage" src="" alt="肾表收款码" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'16\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\'%3E肾表未加载出请刷新%3C/text%3E%3C/svg%3E'" />
-                    </div>
-                    <div id="kidneyUploadSection" style="display:none; margin-top:12px;">
-                        <div class="kidney-upload-area" onclick="document.getElementById('kidneyFileInput').click()">
-                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                            <span class="upload-text">点击上传肾图（图片）</span>
-                            <div id="kidneyFileNameDisplay" class="file-name" style="display:none;"></div>
-                        </div>
-                        <input id="kidneyFileInput" type="file" accept="image/*" style="display:none;" onchange="handleKidneyFileSelect(event)" />
-                        <div id="kidneyPreviewContainer" style="display:none;" class="upload-preview"><img id="kidneyPreviewImage" src="" alt="肾图预览" /></div>
-                        <button class="btn btn-primary mt-8" onclick="submitKidneyApproval()"><i class="fas fa-paper-plane"></i> 提交肾图审批</button>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-title"><i class="fas fa-search" style="color:var(--primary);"></i> 肾图查询 <span class="badge">输入CN查询肾图审批状态</span></div>
-                    <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end;">
-                        <div style="flex:1; min-width:200px;"><input id="kidneyApprovalQueryCN" class="form-control" placeholder="请输入CN" /></div>
-                        <button class="btn btn-primary" onclick="queryKidneyApprovalStatus()"><i class="fas fa-search"></i> 查询</button>
-                        <button class="btn btn-outline" onclick="document.getElementById('kidneyApprovalQueryCN').value=''; document.getElementById('kidneyApprovalQueryResult').innerHTML=''"><i class="fas fa-undo"></i> 清空</button>
-                    </div>
-                    <div id="kidneyApprovalQueryResult" class="transfer-query-result mt-8"></div>
-                </div>
-            </div>
         </div>
 
         <!-- ===== 后台管理面板 ===== -->
@@ -870,8 +808,6 @@
                 <button data-subtab="tracking" onclick="switchSubTab('tracking')"><i class="fas fa-tag"></i> 快递单号</button>
                 <button data-subtab="prepaid" onclick="switchSubTab('prepaid')"><i class="fas fa-coins"></i> 邮费预存</button>
                 <button data-subtab="transfer" onclick="switchSubTab('transfer')"><i class="fas fa-exchange-alt"></i> 转单审批</button>
-                <button data-subtab="kidney" onclick="switchSubTab('kidney')"><i class="fas fa-kidney"></i> 肾表管理</button>
-                <button data-subtab="kidneyApproval" onclick="switchSubTab('kidneyApproval')"><i class="fas fa-check-double"></i> 肾图审批</button>
                 <button style="margin-left:auto;" class="btn btn-sm btn-outline" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i> 退出</button>
             </div>
 
@@ -1080,72 +1016,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- 肾表管理 -->
-            <div id="subtab-kidney" style="display:none;">
-                <div class="card">
-                    <div class="card-title">
-                        <i class="fas fa-kidney" style="color:var(--primary);"></i> 肾表管理
-                        <span class="badge">共 <span id="kidneyCount">0</span> 条</span>
-                        <div class="flex-center" style="margin-left:auto;">
-                            <span style="font-size:13px; color:#888;">批量操作：</span>
-                            <button class="btn btn-sm btn-danger" onclick="batchDeleteKidney()"><i class="fas fa-trash"></i> 批量删除</button>
-                        </div>
-                    </div>
-                    <div class="filter-bar">
-                        <div class="filter-item"><label>CN</label><input id="kidneyFilterCN" class="form-control" style="width:120px; padding:4px 8px;" placeholder="筛选" oninput="renderKidneyTable()" /></div>
-                        <div class="filter-item"><label>是否交肾</label><select id="kidneyFilterPaid" class="form-control" style="width:130px; padding:4px 8px;" onchange="renderKidneyTable()"><option value="">全部</option><option value="微信">微信</option><option value="支付宝">支付宝</option><option value="未交">未交</option></select></div>
-                        <button class="btn btn-sm btn-outline" onclick="renderKidneyTable()"><i class="fas fa-sync-alt"></i> 刷新</button>
-                    </div>
-                    <div class="table-wrap" style="max-height:480px; overflow-y:auto;">
-                        <table class="data-table">
-                            <thead><tr><th class="col-checkbox"><input type="checkbox" id="selectAllKidney" onchange="toggleAllKidney()" /></th><th>CN</th><th>系列</th><th>制品</th><th>角色</th><th>数量</th><th>原价</th><th>折后价格</th><th>定金</th><th>是否交肾</th><th>操作</th></tr></thead>
-                            <tbody id="kidneyTableBody"><tr><td colspan="11" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无肾表数据</td></tr></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title"><i class="fas fa-upload" style="color:var(--primary);"></i> 录入肾表数据</div>
-                    <div class="form-row-3">
-                        <div class="form-group"><label>CN <span class="required">*</span></label><input id="kidneyInputCN" class="form-control" placeholder="如：张三" /></div>
-                        <div class="form-group"><label>系列 <span class="required">*</span></label><input id="kidneyInputSeries" class="form-control" placeholder="如：GSC" /></div>
-                        <div class="form-group"><label>制品 <span class="required">*</span></label><input id="kidneyInputProduct" class="form-control" placeholder="如：手办" /></div>
-                    </div>
-                    <div class="form-row-3">
-                        <div class="form-group"><label>角色 <span class="required">*</span></label><input id="kidneyInputCharacter" class="form-control" placeholder="如：初音未来" /></div>
-                        <div class="form-group"><label>数量 <span class="required">*</span></label><input id="kidneyInputQty" class="form-control" type="number" min="1" value="1" /></div>
-                        <div class="form-group"><label>原价 <span class="required">*</span></label><input id="kidneyInputOriginalPrice" class="form-control" type="number" step="0.01" value="0.00" /></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>折后价格 <span class="required">*</span></label><input id="kidneyInputDiscountPrice" class="form-control" type="number" step="0.01" value="0.00" /></div>
-                        <div class="form-group"><label>定金</label><input id="kidneyInputDeposit" class="form-control" type="number" step="0.01" value="0.00" /></div>
-                        <div class="form-group"><label>是否交肾</label><select id="kidneyInputPaid" class="form-control"><option value="未交">未交</option><option value="微信">微信</option><option value="支付宝">支付宝</option></select></div>
-                    </div>
-                    <button class="btn btn-primary" onclick="addKidneyRecord()"><i class="fas fa-plus-circle"></i> 添加肾表记录</button>
-                </div>
-
-                <div class="card">
-                    <div class="card-title"><i class="fas fa-table" style="color:var(--primary);"></i> 批量录入肾表 <span class="badge">文本格式：CN 系列 制品 角色 数量 原价 折后价格 [定金] [是否交肾]</span></div>
-                    <div class="form-group">
-                        <textarea id="kidneyBatchText" class="form-control" rows="6" placeholder="每行一条，空格分隔：张三 GSC 手办 初音未来 2 100.00 80.00 10.00 微信"></textarea>
-                    </div>
-                    <button class="btn btn-primary" onclick="submitKidneyBatch()"><i class="fas fa-save"></i> 批量提交</button>
-                </div>
-            </div>
-
-            <!-- 肾图审批 -->
-            <div id="subtab-kidneyApproval" style="display:none;">
-                <div class="card">
-                    <div class="card-title"><i class="fas fa-check-double" style="color:var(--primary);"></i> 肾图审批 <span class="badge">待审批的肾图</span></div>
-                    <div class="table-wrap">
-                        <table class="data-table">
-                            <thead><tr><th>申请ID</th><th>CN</th><th>总金额</th><th>状态</th><th>申请时间</th><th>操作</th><th>系统</th></tr></thead>
-                            <tbody id="kidneyApprovalTableBody"><tr><td colspan="7" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无肾图审批</td></tr></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- ===== 登录弹窗 ===== -->
@@ -1182,7 +1052,6 @@
 
         // ======================== 收款码配置 ========================
         const PAYMENT_QR_URL = 'https://cdn.jsdelivr.net/gh/rexxxss/baizhu12123@main/ufei.jpg';
-        const KIDNEY_PAYMENT_QR_URL = 'https://cdn.jsdelivr.net/gh/rexxxss/baizhu12123@main/shentu.jpg';
 
         // =========================== 常量 & 工具 ===========================
         const STATUS = {
@@ -1317,30 +1186,6 @@
             if (error) { console.error(error); toast('保存转单申请失败', 'error'); return false; }
             return true;
         }
-        async function getKidneyData() {
-            const { data, error } = await supabase.from('kidney_data').select('*').limit(100000);
-            if (error) { console.error(error); toast('获取肾表数据失败', 'error'); return []; }
-            return data || [];
-        }
-        async function saveKidneyData(data) {
-            const uniqueMap = new Map();
-            data.forEach(i => { if (i && i.id) uniqueMap.set(i.id, i); });
-            const { error } = await supabase.from('kidney_data').upsert(Array.from(uniqueMap.values()), { onConflict: 'id' });
-            if (error) { console.error(error); toast('保存肾表数据失败', 'error'); return false; }
-            return true;
-        }
-        async function getKidneyApprovals() {
-            const { data, error } = await supabase.from('kidney_approvals').select('*').limit(100000);
-            if (error) { console.error(error); toast('获取肾图审批失败', 'error'); return []; }
-            return data || [];
-        }
-        async function saveKidneyApprovals(data) {
-            const uniqueMap = new Map();
-            data.forEach(i => { if (i && i.id) uniqueMap.set(i.id, i); });
-            const { error } = await supabase.from('kidney_approvals').upsert(Array.from(uniqueMap.values()), { onConflict: 'id' });
-            if (error) { console.error(error); toast('保存肾图审批失败', 'error'); return false; }
-            return true;
-        }
         async function getPrepaidShipping() {
             const { data, error } = await supabase.from('prepaid_shipping').select('*').limit(100000);
             if (error) { console.error('获取邮费预存失败:', error); toast('获取邮费预存失败', 'error'); return []; }
@@ -1424,8 +1269,6 @@
             await adminLoadOrders();
             await renderTrackingList();
             await renderTransferApproval();
-            await renderKidneyTable();
-            await renderKidneyApproval();
             await renderPrepaidTable();
             await autoConvertCharge();
         }
@@ -1453,9 +1296,7 @@
 
         function initQrCodes() {
             const paymentImg = document.getElementById('paymentQrImage');
-            const kidneyImg = document.getElementById('kidneyPaymentQrImage');
             if (paymentImg) paymentImg.src = PAYMENT_QR_URL;
-            if (kidneyImg) kidneyImg.src = KIDNEY_PAYMENT_QR_URL;
         }
 
         // ---------- 省份识别 ----------
@@ -2059,151 +1900,6 @@
             container.innerHTML = html;
         }
 
-        // ---------- 肾表查询 ----------
-        async function queryKidney() {
-            const cn = document.getElementById('kidneyCN').value.trim();
-            if (!cn) { toast('请输入CN', 'error'); return; }
-            let data = await getKidneyData();
-            data = data.filter(item => item.cn === cn);
-            const container = document.getElementById('kidneyResult');
-            const totalEl = document.getElementById('kidneyTotal');
-
-            if (data.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>未找到该CN的肾表数据</p></div>`;
-                totalEl.style.display = 'none';
-                document.getElementById('kidneyUploadSection').style.display = 'none';
-                document.getElementById('kidneyQrContainer').style.display = 'none';
-                return;
-            }
-
-            let html = `<table class="data-table"><thead><tr><th>系列</th><th>制品</th><th>角色</th><th>数量</th><th>原价</th><th>折后价格</th><th>定金</th><th>是否交肾</th></tr></thead><tbody>`;
-            let totalPrice = 0, totalDeposit = 0, allNotPaid = true;
-            data.forEach(item => {
-                totalPrice += item.discountPrice * item.quantity;
-                totalDeposit += item.deposit || 0;
-                const paidLabel = item.paid || '未交';
-                const paidClass = paidLabel === '微信' ? 'wechat' : paidLabel === '支付宝' ? 'alipay' : 's1';
-                if (paidLabel !== '未交') allNotPaid = false;
-                html += `
-                    <tr>
-                        <td data-label="系列">${escHtml(item.series)}</td>
-                        <td data-label="制品">${escHtml(item.product)}</td>
-                        <td data-label="角色">${escHtml(item.character)}</td>
-                        <td data-label="数量">${item.quantity}</td>
-                        <td data-label="原价">${item.originalPrice.toFixed(2)}</td>
-                        <td data-label="折后价格">${item.discountPrice.toFixed(2)}</td>
-                        <td data-label="定金">${(item.deposit || 0).toFixed(2)}</td>
-                        <td data-label="是否交肾"><span class="status-tag ${paidClass}">${escHtml(paidLabel)}</span></td>
-                    </tr>`;
-            });
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-
-            const finalAmount = totalPrice - totalDeposit;
-            totalEl.style.display = 'flex';
-            document.getElementById('kidneyTotalPrice').textContent = totalPrice.toFixed(2);
-            document.getElementById('kidneyTotalDeposit').textContent = totalDeposit.toFixed(2);
-            document.getElementById('kidneyTotalAmount').textContent = finalAmount.toFixed(2);
-
-            document.getElementById('kidneyQrContainer').style.display = KIDNEY_PAYMENT_QR_URL ? 'block' : 'none';
-
-            let approvals = await getKidneyApprovals();
-            const pendingApprovals = approvals.filter(a => a.cn === cn && a.status === 'pending');
-            const canUpload = allNotPaid && pendingApprovals.length === 0;
-            document.getElementById('kidneyUploadSection').style.display = canUpload ? 'block' : 'none';
-            if (!canUpload) {
-                if (!allNotPaid) toast('存在已交肾的记录，不能提交肾图', 'warning');
-                else if (pendingApprovals.length > 0) toast('已有待审批的肾图，请等待审批完成', 'warning');
-            }
-            const section = document.getElementById('kidneyUploadSection');
-            section.dataset.cn = cn;
-            section.dataset.total = finalAmount.toFixed(2);
-        }
-
-        let kidneyUploadFile = null;
-        let kidneyUploadUrl = '';
-
-        function handleKidneyFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            if (!file.type.startsWith('image/')) { toast('请上传图片', 'error'); return; }
-            kidneyUploadFile = file;
-            const section = document.getElementById('kidneyUploadSection');
-            document.getElementById('kidneyFileNameDisplay').textContent = `📎 ${file.name}`;
-            document.getElementById('kidneyFileNameDisplay').style.display = 'block';
-            section.querySelector('.kidney-upload-area').classList.add('has-file');
-            section.querySelector('.kidney-upload-area .upload-text').textContent = '已选择文件';
-            const reader = new FileReader();
-            reader.onload = e => {
-                kidneyUploadUrl = e.target.result;
-                document.getElementById('kidneyPreviewImage').src = kidneyUploadUrl;
-                document.getElementById('kidneyPreviewContainer').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-            toast('肾图已上传', 'success');
-        }
-
-        async function submitKidneyApproval() {
-            const section = document.getElementById('kidneyUploadSection');
-            const cn = section.dataset.cn;
-            const total = parseFloat(section.dataset.total) || 0;
-            if (!cn) { toast('请先查询CN', 'error'); return; }
-            if (!kidneyUploadFile) { toast('请上传肾图', 'error'); return; }
-            let data = await getKidneyData();
-            data = data.filter(item => item.cn === cn);
-            const allNotPaid = data.every(item => (item.paid || '未交') === '未交');
-            let approvals = await getKidneyApprovals();
-            const pendingApprovals = approvals.filter(a => a.cn === cn && a.status === 'pending');
-            if (!allNotPaid) { toast('存在已交肾的记录，不能提交肾图', 'error'); return; }
-            if (pendingApprovals.length > 0) { toast('已有待审批的肾图，请等待审批完成', 'error'); return; }
-            approvals.push({ id: genId(), cn, total, image: kidneyUploadUrl, status: 'pending', createdAt: Date.now(), remark: '' });
-            await saveKidneyApprovals(approvals);
-            toast('肾图已提交审批', 'success');
-            kidneyUploadFile = null;
-            kidneyUploadUrl = '';
-            document.getElementById('kidneyFileNameDisplay').style.display = 'none';
-            document.getElementById('kidneyPreviewContainer').style.display = 'none';
-            section.querySelector('.kidney-upload-area').classList.remove('has-file');
-            section.querySelector('.kidney-upload-area .upload-text').textContent = '点击上传肾图（图片）';
-            document.getElementById('kidneyFileInput').value = '';
-            queryKidney();
-        }
-
-        async function queryKidneyApprovalStatus() {
-            const cn = document.getElementById('kidneyApprovalQueryCN').value.trim();
-            if (!cn) { toast('请输入CN', 'warning'); return; }
-            let approvals = await getKidneyApprovals();
-            approvals = approvals.filter(a => a.cn === cn);
-            const container = document.getElementById('kidneyApprovalQueryResult');
-            if (approvals.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>未找到该CN的肾图审批记录</p></div>`;
-                return;
-            }
-            approvals.sort((a, b) => b.createdAt - a.createdAt);
-            let html = '';
-            approvals.forEach(app => {
-                const statusLabel = app.status === 'pending' ? '<span class="status-tag pending">待审批</span>' :
-                    app.status === 'approved' ? '<span class="status-tag approved">已通过</span>' :
-                    '<span class="status-tag rejected">已拒绝</span>';
-                const methodText = app.method ? `付款方式：${app.method}` : '';
-                const remarkText = app.remark ? `备注：${app.remark}` : '';
-                html += `
-                    <div class="transfer-item">
-                        <div class="transfer-header">
-                            <span><strong>CN：</strong>${escHtml(app.cn)}</span>
-                            <span>${statusLabel}</span>
-                        </div>
-                        <div class="transfer-detail">
-                            <span><i class="fas fa-money-bill"></i> 总金额：${app.total.toFixed(2)}</span>
-                            ${methodText ? `<span><i class="fas fa-credit-card"></i> ${methodText}</span>` : ''}
-                            ${remarkText ? `<span><i class="fas fa-comment"></i> ${remarkText}</span>` : ''}
-                            <span><i class="fas fa-clock"></i> ${formatTime(app.createdAt)}</span>
-                        </div>
-                    </div>`;
-            });
-            container.innerHTML = html;
-        }
-
         // =========================== 后台管理 ===========================
         let currentSubTab = 'item';
 
@@ -2211,7 +1907,7 @@
             currentSubTab = subtab;
             document.querySelectorAll('#adminPanel .sub-tabs button[data-subtab]').forEach(b => b.classList.remove('active'));
             document.querySelector(`#adminPanel .sub-tabs button[data-subtab="${subtab}"]`).classList.add('active');
-            ['item', 'batch', 'order', 'tracking', 'prepaid', 'transfer', 'kidney', 'kidneyApproval'].forEach(id => {
+            ['item', 'batch', 'order', 'tracking', 'prepaid', 'transfer'].forEach(id => {
                 document.getElementById(`subtab-${id}`).style.display = id === subtab ? 'block' : 'none';
             });
             if (subtab === 'item') adminRenderItems();
@@ -2219,8 +1915,6 @@
             if (subtab === 'tracking') renderTrackingList();
             if (subtab === 'prepaid') renderPrepaidTable();
             if (subtab === 'transfer') renderTransferApproval();
-            if (subtab === 'kidney') renderKidneyTable();
-            if (subtab === 'kidneyApproval') renderKidneyApproval();
         }
 
         // ---------- 物品管理 ----------
@@ -3177,278 +2871,6 @@
             renderTransferApproval();
         }
 
-        // ---------- 肾表管理 ----------
-        async function renderKidneyTable() {
-            const filterCN = document.getElementById('kidneyFilterCN').value.trim();
-            const filterPaid = document.getElementById('kidneyFilterPaid').value;
-            let data = await getKidneyData();
-            if (filterCN) data = data.filter(item => item.cn.includes(filterCN));
-            if (filterPaid) data = data.filter(item => (item.paid || '未交') === filterPaid);
-            data.sort((a, b) => a.cn.localeCompare(b.cn));
-            document.getElementById('kidneyCount').textContent = data.length;
-            const tbody = document.getElementById('kidneyTableBody');
-            if (!data.length) {
-                tbody.innerHTML = `<tr><td colspan="11" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无肾表数据</td></tr>`;
-                return;
-            }
-            let html = '';
-            data.forEach(item => {
-                const paidLabel = item.paid || '未交';
-                const paidClass = paidLabel === '微信' ? 'wechat' : paidLabel === '支付宝' ? 'alipay' : 's1';
-                html += `
-                    <tr>
-                        <td class="col-checkbox" data-label="选择"><input type="checkbox" class="kidney-checkbox-select" value="${item.id}" /></td>
-                        <td data-label="CN">${escHtml(item.cn)}</td>
-                        <td data-label="系列">${escHtml(item.series)}</td>
-                        <td data-label="制品">${escHtml(item.product)}</td>
-                        <td data-label="角色">${escHtml(item.character)}</td>
-                        <td data-label="数量">${item.quantity}</td>
-                        <td data-label="原价">${item.originalPrice.toFixed(2)}</td>
-                        <td data-label="折后价格">${item.discountPrice.toFixed(2)}</td>
-                        <td data-label="定金">${(item.deposit || 0).toFixed(2)}</td>
-                        <td data-label="是否交肾"><span class="status-tag ${paidClass}">${escHtml(paidLabel)}</span></td>
-                        <td data-label="操作">
-                            <div class="actions">
-                                <button class="btn btn-sm btn-outline" onclick="editKidneyRecord('${item.id}')"><i class="fas fa-edit"></i> 编辑</button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteKidneyRecord('${item.id}')"><i class="fas fa-trash"></i> 删除</button>
-                            </div>
-                        </td>
-                    </tr>`;
-            });
-            tbody.innerHTML = html;
-        }
-
-        function toggleAllKidney() {
-            const checked = document.getElementById('selectAllKidney').checked;
-            document.querySelectorAll('.kidney-checkbox-select').forEach(cb => cb.checked = checked);
-        }
-
-        async function batchDeleteKidney() {
-            const selected = document.querySelectorAll('.kidney-checkbox-select:checked');
-            if (selected.length === 0) { toast('请选择要删除的肾表记录', 'warning'); return; }
-            if (!confirm(`确认删除选中的 ${selected.length} 条记录？此操作不可撤销！`)) return;
-            const ids = Array.from(selected).map(cb => cb.value);
-            const { error } = await supabase.from('kidney_data').delete().in('id', ids);
-            if (error) { console.error(error); toast('删除失败', 'error'); return; }
-            toast(`已删除 ${selected.length} 条肾表记录`, 'success');
-            renderKidneyTable();
-        }
-
-        async function addKidneyRecord() {
-            const cn = document.getElementById('kidneyInputCN').value.trim();
-            const series = document.getElementById('kidneyInputSeries').value.trim();
-            const product = document.getElementById('kidneyInputProduct').value.trim();
-            const character = document.getElementById('kidneyInputCharacter').value.trim();
-            const qty = parseInt(document.getElementById('kidneyInputQty').value) || 1;
-            const originalPrice = parseFloat(document.getElementById('kidneyInputOriginalPrice').value) || 0;
-            const discountPrice = parseFloat(document.getElementById('kidneyInputDiscountPrice').value) || 0;
-            const deposit = parseFloat(document.getElementById('kidneyInputDeposit').value) || 0;
-            const paid = document.getElementById('kidneyInputPaid').value;
-            if (!cn || !series || !product || !character) { toast('请完整填写CN、系列、制品、角色', 'error'); return; }
-            let data = await getKidneyData();
-            data.push({ id: genId(), cn, series, product, character, quantity: qty, originalPrice, discountPrice, deposit, paid });
-            await saveKidneyData(data);
-            toast('肾表记录添加成功', 'success');
-            document.getElementById('kidneyInputCN').value = '';
-            document.getElementById('kidneyInputSeries').value = '';
-            document.getElementById('kidneyInputProduct').value = '';
-            document.getElementById('kidneyInputCharacter').value = '';
-            document.getElementById('kidneyInputQty').value = 1;
-            document.getElementById('kidneyInputOriginalPrice').value = '0.00';
-            document.getElementById('kidneyInputDiscountPrice').value = '0.00';
-            document.getElementById('kidneyInputDeposit').value = '0.00';
-            renderKidneyTable();
-        }
-
-        async function submitKidneyBatch() {
-            const text = document.getElementById('kidneyBatchText').value;
-            if (!text.trim()) { toast('请输入文本数据', 'warning'); return; }
-            const lines = text.split('\n').filter(line => line.trim() !== '');
-            let data = await getKidneyData();
-            let count = 0;
-            lines.forEach(line => {
-                const parts = line.trim().split(/\s+/);
-                if (parts.length < 7) return;
-                const [cn, series, product, character, qtyStr, originalStr, discountStr, ...rest] = parts;
-                let deposit = 0, paid = '未交', restIdx = 0;
-                if (rest.length > 0 && !isNaN(parseFloat(rest[restIdx]))) { deposit = parseFloat(rest[restIdx]); restIdx++; }
-                if (rest.length > restIdx && ['微信', '支付宝', '未交'].includes(rest[restIdx])) paid = rest[restIdx];
-                const qty = parseInt(qtyStr) || 1;
-                const originalPrice = parseFloat(originalStr) || 0;
-                const discountPrice = parseFloat(discountStr) || 0;
-                if (cn && series && product && character) {
-                    data.push({ id: genId(), cn, series, product, character, quantity: qty, originalPrice, discountPrice, deposit, paid });
-                    count++;
-                }
-            });
-            await saveKidneyData(data);
-            toast(`成功录入 ${count} 条肾表记录`, 'success');
-            document.getElementById('kidneyBatchText').value = '';
-            renderKidneyTable();
-        }
-
-        async function editKidneyRecord(id) {
-            let data = await getKidneyData();
-            const item = data.find(d => d.id === id);
-            if (!item) { toast('记录不存在', 'error'); return; }
-            document.getElementById('detailModalTitle').innerHTML = `<i class="fas fa-edit" style="color:var(--primary);"></i> 编辑肾表记录`;
-            document.getElementById('modalContent').innerHTML = `
-                <div class="form-group"><label>CN</label><input id="editKidneyCN" class="form-control" value="${escHtml(item.cn)}" /></div>
-                <div class="form-row">
-                    <div class="form-group"><label>系列</label><input id="editKidneySeries" class="form-control" value="${escHtml(item.series)}" /></div>
-                    <div class="form-group"><label>制品</label><input id="editKidneyProduct" class="form-control" value="${escHtml(item.product)}" /></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>角色</label><input id="editKidneyCharacter" class="form-control" value="${escHtml(item.character)}" /></div>
-                    <div class="form-group"><label>数量</label><input id="editKidneyQty" class="form-control" type="number" min="1" value="${item.quantity}" /></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>原价</label><input id="editKidneyOriginal" class="form-control" type="number" step="0.01" value="${item.originalPrice}" /></div>
-                    <div class="form-group"><label>折后价格</label><input id="editKidneyDiscount" class="form-control" type="number" step="0.01" value="${item.discountPrice}" /></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>定金</label><input id="editKidneyDeposit" class="form-control" type="number" step="0.01" value="${item.deposit || 0}" /></div>
-                    <div class="form-group"><label>是否交肾</label>
-                        <select id="editKidneyPaid" class="form-control">
-                            <option value="未交" ${item.paid==='未交'?'selected':''}>未交</option>
-                            <option value="微信" ${item.paid==='微信'?'selected':''}>微信</option>
-                            <option value="支付宝" ${item.paid==='支付宝'?'selected':''}>支付宝</option>
-                        </select>
-                    </div>
-                </div>
-                <button class="btn btn-primary w-full mt-12" onclick="saveKidneyEdit('${id}')"><i class="fas fa-save"></i> 保存修改</button>`;
-            document.getElementById('detailModal').classList.remove('hidden');
-        }
-
-        async function saveKidneyEdit(id) {
-            const cn = document.getElementById('editKidneyCN').value.trim();
-            const series = document.getElementById('editKidneySeries').value.trim();
-            const product = document.getElementById('editKidneyProduct').value.trim();
-            const character = document.getElementById('editKidneyCharacter').value.trim();
-            const qty = parseInt(document.getElementById('editKidneyQty').value) || 1;
-            const originalPrice = parseFloat(document.getElementById('editKidneyOriginal').value) || 0;
-            const discountPrice = parseFloat(document.getElementById('editKidneyDiscount').value) || 0;
-            const deposit = parseFloat(document.getElementById('editKidneyDeposit').value) || 0;
-            const paid = document.getElementById('editKidneyPaid').value;
-            if (!cn || !series || !product || !character) { toast('请完整填写信息', 'error'); return; }
-            let data = await getKidneyData();
-            const item = data.find(d => d.id === id);
-            if (!item) { toast('记录不存在', 'error'); return; }
-            Object.assign(item, { cn, series, product, character, quantity: qty, originalPrice, discountPrice, deposit, paid });
-            await saveKidneyData(data);
-            toast('肾表记录已更新', 'success');
-            closeModal();
-            renderKidneyTable();
-        }
-
-        async function deleteKidneyRecord(id) {
-            if (!confirm('确认删除该肾表记录？')) return;
-            const { error } = await supabase.from('kidney_data').delete().eq('id', id);
-            if (error) { console.error(error); toast('删除失败', 'error'); return; }
-            toast('已删除', 'success');
-            renderKidneyTable();
-        }
-
-        // ---------- 肾图审批 ----------
-        async function renderKidneyApproval() {
-            let approvals = await getKidneyApprovals();
-            approvals.sort((a, b) => b.createdAt - a.createdAt);
-            const tbody = document.getElementById('kidneyApprovalTableBody');
-            if (!approvals.length) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无肾图审批</td></tr>`;
-                return;
-            }
-            let html = '';
-            approvals.forEach(app => {
-                const statusLabel = app.status === 'pending' ? '<span class="status-tag pending">待审批</span>' :
-                    app.status === 'approved' ? '<span class="status-tag approved">已通过</span>' :
-                    '<span class="status-tag rejected">已拒绝</span>';
-                const actionHtml = app.status === 'pending' ? `
-                    <div class="action-columns">
-                        <button class="btn btn-sm btn-success" onclick="approveKidney('${app.id}', '微信')"><i class="fab fa-weixin"></i> 微信</button>
-                        <button class="btn btn-sm btn-success" onclick="approveKidney('${app.id}', '支付宝')"><i class="fab fa-alipay"></i> 支付宝</button>
-                        <button class="btn btn-sm btn-danger" onclick="rejectKidney('${app.id}')"><i class="fas fa-times"></i> 付款无效</button>
-                    </div>` : `<span class="text-muted">已处理</span>`;
-
-                html += `
-                    <tr>
-                        <td data-label="申请ID">#${app.id}</td>
-                        <td data-label="CN">${escHtml(app.cn)}</td>
-                        <td data-label="总金额">${app.total.toFixed(2)}</td>
-                        <td data-label="状态">${statusLabel}</td>
-                        <td data-label="申请时间" class="text-muted" style="white-space:nowrap;">${formatTime(app.createdAt)}</td>
-                        <td data-label="操作">${actionHtml}</td>
-                        <td data-label="系统">
-                            <div class="action-columns">
-                                <button class="btn btn-sm btn-outline" onclick="adminViewKidneyDetail('${app.id}')"><i class="fas fa-eye"></i> 详情</button>
-                                <button class="btn btn-sm btn-danger" onclick="adminDeleteKidneyApproval('${app.id}')"><i class="fas fa-trash"></i> 删除</button>
-                            </div>
-                        </td>
-                    </tr>`;
-            });
-            tbody.innerHTML = html;
-        }
-
-        async function adminViewKidneyDetail(id) {
-            let approvals = await getKidneyApprovals();
-            const app = approvals.find(a => a.id === id);
-            if (!app) { toast('审批不存在', 'error'); return; }
-            document.getElementById('detailModalTitle').innerHTML = `<i class="fas fa-kidney" style="color:var(--primary);"></i> 肾图详情`;
-            const statusLabel = app.status === 'pending' ? '待审批' : app.status === 'approved' ? '已通过' : '已拒绝';
-            const methodText = app.method ? `付款方式：${app.method}` : '';
-            const remarkText = app.remark ? `备注：${app.remark}` : '';
-            const imageHtml = app.image ?
-                `<img src="${app.image}" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid #eee;margin-top:6px;" />` :
-                '<span style="color:#999;">未上传</span>';
-            document.getElementById('modalContent').innerHTML = `
-                <div class="detail-row"><span class="label">申请ID</span><span class="value">#${app.id}</span></div>
-                <div class="detail-row"><span class="label">CN</span><span class="value">${escHtml(app.cn)}</span></div>
-                <div class="detail-row"><span class="label">总金额</span><span class="value">${app.total.toFixed(2)}</span></div>
-                <div class="detail-row"><span class="label">状态</span><span class="value"><span class="status-tag ${app.status === 'pending' ? 'pending' : app.status === 'approved' ? 'approved' : 'rejected'}">${statusLabel}</span></span></div>
-                ${methodText ? `<div class="detail-row"><span class="label">付款方式</span><span class="value">${methodText}</span></div>` : ''}
-                ${remarkText ? `<div class="detail-row"><span class="label">备注</span><span class="value">${remarkText}</span></div>` : ''}
-                <div class="detail-row"><span class="label">申请时间</span><span class="value">${formatTime(app.createdAt)}</span></div>
-                <div style="margin-top:12px;"><div style="font-weight:600;">🖼️ 肾图</div>${imageHtml}</div>`;
-            document.getElementById('detailModal').classList.remove('hidden');
-        }
-
-        async function adminDeleteKidneyApproval(id) {
-            if (!confirm('确认删除该肾图审批记录？此操作不可撤销！')) return;
-            const { error } = await supabase.from('kidney_approvals').delete().eq('id', id);
-            if (error) { console.error(error); toast('删除失败', 'error'); return; }
-            toast('已删除', 'success');
-            renderKidneyApproval();
-        }
-
-        async function approveKidney(id, method) {
-            if (!confirm(`确认通过该肾图审批，付款方式：${method}？`)) return;
-            let approvals = await getKidneyApprovals();
-            const app = approvals.find(a => a.id === id);
-            if (!app || app.status !== 'pending') { toast('该申请已处理', 'warning'); return; }
-            let kidneyData = await getKidneyData();
-            kidneyData.forEach(item => { if (item.cn === app.cn) item.paid = method; });
-            await saveKidneyData(kidneyData);
-            app.status = 'approved';
-            app.method = method;
-            await saveKidneyApprovals(approvals);
-            toast(`肾图审批通过，付款方式：${method}，已更新肾表`, 'success');
-            renderKidneyApproval();
-            renderKidneyTable();
-        }
-
-        async function rejectKidney(id) {
-            const remark = prompt('请输入付款无效的原因（备注）：');
-            if (remark === null) return;
-            let approvals = await getKidneyApprovals();
-            const app = approvals.find(a => a.id === id);
-            if (!app || app.status !== 'pending') { toast('该申请已处理', 'warning'); return; }
-            app.status = 'rejected';
-            app.remark = remark || '付款无效';
-            await saveKidneyApprovals(approvals);
-            toast('已标记为付款无效', 'success');
-            renderKidneyApproval();
-        }
-
         // =========================== 弹窗控制 ===========================
         function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
 
@@ -3462,8 +2884,6 @@
             document.getElementById('queryPhone').addEventListener('keydown', e => { if (e.key === 'Enter') queryOrdersByPhone(); });
             document.getElementById('transferFromCN').addEventListener('keydown', e => { if (e.key === 'Enter') loadTransferItems(); });
             document.getElementById('transferQueryCN').addEventListener('keydown', e => { if (e.key === 'Enter') queryTransferStatus(); });
-            document.getElementById('kidneyCN').addEventListener('keydown', e => { if (e.key === 'Enter') queryKidney(); });
-            document.getElementById('kidneyApprovalQueryCN').addEventListener('keydown', e => { if (e.key === 'Enter') queryKidneyApprovalStatus(); });
 
             initPackPrices();
             initQrCodes();
