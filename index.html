@@ -170,6 +170,7 @@
         .upload-area .upload-icon { font-size: 26px; color: #ccc; display: block; }
         .upload-area .file-name { color: var(--primary); font-weight: 500; }
         .upload-area.has-file { border-color: #52c41a; background: #f6ffed; }
+        .upload-area.compressing { border-color: #faad14; background: #fffbe6; pointer-events: none; }
         .upload-preview { margin-top: 8px; max-width: 160px; max-height: 120px; border-radius: 6px; border: 1px solid #eee; overflow: hidden; }
         .upload-preview img { width: 100%; height: auto; display: block; }
         .qr-code-container {
@@ -352,6 +353,44 @@
         .system-column { vertical-align: middle; }
         .system-column .action-columns .btn { font-size: 12px; padding: 2px 10px; }
         .merged-order-info { font-size: 13px; color: #888; padding: 4px 8px; background: #f6f8fa; border-radius: 4px; display: inline-block; }
+
+        /* ===== 凭证缩略图（可点击看大图） ===== */
+        .proof-thumb {
+            max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid #eee;
+            margin-top: 6px; cursor: zoom-in; transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+            display: block;
+        }
+        .proof-thumb:hover { opacity: .92; box-shadow: 0 6px 18px rgba(24,144,255,.25); transform: scale(1.015); }
+        .proof-wrap { position: relative; display: inline-block; }
+        .proof-wrap .proof-tip {
+            position: absolute; right: 10px; bottom: 14px; background: rgba(0,0,0,.55); color: #fff;
+            font-size: 12px; padding: 3px 10px; border-radius: 20px; pointer-events: none;
+        }
+
+        /* ===== 图片大图查看器 ===== */
+        .image-viewer {
+            position: fixed; inset: 0; background: rgba(0,0,0,.9);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100000; padding: 24px; cursor: zoom-out;
+            animation: fadeIn .18s ease;
+        }
+        .image-viewer img {
+            max-width: 100%; max-height: 100%; border-radius: 10px;
+            box-shadow: 0 18px 60px rgba(0,0,0,.7); cursor: default;
+            animation: slideUp .22s ease;
+        }
+        .image-viewer-close {
+            position: absolute; top: 16px; right: 18px; width: 44px; height: 44px;
+            border-radius: 50%; border: none; background: rgba(255,255,255,.16); color: #fff;
+            font-size: 26px; line-height: 1; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; transition: background .2s;
+        }
+        .image-viewer-close:hover { background: rgba(255,255,255,.32); }
+        .image-viewer-hint {
+            position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+            color: rgba(255,255,255,.6); font-size: 13px; pointer-events: none;
+        }
+        .image-viewer-loading { color: rgba(255,255,255,.7); font-size: 14px; }
 
         /* ===== 移动端适配 ===== */
         @media (max-width: 768px) {
@@ -562,6 +601,11 @@
             .pack-row .number-input-group { max-width: 120px; }
             .pack-row .number-input-group .btn-num { width: 26px; height: 26px; font-size: 12px; }
             .pack-row .number-input-group .num-input { width: 36px; height: 26px; font-size: 12px; }
+
+            /* 大图查看器 */
+            .image-viewer { padding: 10px; }
+            .image-viewer-close { top: 10px; right: 10px; width: 40px; height: 40px; font-size: 24px; }
+            .image-viewer-hint { bottom: 10px; font-size: 12px; }
         }
         @media (max-width: 480px) {
             .client-tabs button { font-size: 12px; padding: 4px 8px; }
@@ -736,7 +780,7 @@
                         </div>
                         <input id="fileInput" type="file" accept="image/*" style="display:none;" onchange="handleFileSelect(event)" />
                         <div id="previewContainer" style="display:none;" class="upload-preview"><img id="previewImage" src="" alt="凭证预览" /></div>
-                        <span class="field-hint"><i class="fas fa-receipt"></i> 请上传邮费支付截图</span>
+                        <span class="field-hint"><i class="fas fa-receipt"></i> 请上传邮费支付截图（系统会自动压缩，画质足够核对）</span>
                     </div>
 
                     <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
@@ -839,7 +883,7 @@
                         <div class="filter-item"><label>系列</label><input id="filterSeries" class="form-control" style="width:120px; padding:4px 8px;" placeholder="系列" oninput="adminRenderItems()" /></div>
                         <div class="filter-item"><label>角色</label><input id="filterCharacter" class="form-control" style="width:120px; padding:4px 8px;" placeholder="角色" oninput="adminRenderItems()" /></div>
                         <div class="filter-item"><label>下单版本</label><input id="filterOrderVersion" class="form-control" style="width:120px; padding:4px 8px;" placeholder="版本" oninput="adminRenderItems()" /></div>
-                        <button class="btn btn-sm btn-outline" onclick="adminRenderItems()"><i class="fas fa-sync-alt"></i> 刷新</button>
+                        <button class="btn btn-sm btn-outline" onclick="adminRenderItems(true)"><i class="fas fa-sync-alt"></i> 刷新</button>
                     </div>
                     <div class="table-wrap" style="max-height:480px; overflow-y:auto;">
                         <table class="data-table">
@@ -907,7 +951,7 @@
                     <div class="card-title">
                         <i class="fas fa-list-ul" style="color:var(--primary);"></i> 订单管理
                         <span class="badge">按提交时间排序</span>
-                        <button class="btn btn-sm btn-outline" style="margin-left:auto;" onclick="adminLoadOrders()"><i class="fas fa-sync-alt"></i> 刷新</button>
+                        <button class="btn btn-sm btn-outline" style="margin-left:auto;" onclick="adminLoadOrders(true)"><i class="fas fa-sync-alt"></i> 刷新</button>
                         <button class="btn btn-sm btn-danger" onclick="batchDeleteOrders()"><i class="fas fa-trash"></i> 批量删除</button>
                     </div>
                     <div class="table-wrap">
@@ -938,7 +982,7 @@
                     <div class="card-title"><i class="fas fa-tag" style="color:var(--primary);"></i> 快递单号录入 <span class="badge">可搜索订单号或手机号</span></div>
                     <div class="filter-bar">
                         <div class="filter-item"><label>搜索</label><input id="trackingSearchInput" class="form-control" style="width:200px; padding:4px 8px;" placeholder="订单号/手机号" oninput="renderTrackingList()" /></div>
-                        <button class="btn btn-sm btn-outline" onclick="renderTrackingList()"><i class="fas fa-sync-alt"></i> 刷新</button>
+                        <button class="btn btn-sm btn-outline" onclick="renderTrackingList(true)"><i class="fas fa-sync-alt"></i> 刷新</button>
                     </div>
                     <div id="trackingSummary"></div>
                     <div class="table-wrap">
@@ -1040,6 +1084,13 @@
             </div>
         </div>
 
+        <!-- ===== 图片大图查看器 ===== -->
+        <div id="imageViewer" class="image-viewer hidden" onclick="closeImageViewer()">
+            <button class="image-viewer-close" onclick="closeImageViewer()" title="关闭">&times;</button>
+            <img id="imageViewerImg" src="" alt="查看大图" onclick="event.stopPropagation()" />
+            <div class="image-viewer-hint">点击空白处或按 Esc 关闭</div>
+        </div>
+
         <!-- ===== Toast容器 ===== -->
         <div id="toastContainer" class="toast-container"></div>
     </div>
@@ -1052,6 +1103,14 @@
 
         // ======================== 收款码配置 ========================
         const PAYMENT_QR_URL = 'https://cdn.jsdelivr.net/gh/rexxxss/baizhu12123@main/ufei.jpg';
+
+        // ======================== 图片压缩配置 ========================
+        const IMG_MAX_DIM = 1280;      // 最长边像素上限
+        const IMG_QUALITY = 0.72;      // JPEG 质量（0~1）
+        const IMG_MIN_SAVE = 1;        // 压缩后比原图还大则保留原图
+
+        // ======================== 缓存配置 ========================
+        const CACHE_TTL = 20000;       // 缓存有效期（毫秒）
 
         // =========================== 常量 & 工具 ===========================
         const STATUS = {
@@ -1093,6 +1152,12 @@
         }
         function formatTime(ts) { return ts ? new Date(ts).toLocaleString('zh-CN', { hour12: false }) : '-'; }
         function formatDate(ts) { return ts ? new Date(ts).toLocaleDateString('zh-CN') : '-'; }
+        function formatBytes(bytes) {
+            if (!bytes || bytes < 0) return '0 B';
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+        }
         function calcExpireDate(arrivalTs) {
             if (!arrivalTs) return null;
             const d = new Date(arrivalTs);
@@ -1110,6 +1175,130 @@
             const today = new Date();
             const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
             return dateStr + '-' + String(Date.now() % 10000).padStart(4, '0');
+        }
+
+        // =========================== 内存缓存层 ===========================
+        const Cache = {
+            _store: new Map(),      // key -> { data, expire }
+            _pending: new Map(),    // key -> Promise（并发去重）
+            get(key) {
+                const entry = this._store.get(key);
+                if (!entry) return null;
+                if (Date.now() > entry.expire) { this._store.delete(key); return null; }
+                return entry.data;
+            },
+            set(key, data, ttl = CACHE_TTL) {
+                this._store.set(key, { data, expire: Date.now() + ttl });
+            },
+            invalidate(...keys) {
+                if (!keys.length) { this._store.clear(); return; }
+                keys.forEach(k => this._store.delete(k));
+            },
+            /** 命中缓存直接返回；未命中则执行 fetcher 并写入缓存；并发请求会复用同一个 Promise */
+            async fetch(key, fetcher, ttl = CACHE_TTL) {
+                const hit = this.get(key);
+                if (hit !== null) return hit;
+                if (this._pending.has(key)) return this._pending.get(key);
+                const task = (async () => {
+                    try {
+                        const data = await fetcher();
+                        this.set(key, data, ttl);
+                        return data;
+                    } finally {
+                        this._pending.delete(key);
+                    }
+                })();
+                this._pending.set(key, task);
+                return task;
+            },
+            stats() {
+                return { keys: this._store.size, pending: this._pending.size };
+            }
+        };
+        /** 浅拷贝数组元素，避免业务代码改到缓存本体 */
+        function cloneList(arr) {
+            if (!Array.isArray(arr)) return arr;
+            return arr.map(o => (o && typeof o === 'object') ? { ...o } : o);
+        }
+
+        // =========================== 图片压缩 ===========================
+        /**
+         * 将图片压缩到指定最长边 + JPEG 质量，返回 dataURL
+         * @returns {Promise<{dataUrl:string,width:number,height:number,originalSize:number,compressedSize:number,saved:number}>}
+         */
+        function compressImage(file, maxDim = IMG_MAX_DIM, quality = IMG_QUALITY) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onerror = () => reject(new Error('文件读取失败'));
+                reader.onload = e => {
+                    const originalDataUrl = e.target.result;
+                    const img = new Image();
+                    img.onerror = () => reject(new Error('图片解析失败'));
+                    img.onload = () => {
+                        try {
+                            const ow = img.naturalWidth || img.width || 0;
+                            const oh = img.naturalHeight || img.height || 0;
+                            if (!ow || !oh) { reject(new Error('图片尺寸无效')); return; }
+
+                            let w = ow, h = oh;
+                            if (Math.max(ow, oh) > maxDim) {
+                                const ratio = maxDim / Math.max(ow, oh);
+                                w = Math.max(1, Math.round(ow * ratio));
+                                h = Math.max(1, Math.round(oh * ratio));
+                            }
+
+                            const canvas = document.createElement('canvas');
+                            canvas.width = w;
+                            canvas.height = h;
+                            const ctx = canvas.getContext('2d');
+                            // 白底（避免 PNG 透明区转 JPEG 变黑）
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillRect(0, 0, w, h);
+                            ctx.drawImage(img, 0, 0, w, h);
+
+                            let dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+                            // 若原图本身就更小（例如已压过的小图），保留原图更省流量
+                            if (originalDataUrl.length < dataUrl.length && dataUrl.length > 0) {
+                                dataUrl = originalDataUrl;
+                            }
+
+                            const base64Len = dataUrl.length - dataUrl.indexOf(',') - 1;
+                            const compressedSize = Math.max(0, Math.round(base64Len * 3 / 4));
+
+                            resolve({
+                                dataUrl,
+                                width: w,
+                                height: h,
+                                originalSize: file.size,
+                                compressedSize,
+                                saved: Math.max(0, file.size - compressedSize)
+                            });
+                        } catch (err) {
+                            reject(err);
+                        }
+                    };
+                    img.src = originalDataUrl;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // =========================== 大图查看器 ===========================
+        function openImageViewer(src) {
+            if (!src) { toast('图片不存在', 'error'); return; }
+            const viewer = document.getElementById('imageViewer');
+            const img = document.getElementById('imageViewerImg');
+            img.src = src;
+            viewer.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeImageViewer() {
+            const viewer = document.getElementById('imageViewer');
+            if (viewer.classList.contains('hidden')) return;
+            viewer.classList.add('hidden');
+            document.getElementById('imageViewerImg').src = '';
+            document.body.style.overflow = '';
         }
 
         // =========================== 数字输入框 ===========================
@@ -1138,68 +1327,120 @@
             }, 3200);
         }
 
-        // =========================== Supabase 数据操作 ===========================
-        async function getItems() {
+        // =========================== Supabase 数据操作（带缓存） ===========================
+        // ---------- 原始请求 ----------
+        async function fetchItemsFromDB() {
             let allData = [];
             let from = 0;
             const pageSize = 1000;
-            let hasMore = true;
-            while (hasMore) {
+            while (true) {
                 const { data, error } = await supabase.from('items').select('*').range(from, from + pageSize - 1);
-                if (error) { console.error('获取物品分页失败:', error); toast('获取物品失败，请刷新重试', 'error'); return allData; }
-                if (data && data.length > 0) {
-                    allData = allData.concat(data);
-                    from += data.length;
-                    if (data.length < pageSize) hasMore = false;
-                } else { hasMore = false; }
+                if (error) throw error;
+                if (!data || data.length === 0) break;
+                allData = allData.concat(data);
+                if (data.length < pageSize) break;
+                from += data.length;
             }
             return allData;
         }
+        async function fetchOrdersFromDB() {
+            const { data, error } = await supabase.from('orders').select('*').limit(100000);
+            if (error) throw error;
+            return data || [];
+        }
+        async function fetchTransferRequestsFromDB() {
+            const { data, error } = await supabase.from('transfer_requests').select('*').limit(100000);
+            if (error) throw error;
+            return data || [];
+        }
+        async function fetchPrepaidFromDB() {
+            const { data, error } = await supabase.from('prepaid_shipping').select('*').limit(100000);
+            if (error) throw error;
+            return data || [];
+        }
+
+        // ---------- 读（带缓存 + 强制刷新参数） ----------
+        async function getItems(force = false) {
+            if (force) Cache.invalidate('items');
+            try {
+                const data = await Cache.fetch('items', fetchItemsFromDB);
+                return cloneList(data);
+            } catch (error) {
+                console.error('获取物品失败:', error);
+                toast('获取物品失败，请刷新重试', 'error');
+                return [];
+            }
+        }
+        async function getOrders(force = false) {
+            if (force) Cache.invalidate('orders');
+            try {
+                const data = await Cache.fetch('orders', fetchOrdersFromDB);
+                return cloneList(data);
+            } catch (error) {
+                console.error('获取订单失败:', error);
+                toast('获取订单失败', 'error');
+                return [];
+            }
+        }
+        async function getTransferRequests(force = false) {
+            if (force) Cache.invalidate('transfers');
+            try {
+                const data = await Cache.fetch('transfers', fetchTransferRequestsFromDB);
+                return cloneList(data);
+            } catch (error) {
+                console.error('获取转单申请失败:', error);
+                toast('获取转单申请失败', 'error');
+                return [];
+            }
+        }
+        async function getPrepaidShipping(force = false) {
+            if (force) Cache.invalidate('prepaid');
+            try {
+                const data = await Cache.fetch('prepaid', fetchPrepaidFromDB);
+                return cloneList(data);
+            } catch (error) {
+                console.error('获取邮费预存失败:', error);
+                toast('获取邮费预存失败', 'error');
+                return [];
+            }
+        }
+
+        // ---------- 写（写后失效缓存） ----------
         async function saveItems(items) {
             const uniqueMap = new Map();
             items.forEach(item => { if (item && item.id) uniqueMap.set(item.id, item); });
             const { error } = await supabase.from('items').upsert(Array.from(uniqueMap.values()), { onConflict: 'id' });
+            Cache.invalidate('items');
             if (error) { console.error(error); toast('保存物品失败', 'error'); return false; }
             return true;
-        }
-        async function getOrders() {
-            const { data, error } = await supabase.from('orders').select('*').limit(100000);
-            if (error) { console.error(error); toast('获取订单失败', 'error'); return []; }
-            return data || [];
         }
         async function saveOrders(orders) {
             const uniqueMap = new Map();
             orders.forEach(o => { if (o && o.id) uniqueMap.set(o.id, o); });
             const { error } = await supabase.from('orders').upsert(Array.from(uniqueMap.values()), { onConflict: 'id' });
+            Cache.invalidate('orders');
             if (error) { console.error(error); toast('保存订单失败', 'error'); return false; }
             return true;
-        }
-        async function getTransferRequests() {
-            const { data, error } = await supabase.from('transfer_requests').select('*').limit(100000);
-            if (error) { console.error(error); toast('获取转单申请失败', 'error'); return []; }
-            return data || [];
         }
         async function saveTransferRequests(reqs) {
             const uniqueMap = new Map();
             reqs.forEach(r => { if (r && r.id) uniqueMap.set(r.id, r); });
             const { error } = await supabase.from('transfer_requests').upsert(Array.from(uniqueMap.values()), { onConflict: 'id' });
+            Cache.invalidate('transfers');
             if (error) { console.error(error); toast('保存转单申请失败', 'error'); return false; }
             return true;
-        }
-        async function getPrepaidShipping() {
-            const { data, error } = await supabase.from('prepaid_shipping').select('*').limit(100000);
-            if (error) { console.error('获取邮费预存失败:', error); toast('获取邮费预存失败', 'error'); return []; }
-            return data || [];
         }
         async function savePrepaidShipping(data) {
             const uniqueMap = new Map();
             data.forEach(i => { if (i && i.id) uniqueMap.set(i.id, i); });
             const { error } = await supabase.from('prepaid_shipping').upsert(Array.from(uniqueMap.values()), { onConflict: 'id' });
+            Cache.invalidate('prepaid');
             if (error) { console.error('保存预存失败详情:', error); toast('保存邮费预存失败: ' + error.message, 'error'); return false; }
             return true;
         }
         async function deletePrepaidShipping(ids) {
             const { error } = await supabase.from('prepaid_shipping').delete().in('id', ids);
+            Cache.invalidate('prepaid');
             if (error) { console.error(error); toast('删除预存记录失败', 'error'); return false; }
             return true;
         }
@@ -1547,29 +1788,52 @@
             document.getElementById('fileNameDisplay').style.display = 'none';
             document.getElementById('previewContainer').style.display = 'none';
             document.getElementById('uploadArea').classList.remove('has-file');
+            document.getElementById('uploadArea').classList.remove('compressing');
             document.getElementById('uploadArea').querySelector('.upload-text').textContent = '点击上传凭证（图片）';
             document.getElementById('fileInput').value = '';
         }
 
         function resetShipForm() { resetShipFormFields(); toast('已重置', 'info'); }
 
-        function handleFileSelect(event) {
+        // ---------- 凭证上传（自动压缩） ----------
+        async function handleFileSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
-            if (!file.type.startsWith('image/')) { toast('请上传图片', 'error'); return; }
+            if (!file.type.startsWith('image/')) { toast('请上传图片', 'error'); event.target.value = ''; return; }
+
+            const uploadArea = document.getElementById('uploadArea');
+            const uploadText = uploadArea.querySelector('.upload-text');
+
             clientUploadFile = file;
             document.getElementById('fileNameDisplay').textContent = `📎 ${file.name}`;
             document.getElementById('fileNameDisplay').style.display = 'block';
-            document.getElementById('uploadArea').classList.add('has-file');
-            document.getElementById('uploadArea').querySelector('.upload-text').textContent = '已选择文件';
-            const reader = new FileReader();
-            reader.onload = e => {
-                clientUploadUrl = e.target.result;
+            uploadArea.classList.add('has-file');
+            uploadArea.classList.add('compressing');
+            uploadText.textContent = '正在压缩图片...';
+
+            try {
+                const result = await compressImage(file);
+                clientUploadUrl = result.dataUrl;
                 document.getElementById('previewImage').src = clientUploadUrl;
                 document.getElementById('previewContainer').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-            toast('凭证已上传', 'success');
+                uploadText.textContent = '已选择文件（已压缩）';
+                const tip = result.saved > 0
+                    ? `已压缩 ${formatBytes(result.originalSize)} → ${formatBytes(result.compressedSize)}`
+                    : `图片已就绪（${formatBytes(result.compressedSize)}）`;
+                toast(tip, 'success');
+            } catch (err) {
+                console.error(err);
+                clientUploadFile = null;
+                clientUploadUrl = '';
+                uploadArea.classList.remove('has-file');
+                uploadText.textContent = '点击上传凭证（图片）';
+                document.getElementById('fileNameDisplay').style.display = 'none';
+                document.getElementById('previewContainer').style.display = 'none';
+                toast('图片处理失败：' + err.message, 'error');
+                event.target.value = '';
+            } finally {
+                uploadArea.classList.remove('compressing');
+            }
         }
 
         // ---------- 提交发货 ----------
@@ -1596,7 +1860,7 @@
                 const qtyBoard = parseInt(document.getElementById('qty_board').value) || 0;
                 const qtyCarton = parseInt(document.getElementById('qty_carton').value) || 0;
                 if (!receiverName || !receiverPhone || !receiverAddress) { toast('请完整填写收货信息', 'error'); return; }
-                if (!clientUploadFile) { toast('请上传凭证', 'error'); return; }
+                if (!clientUploadFile || !clientUploadUrl) { toast('请上传凭证', 'error'); return; }
 
                 await fetchPrepaidForCN(cn);
                 const prepaid = cachedPrepaid || 0;
@@ -1613,7 +1877,7 @@
 
                 let items = await getItems();
                 shipSelectedItems.forEach(selItem => {
-                    const found = items.find(i => i.id === selItem.id);
+                    const found = items.find(i => String(i.id) === String(selItem.id));
                     if (found) found.status = STATUS.QUEUED;
                 });
                 await saveItems(items);
@@ -1761,23 +2025,44 @@
         let transferUploadFile = null;
         let transferUploadUrl = '';
 
-        function handleTransferFileSelect(event) {
+        async function handleTransferFileSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
-            if (!file.type.startsWith('image/')) { toast('请上传图片', 'error'); return; }
+            if (!file.type.startsWith('image/')) { toast('请上传图片', 'error'); event.target.value = ''; return; }
+
+            const area = document.getElementById('transferUploadArea');
+            const txt = area.querySelector('.upload-text');
+
             transferUploadFile = file;
             document.getElementById('transferFileNameDisplay').textContent = `📎 ${file.name}`;
             document.getElementById('transferFileNameDisplay').style.display = 'block';
-            document.getElementById('transferUploadArea').classList.add('has-file');
-            document.getElementById('transferUploadArea').querySelector('.upload-text').textContent = '已选择文件';
-            const reader = new FileReader();
-            reader.onload = e => {
-                transferUploadUrl = e.target.result;
+            area.classList.add('has-file');
+            area.classList.add('compressing');
+            txt.textContent = '正在压缩图片...';
+
+            try {
+                const result = await compressImage(file);
+                transferUploadUrl = result.dataUrl;
                 document.getElementById('transferPreviewImage').src = transferUploadUrl;
                 document.getElementById('transferPreviewContainer').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-            toast('证据已上传', 'success');
+                txt.textContent = '已选择文件（已压缩）';
+                const tip = result.saved > 0
+                    ? `已压缩 ${formatBytes(result.originalSize)} → ${formatBytes(result.compressedSize)}`
+                    : `图片已就绪（${formatBytes(result.compressedSize)}）`;
+                toast(tip, 'success');
+            } catch (err) {
+                console.error(err);
+                transferUploadFile = null;
+                transferUploadUrl = '';
+                area.classList.remove('has-file');
+                txt.textContent = '点击上传证据（图片）';
+                document.getElementById('transferFileNameDisplay').style.display = 'none';
+                document.getElementById('transferPreviewContainer').style.display = 'none';
+                toast('图片处理失败：' + err.message, 'error');
+                event.target.value = '';
+            } finally {
+                area.classList.remove('compressing');
+            }
         }
 
         async function submitTransferRequest() {
@@ -1787,7 +2072,7 @@
             if (fromCN === toCN) { toast('转出和转入不能相同', 'error'); return; }
             const selectedItems = Object.keys(transferSelected).filter(id => transferSelected[id] > 0);
             if (selectedItems.length === 0) { toast('请至少选择一件物品并填写数量', 'error'); return; }
-            if (!transferUploadFile) { toast('请上传转单证据', 'error'); return; }
+            if (!transferUploadFile || !transferUploadUrl) { toast('请上传转单证据', 'error'); return; }
             const items = selectedItems.map(id => {
                 const item = transferItems.find(i => String(i.id) === String(id));
                 return {
@@ -1921,14 +2206,14 @@
         }
 
         // ---------- 物品管理 ----------
-        async function adminRenderItems() {
+        async function adminRenderItems(force = false) {
             const filterCN = document.getElementById('filterCN').value.trim();
             const filterStatus = document.getElementById('filterStatus').value;
             const filterSeries = document.getElementById('filterSeries').value.trim();
             const filterCharacter = document.getElementById('filterCharacter').value.trim();
             const filterOrderVersion = document.getElementById('filterOrderVersion').value.trim();
             await autoConvertCharge();
-            let items = await getItems();
+            let items = await getItems(force);
             // ★ CN / 状态：精准匹配（完全一致）
             if (filterCN) items = items.filter(i => (i.username || '').trim() === filterCN);
             if (filterStatus) items = items.filter(i => i.status === filterStatus);
@@ -1980,6 +2265,7 @@
             if (!confirm(`确认删除选中的 ${selected.length} 件物品？此操作不可撤销！`)) return;
             const ids = Array.from(selected).map(cb => cb.value);
             const { error } = await supabase.from('items').delete().in('id', ids);
+            Cache.invalidate('items');
             if (error) { console.error('删除失败:', error); toast('删除失败: ' + error.message, 'error'); return; }
             toast(`已删除 ${selected.length} 件物品`, 'success');
             adminRenderItems();
@@ -2084,6 +2370,7 @@
         async function adminDeleteItem(id) {
             if (!confirm(`确认删除物品 #${id}？此操作不可撤销！`)) return;
             const { error } = await supabase.from('items').delete().eq('id', String(id));
+            Cache.invalidate('items');
             if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast('物品已删除', 'success');
             adminRenderItems();
@@ -2252,8 +2539,8 @@
         }
 
         // ---------- 订单管理 ----------
-        async function adminLoadOrders() {
-            let orders = await getOrders();
+        async function adminLoadOrders(force = false) {
+            let orders = await getOrders(force);
             orders.sort((a, b) => a.created_at - b.created_at);
 
             const mergedOrders = [];
@@ -2351,7 +2638,7 @@
             if (order.ship_status === 'shipped') { toast('该订单已发货，不可重复操作', 'warning'); return; }
             let items = await getItems();
             order.items.forEach(item => {
-                const found = items.find(i => i.id === item.id);
+                const found = items.find(i => String(i.id) === String(item.id));
                 if (found && found.status !== STATUS.SHIPPED) {
                     found.status = STATUS.SHIPPED;
                     found.shipDate = Date.now();
@@ -2361,7 +2648,7 @@
             order.ship_status = 'shipped';
             if (order._merged) {
                 order._merged.forEach(sub => {
-                    const subOrder = orders.find(o => o.id === sub.id);
+                    const subOrder = orders.find(o => String(o.id) === String(sub.id));
                     if (subOrder) subOrder.ship_status = 'shipped';
                 });
             }
@@ -2382,6 +2669,7 @@
             if (!confirm(`确认删除选中的 ${selected.length} 个订单？此操作不可撤销！`)) return;
             const ids = Array.from(selected).map(cb => cb.value);
             const { error } = await supabase.from('orders').delete().in('id', ids);
+            Cache.invalidate('orders');
             if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast(`已删除 ${selected.length} 个订单`, 'success');
             adminLoadOrders();
@@ -2390,12 +2678,13 @@
         async function adminDeleteOrder(id) {
             if (!confirm(`确认删除订单 #${id}？此操作不可撤销！`)) return;
             const { error } = await supabase.from('orders').delete().eq('id', String(id));
+            Cache.invalidate('orders');
             if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast('订单已删除', 'success');
             adminLoadOrders();
         }
 
-        // ---------- 订单详情 ----------
+        // ---------- 订单详情（凭证可点开看大图） ----------
         async function adminViewOrderDetail(id) {
             let orders = await getOrders();
             const order = orders.find(o => String(o.id) === String(id));
@@ -2426,7 +2715,7 @@
                 <div class="detail-row"><span class="label">电话</span><span class="value">${escHtml(order.receiver_phone)}</span></div>
                 <div class="detail-row"><span class="label">地址</span><span class="value">${escHtml(order.receiver_address)}</span></div>
                 <div class="detail-row"><span class="label">省份</span><span class="value">${escHtml(order.province || '未识别')}</span></div>
-                <div class="detail-row"><span class="label">总费用</span><span class="value" style="font-weight:700;color:var(--primary);">${order.total_fee.toFixed(2)} 元</span></div>
+                <div class="detail-row"><span class="label">总费用</span><span class="value" style="font-weight:700;color:var(--primary);">${(order.total_fee || 0).toFixed(2)} 元</span></div>
                 <div class="detail-row"><span class="label">提交时间</span><span class="value">${formatTime(order.created_at)}</span></div>
                 <div class="detail-row"><span class="label">发货状态</span><span class="value">${order.ship_status === 'shipped' ? '已发货' : '待发货'}</span></div>
             `;
@@ -2469,13 +2758,17 @@
                         <div style="margin-top:8px; font-weight:600; color:#666;">🧾 物品清单</div>
                         ${itemsHtml}
                         <div style="margin-top:4px; text-align:right; font-size:13px; color:#888;">
-                            子订单费用：<strong>${sub.total_fee.toFixed(2)}</strong> 元
+                            子订单费用：<strong>${(sub.total_fee || 0).toFixed(2)}</strong> 元
                         </div>
                     </div>`;
             });
 
+            // ★ 凭证图片：可点击查看大图
             const proofHtml = order.proof_url ?
-                `<img src="${order.proof_url}" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid #eee;margin-top:6px;" />` :
+                `<div class="proof-wrap">
+                    <img src="${order.proof_url}" class="proof-thumb" alt="邮费凭证" title="点击查看大图" />
+                    <span class="proof-tip"><i class="fas fa-search-plus"></i> 点击看大图</span>
+                 </div>` :
                 '<span style="color:#999;">未上传</span>';
             contentHtml += `<div style="margin-top:12px;"><div style="font-weight:600;">🧾 邮费凭证</div>${proofHtml}</div>`;
 
@@ -2486,6 +2779,7 @@
         async function deleteSubOrder(subOrderId, mainOrderId) {
             if (!confirm('确认删除该子订单？此操作不可撤销！')) return;
             const { error } = await supabase.from('orders').delete().eq('id', subOrderId);
+            Cache.invalidate('orders');
             if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast('子订单已删除', 'success');
             adminViewOrderDetail(mainOrderId);
@@ -2493,9 +2787,9 @@
         }
 
         // ---------- 快递单号 ----------
-        async function renderTrackingList() {
+        async function renderTrackingList(force = false) {
             const search = document.getElementById('trackingSearchInput').value.trim();
-            let orders = await getOrders();
+            let orders = await getOrders(force);
             if (search) {
                 orders = orders.filter(o => String(o.id).includes(search) || (o.receiver_phone && o.receiver_phone.includes(search)));
             }
@@ -2504,6 +2798,8 @@
             if (!orders.length) {
                 tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无订单</td></tr>`;
                 document.getElementById('trackingSummary').innerHTML = '';
+                document.getElementById('addressListContainer').innerHTML = '<div style="color:#999;padding:8px;">暂无待发货地址</div>';
+                window._addressList = [];
                 return;
             }
 
@@ -2546,7 +2842,7 @@
                     <span><strong>盈亏：</strong><span style="color:${balance >= 0 ? '#52c41a' : '#ff4d4f'}; font-weight:700;">${balance >= 0 ? '赚 ' : '亏 '}${Math.abs(balance).toFixed(2)}</span> 元</span>
                 </div>`;
 
-            renderAddressList();
+            renderAddressList(orders);
         }
 
         async function saveTracking(orderId) {
@@ -2579,14 +2875,12 @@
             adminLoadOrders();
         }
 
-        // ★ 改造：只显示未录入快递单号的订单地址，且复制内容不含CN
-        async function renderAddressList() {
-            let orders = await getOrders();
-            // 过滤：已录入快递单号的订单不再显示地址
+        // ★ 只显示未录入快递单号的订单地址，且复制内容不含CN
+        async function renderAddressList(ordersInput) {
+            let orders = ordersInput || await getOrders();
             orders = orders.filter(o => !(o.tracking_number && o.tracking_number.trim() !== ''));
             if (!orders.length) {
                 document.getElementById('addressListContainer').innerHTML = '<div style="color:#999;padding:8px;">暂无待发货地址（已录入单号的地址不再显示）</div>';
-                window._addressMap = {};
                 window._addressList = [];
                 return;
             }
@@ -2597,7 +2891,6 @@
                     addrMap[key] = { address: o.receiver_address, name: o.receiver_name, phone: o.receiver_phone };
                 }
             });
-            window._addressMap = addrMap;
             const list = Object.values(addrMap);
             window._addressList = list;
 
@@ -2610,7 +2903,6 @@
                     </div>`;
             });
             document.getElementById('addressListContainer').innerHTML = html;
-            window._allOrders = orders;
         }
 
         function copySingleAddress(idx) {
@@ -2654,9 +2946,9 @@
         }
 
         // ---------- 邮费预存管理 ----------
-        async function renderPrepaidTable() {
-            const data = await getPrepaidShipping();
-            data.sort((a, b) => a.cn.localeCompare(b.cn));
+        async function renderPrepaidTable(force = false) {
+            const data = await getPrepaidShipping(force);
+            data.sort((a, b) => String(a.cn || '').localeCompare(String(b.cn || '')));
             document.getElementById('prepaidCount').textContent = `共 ${data.length} 条`;
             const tbody = document.getElementById('prepaidTableBody');
             if (!data.length) {
@@ -2669,7 +2961,7 @@
                     <tr>
                         <td class="col-checkbox" data-label="选择"><input type="checkbox" class="prepaid-checkbox-select" value="${item.id}" /></td>
                         <td data-label="CN">${escHtml(item.cn)}</td>
-                        <td data-label="预存金额 (元)">${item.amount.toFixed(2)}</td>
+                        <td data-label="预存金额 (元)">${Number(item.amount || 0).toFixed(2)}</td>
                         <td data-label="操作">
                             <div class="actions">
                                 <button class="btn btn-sm btn-outline" onclick="editPrepaidRecord('${item.id}')"><i class="fas fa-edit"></i> 编辑</button>
@@ -2703,7 +2995,7 @@
             let data = await getPrepaidShipping();
             const existing = data.find(item => item.cn === cn);
             if (existing) {
-                if (!confirm(`CN "${cn}" 已有预存 ${existing.amount.toFixed(2)} 元，是否覆盖？`)) return;
+                if (!confirm(`CN "${cn}" 已有预存 ${Number(existing.amount || 0).toFixed(2)} 元，是否覆盖？`)) return;
                 existing.amount = amount;
                 await savePrepaidShipping(data);
                 toast(`已更新 ${cn} 的预存金额为 ${amount.toFixed(2)} 元`, 'success');
@@ -2743,7 +3035,7 @@
 
         async function editPrepaidRecord(id) {
             let data = await getPrepaidShipping();
-            const item = data.find(d => d.id === id);
+            const item = data.find(d => String(d.id) === String(id));
             if (!item) { toast('记录不存在', 'error'); return; }
             document.getElementById('detailModalTitle').innerHTML = `<i class="fas fa-edit" style="color:var(--primary);"></i> 编辑预存记录`;
             document.getElementById('modalContent').innerHTML = `
@@ -2759,7 +3051,7 @@
             if (!cn) { toast('请输入CN', 'error'); return; }
             if (isNaN(amount) || amount <= 0) { toast('请输入有效的预存金额', 'error'); return; }
             let data = await getPrepaidShipping();
-            const item = data.find(d => d.id === id);
+            const item = data.find(d => String(d.id) === String(id));
             if (!item) { toast('记录不存在', 'error'); return; }
             item.cn = cn;
             item.amount = amount;
@@ -2776,8 +3068,8 @@
         }
 
         // ---------- 转单审批 ----------
-        async function renderTransferApproval() {
-            let reqs = await getTransferRequests();
+        async function renderTransferApproval(force = false) {
+            let reqs = await getTransferRequests(force);
             reqs.sort((a, b) => b.createdAt - a.createdAt);
             const tbody = document.getElementById('transferApprovalTableBody');
             if (!reqs.length) {
@@ -2819,7 +3111,7 @@
 
         async function adminViewTransferDetail(reqId) {
             let reqs = await getTransferRequests();
-            const req = reqs.find(r => r.id === reqId);
+            const req = reqs.find(r => String(r.id) === String(reqId));
             if (!req) { toast('申请不存在', 'error'); return; }
             document.getElementById('detailModalTitle').innerHTML = `<i class="fas fa-exchange-alt" style="color:var(--primary);"></i> 转单详情`;
             const itemsHtml = req.items.map(it =>
@@ -2829,7 +3121,10 @@
                 </div>`).join('');
             const statusLabel = req.status === 'pending' ? '待审批' : req.status === 'approved' ? '已通过' : '已拒绝';
             const evidenceHtml = req.evidence ?
-                `<img src="${req.evidence}" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid #eee;margin-top:6px;" />` :
+                `<div class="proof-wrap">
+                    <img src="${req.evidence}" class="proof-thumb" alt="转单证据" title="点击查看大图" />
+                    <span class="proof-tip"><i class="fas fa-search-plus"></i> 点击看大图</span>
+                 </div>` :
                 '<span style="color:#999;">未上传</span>';
             document.getElementById('modalContent').innerHTML = `
                 <div class="detail-row"><span class="label">转出CN</span><span class="value">${escHtml(req.fromUser)}</span></div>
@@ -2844,6 +3139,7 @@
         async function adminDeleteTransfer(reqId) {
             if (!confirm('确认删除该转单申请？此操作不可撤销！')) return;
             const { error } = await supabase.from('transfer_requests').delete().eq('id', reqId);
+            Cache.invalidate('transfers');
             if (error) { console.error(error); toast('删除失败', 'error'); return; }
             toast('转单申请已删除', 'success');
             renderTransferApproval();
@@ -2852,21 +3148,26 @@
         async function approveTransfer(reqId) {
             if (!confirm('确认通过该转单申请？物品将转移到目标CN下。')) return;
             let reqs = await getTransferRequests();
-            const req = reqs.find(r => r.id === reqId);
+            const req = reqs.find(r => String(r.id) === String(reqId));
             if (!req) { toast('申请不存在', 'error'); return; }
             if (req.status !== 'pending') { toast('该申请已处理', 'warning'); return; }
             let items = await getItems();
             let success = true;
+            const newItems = [];
+            const removeIds = [];
             req.items.forEach(trans => {
-                const fromItem = items.find(i => i.id === trans.itemId);
+                const fromItem = items.find(i => String(i.id) === String(trans.itemId));
                 if (!fromItem) { toast(`物品 ${trans.name} 不存在，转移失败`, 'error'); success = false; return; }
                 if (fromItem.quantity < trans.quantity) { toast(`物品 ${trans.name} 数量不足`, 'error'); success = false; return; }
                 fromItem.quantity -= trans.quantity;
-                if (fromItem.quantity === 0) items = items.filter(i => i.id !== fromItem.id);
-                items.push({ ...fromItem, id: genId(), username: req.toUser, quantity: trans.quantity });
+                if (fromItem.quantity === 0) removeIds.push(fromItem.id);
+                newItems.push({ ...fromItem, id: genId(), username: req.toUser, quantity: trans.quantity });
             });
             if (success) {
-                await saveItems(items);
+                const finalItems = items
+                    .filter(i => !removeIds.includes(String(i.id)))
+                    .concat(newItems);
+                await saveItems(finalItems);
                 req.status = 'approved';
                 await saveTransferRequests(reqs);
                 toast('转单审批通过，物品已转移', 'success');
@@ -2880,7 +3181,7 @@
         async function rejectTransfer(reqId) {
             if (!confirm('确认拒绝该转单申请？')) return;
             let reqs = await getTransferRequests();
-            const req = reqs.find(r => r.id === reqId);
+            const req = reqs.find(r => String(r.id) === String(reqId));
             if (!req) { toast('申请不存在', 'error'); return; }
             if (req.status !== 'pending') { toast('该申请已处理', 'warning'); return; }
             req.status = 'rejected';
@@ -2902,6 +3203,19 @@
             document.getElementById('queryPhone').addEventListener('keydown', e => { if (e.key === 'Enter') queryOrdersByPhone(); });
             document.getElementById('transferFromCN').addEventListener('keydown', e => { if (e.key === 'Enter') loadTransferItems(); });
             document.getElementById('transferQueryCN').addEventListener('keydown', e => { if (e.key === 'Enter') queryTransferStatus(); });
+
+            // ★ 凭证缩略图点击 → 大图查看
+            document.addEventListener('click', function(e) {
+                const target = e.target;
+                if (target && target.classList && target.classList.contains('proof-thumb')) {
+                    e.stopPropagation();
+                    openImageViewer(target.src);
+                }
+            });
+            // Esc 关闭大图
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeImageViewer();
+            });
 
             initPackPrices();
             initQrCodes();
