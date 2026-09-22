@@ -1407,7 +1407,8 @@
             calcTotalFee();
 
             let allItems = await getItems();
-            let items = allItems.filter(item => item.username === cn && item.picked !== true);
+            // ★ 前台查询：CN 与 状态 均为精准匹配（完全一致）
+            let items = allItems.filter(item => (item.username || '').trim() === cn && item.picked !== true);
             if (statusFilter) items = items.filter(item => item.status === statusFilter);
             clientItems = items;
             clientSelected = new Set();
@@ -1692,7 +1693,8 @@
             const cn = document.getElementById('transferFromCN').value.trim();
             if (!cn) { toast('请输入您的CN', 'error'); return; }
             let allItems = await getItems();
-            const items = allItems.filter(item => item.username === cn && item.picked !== true);
+            // ★ 转单查询同样使用精准匹配
+            const items = allItems.filter(item => (item.username || '').trim() === cn && item.picked !== true);
             transferItems = items;
             transferSelected = {};
             renderTransferItems();
@@ -1818,7 +1820,8 @@
             const cn = document.getElementById('transferQueryCN').value.trim();
             if (!cn) { toast('请输入转出CN', 'warning'); return; }
             let reqs = await getTransferRequests();
-            reqs = reqs.filter(r => r.fromUser === cn);
+            // ★ 转单查询：转出CN 精准匹配
+            reqs = reqs.filter(r => (r.fromUser || '').trim() === cn);
             const container = document.getElementById('transferQueryResult');
             if (reqs.length === 0) {
                 container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>未找到该CN的转单申请</p></div>`;
@@ -1926,8 +1929,10 @@
             const filterOrderVersion = document.getElementById('filterOrderVersion').value.trim();
             await autoConvertCharge();
             let items = await getItems();
-            if (filterCN) items = items.filter(i => i.username.includes(filterCN));
+            // ★ CN / 状态：精准匹配（完全一致）
+            if (filterCN) items = items.filter(i => (i.username || '').trim() === filterCN);
             if (filterStatus) items = items.filter(i => i.status === filterStatus);
+            // ★ 系列 / 角色 / 下单版本：模糊匹配（包含即可，搜 1 出 1/12/123）
             if (filterSeries) items = items.filter(i => (i.series || '').includes(filterSeries));
             if (filterCharacter) items = items.filter(i => (i.character || '').includes(filterCharacter));
             if (filterOrderVersion) items = items.filter(i => (i.orderVersion || '').includes(filterOrderVersion));
@@ -2253,15 +2258,26 @@
 
             const mergedOrders = [];
             const skipIds = new Set();
+
             for (let i = 0; i < orders.length; i++) {
                 if (skipIds.has(orders[i].id)) continue;
-                let baseOrder = orders[i];
+                const baseOrder = orders[i];
+
+                // ★ 已发货的订单不参与合并，单独展示
+                if (baseOrder.ship_status === 'shipped') {
+                    mergedOrders.push(baseOrder);
+                    continue;
+                }
+
                 for (let j = i + 1; j < orders.length; j++) {
                     if (skipIds.has(orders[j].id)) continue;
                     const other = orders[j];
+
+                    // ★ 只有「待发货」的订单之间才允许合并
+                    if (other.ship_status === 'shipped') continue;
+
                     if (baseOrder.username === other.username &&
-                        baseOrder.receiver_address === other.receiver_address &&
-                        baseOrder.ship_status !== 'shipped') {
+                        baseOrder.receiver_address === other.receiver_address) {
                         if (!baseOrder._merged) {
                             baseOrder._merged = [];
                             baseOrder._merged.push({ ...baseOrder, isBase: true });
@@ -2277,9 +2293,10 @@
                         skipIds.add(other.id);
                     }
                 }
-                if (baseOrder._merged) {
-                    baseOrder.ship_status = baseOrder._merged.every(o => o.ship_status === 'shipped') ? 'shipped' : 'pending';
-                }
+
+                // 合并后的订单一定是「待发货」
+                if (baseOrder._merged) baseOrder.ship_status = 'pending';
+
                 mergedOrders.push(baseOrder);
             }
 
@@ -2384,17 +2401,18 @@
             const order = orders.find(o => String(o.id) === String(id));
             if (!order) { toast('订单不存在', 'error'); return; }
 
-            const sameAddressOrders = orders.filter(o =>
-                o.username === order.username &&
-                o.receiver_address === order.receiver_address &&
-                o.ship_status !== 'shipped'
-            );
-            let displayOrders = [];
-            if (sameAddressOrders.length > 1) {
-                sameAddressOrders.sort((a, b) => a.created_at - b.created_at);
-                displayOrders = sameAddressOrders.map((o, index) => ({ ...o, isBase: index === 0 }));
-            } else {
-                displayOrders = [order];
+            // ★ 详情弹窗与列表合并规则保持一致：仅「待发货」订单参与合并展示
+            let displayOrders = [order];
+            if (order.ship_status !== 'shipped') {
+                const sameAddressOrders = orders.filter(o =>
+                    o.username === order.username &&
+                    o.receiver_address === order.receiver_address &&
+                    o.ship_status !== 'shipped'
+                );
+                if (sameAddressOrders.length > 1) {
+                    sameAddressOrders.sort((a, b) => a.created_at - b.created_at);
+                    displayOrders = sameAddressOrders.map((o, index) => ({ ...o, isBase: index === 0 }));
+                }
             }
 
             const modal = document.getElementById('detailModal');
