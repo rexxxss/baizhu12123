@@ -881,6 +881,7 @@
                         <div class="filter-item"><label>CN</label><input id="filterCN" class="form-control" style="width:120px; padding:4px 8px;" placeholder="筛选" oninput="adminRenderItems()" /></div>
                         <div class="filter-item"><label>状态</label><select id="filterStatus" class="form-control" style="width:130px; padding:4px 8px;" onchange="adminRenderItems()"><option value="">全部</option><option value="已下单">已下单</option><option value="已到货">已到货</option><option value="收费囤">收费囤</option><option value="已加入排发">已加入排发</option><option value="拆地址">拆地址</option><option value="已发货">已发货</option><option value="已掉落">已掉落</option></select></div>
                         <div class="filter-item"><label>系列</label><input id="filterSeries" class="form-control" style="width:120px; padding:4px 8px;" placeholder="系列" oninput="adminRenderItems()" /></div>
+                        <div class="filter-item"><label>制品</label><input id="filterProduct" class="form-control" style="width:120px; padding:4px 8px;" placeholder="制品" oninput="adminRenderItems()" /></div>
                         <div class="filter-item"><label>角色</label><input id="filterCharacter" class="form-control" style="width:120px; padding:4px 8px;" placeholder="角色" oninput="adminRenderItems()" /></div>
                         <div class="filter-item"><label>下单版本</label><input id="filterOrderVersion" class="form-control" style="width:120px; padding:4px 8px;" placeholder="版本" oninput="adminRenderItems()" /></div>
                         <button class="btn btn-sm btn-outline" onclick="adminRenderItems(true)"><i class="fas fa-sync-alt"></i> 刷新</button>
@@ -954,6 +955,16 @@
                         <button class="btn btn-sm btn-outline" style="margin-left:auto;" onclick="adminLoadOrders(true)"><i class="fas fa-sync-alt"></i> 刷新</button>
                         <button class="btn btn-sm btn-danger" onclick="batchDeleteOrders()"><i class="fas fa-trash"></i> 批量删除</button>
                     </div>
+                    <div class="filter-bar">
+                        <div class="filter-item">
+                            <label>发货状态</label>
+                            <select id="orderStatusFilter" class="form-control" style="width:150px; padding:4px 8px;" onchange="adminLoadOrders()">
+                                <option value="">全部</option>
+                                <option value="pending">待发货</option>
+                                <option value="shipped">已发货</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="table-wrap">
                         <table class="data-table" id="orderManageTable">
                             <thead>
@@ -982,6 +993,14 @@
                     <div class="card-title"><i class="fas fa-tag" style="color:var(--primary);"></i> 快递单号录入 <span class="badge">可搜索订单号或手机号</span></div>
                     <div class="filter-bar">
                         <div class="filter-item"><label>搜索</label><input id="trackingSearchInput" class="form-control" style="width:200px; padding:4px 8px;" placeholder="订单号/手机号" oninput="renderTrackingList()" /></div>
+                        <div class="filter-item">
+                            <label>单号状态</label>
+                            <select id="trackingNumberFilter" class="form-control" style="width:150px; padding:4px 8px;" onchange="renderTrackingList()">
+                                <option value="">全部</option>
+                                <option value="uploaded">已录入单号</option>
+                                <option value="missing">未录入单号</option>
+                            </select>
+                        </div>
                         <button class="btn btn-sm btn-outline" onclick="renderTrackingList(true)"><i class="fas fa-sync-alt"></i> 刷新</button>
                     </div>
                     <div id="trackingSummary"></div>
@@ -1084,6 +1103,38 @@
             </div>
         </div>
 
+        <!-- ===== 修改收货信息弹窗（前台） ===== -->
+        <div id="addressModal" class="modal-overlay hidden" onclick="if(event.target===this) closeAddressModal()">
+            <div class="modal-box" style="max-width:480px;">
+                <div class="modal-header">
+                    <h2><i class="fas fa-edit" style="color:var(--primary);"></i> 修改收货信息</h2>
+                    <button class="modal-close" onclick="closeAddressModal()">&times;</button>
+                </div>
+                <input type="hidden" id="editOrderId" />
+                <div class="form-group">
+                    <label>订单编号</label>
+                    <input id="editOrderNumberDisplay" class="form-control" readonly style="background:#f5f5f5; color:#888;" />
+                </div>
+                <div class="form-group">
+                    <label>收货人姓名 <span class="required">*</span></label>
+                    <input id="editReceiverName" class="form-control" placeholder="如：李四" />
+                </div>
+                <div class="form-group">
+                    <label>收货人电话 <span class="required">*</span></label>
+                    <input id="editReceiverPhone" class="form-control" placeholder="如：13800138000" />
+                </div>
+                <div class="form-group">
+                    <label>收货地址 <span class="required">*</span></label>
+                    <textarea id="editReceiverAddress" class="form-control" rows="3" placeholder="如：广东省广州市天河区xx路xx号"></textarea>
+                    <span class="field-hint"><i class="fas fa-info-circle"></i> 修改后管理员发货时将使用新地址</span>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">
+                    <button class="btn btn-primary" onclick="saveOrderAddress()"><i class="fas fa-save"></i> 保存修改</button>
+                    <button class="btn btn-outline" onclick="closeAddressModal()"><i class="fas fa-times"></i> 取消</button>
+                </div>
+            </div>
+        </div>
+
         <!-- ===== 图片大图查看器 ===== -->
         <div id="imageViewer" class="image-viewer hidden" onclick="closeImageViewer()">
             <button class="image-viewer-close" onclick="closeImageViewer()" title="关闭">&times;</button>
@@ -1175,6 +1226,9 @@
             const today = new Date();
             const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
             return dateStr + '-' + String(Date.now() % 10000).padStart(4, '0');
+        }
+        function hasTrackingNumber(order) {
+            return !!(order && order.tracking_number && String(order.tracking_number).trim() !== '');
         }
 
         // =========================== 内存缓存层 ===========================
@@ -2150,8 +2204,8 @@
             }
             orders.sort((a, b) => b.created_at - a.created_at);
             let html = '';
-             orders.forEach(order => {
-                const hasTracking = !!(order.tracking_number && order.tracking_number.trim() !== '');
+            orders.forEach(order => {
+                const hasTracking = hasTrackingNumber(order);
                 const isShipped = order.ship_status === 'shipped';
 
                 // 排发状态二次判定
@@ -2168,6 +2222,16 @@
                 }
 
                 const itemsBrief = order.items ? order.items.map(it => `${escHtml(it.name)}×${it.quantity}`).join('、') : '无';
+
+                // ★ 未上传快递单号的订单，开放「修改收货信息」
+                const canEditAddress = !hasTracking;
+                const editBtnHtml = canEditAddress ? `
+                    <div style="margin-top:8px; display:flex; justify-content:flex-end;">
+                        <button class="btn btn-sm btn-outline" onclick="openAddressModal('${order.id}')">
+                            <i class="fas fa-edit"></i> 修改收货信息
+                        </button>
+                    </div>` : '';
+
                 html += `
                     <div class="order-item" style="background:#fafafa;border-radius:8px;padding:12px 16px;margin-bottom:10px;border:1px solid #f0f0f0;">
                         <div class="order-header" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
@@ -2183,9 +2247,70 @@
                             <span><i class="fas fa-box"></i> ${itemsBrief}</span>
                             ${hasTracking ? `<span><i class="fas fa-tag"></i> 单号：${escHtml(order.tracking_number)}</span>` : ''}
                         </div>
+                        ${editBtnHtml}
                     </div>`;
             });
             container.innerHTML = html;
+        }
+
+        // ---------- 前台修改收货信息 ----------
+        async function openAddressModal(orderId) {
+            let orders = await getOrders();
+            const order = orders.find(o => String(o.id) === String(orderId));
+            if (!order) { toast('订单不存在', 'error'); return; }
+            if (hasTrackingNumber(order)) {
+                toast('该订单已录入快递单号，无法修改收货信息', 'warning');
+                return;
+            }
+            document.getElementById('editOrderId').value = order.id;
+            document.getElementById('editOrderNumberDisplay').value = order.orderNumber || ('#' + order.id);
+            document.getElementById('editReceiverName').value = order.receiver_name || '';
+            document.getElementById('editReceiverPhone').value = order.receiver_phone || '';
+            document.getElementById('editReceiverAddress').value = order.receiver_address || '';
+            document.getElementById('addressModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAddressModal() {
+            const modal = document.getElementById('addressModal');
+            if (modal.classList.contains('hidden')) return;
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        async function saveOrderAddress() {
+            const orderId = document.getElementById('editOrderId').value;
+            const name = document.getElementById('editReceiverName').value.trim();
+            const phone = document.getElementById('editReceiverPhone').value.trim();
+            const address = document.getElementById('editReceiverAddress').value
+                .replace(/[\r\n\t]+/g, ' ')
+                .replace(/[ \u3000]+/g, ' ')
+                .trim();
+
+            if (!name) { toast('请填写收货人姓名', 'error'); return; }
+            if (!isValidPhone(phone)) { toast('请输入正确的11位手机号', 'error'); return; }
+            if (!address) { toast('请填写收货地址', 'error'); return; }
+
+            let orders = await getOrders();
+            const order = orders.find(o => String(o.id) === String(orderId));
+            if (!order) { toast('订单不存在', 'error'); return; }
+            if (hasTrackingNumber(order)) {
+                toast('该订单已录入快递单号，无法修改收货信息', 'warning');
+                closeAddressModal();
+                queryOrdersByPhone();
+                return;
+            }
+
+            order.receiver_name = name;
+            order.receiver_phone = phone;
+            order.receiver_address = address;
+
+            const ok = await saveOrders(orders);
+            if (!ok) { toast('保存失败，请稍后重试', 'error'); return; }
+
+            toast('收货信息已更新', 'success');
+            closeAddressModal();
+            queryOrdersByPhone();
         }
 
         // =========================== 后台管理 ===========================
@@ -2210,6 +2335,7 @@
             const filterCN = document.getElementById('filterCN').value.trim();
             const filterStatus = document.getElementById('filterStatus').value;
             const filterSeries = document.getElementById('filterSeries').value.trim();
+            const filterProduct = document.getElementById('filterProduct').value.trim();   // ★ 新增：制品模糊搜索
             const filterCharacter = document.getElementById('filterCharacter').value.trim();
             const filterOrderVersion = document.getElementById('filterOrderVersion').value.trim();
             await autoConvertCharge();
@@ -2217,8 +2343,9 @@
             // ★ CN / 状态：精准匹配（完全一致）
             if (filterCN) items = items.filter(i => (i.username || '').trim() === filterCN);
             if (filterStatus) items = items.filter(i => i.status === filterStatus);
-            // ★ 系列 / 角色 / 下单版本：模糊匹配（包含即可，搜 1 出 1/12/123）
+            // ★ 系列 / 制品 / 角色 / 下单版本：模糊匹配（包含即可，搜 12 出 12/123）
             if (filterSeries) items = items.filter(i => (i.series || '').includes(filterSeries));
+            if (filterProduct) items = items.filter(i => (i.product || '').includes(filterProduct));
             if (filterCharacter) items = items.filter(i => (i.character || '').includes(filterCharacter));
             if (filterOrderVersion) items = items.filter(i => (i.orderVersion || '').includes(filterOrderVersion));
             items.sort((a, b) => b.createdAt - a.createdAt);
@@ -2587,14 +2714,24 @@
                 mergedOrders.push(baseOrder);
             }
 
+            // ★ 新增：按发货状态筛选
+            const statusFilter = document.getElementById('orderStatusFilter') ? document.getElementById('orderStatusFilter').value : '';
+            let displayOrders = mergedOrders;
+            if (statusFilter === 'pending') {
+                displayOrders = mergedOrders.filter(o => o.ship_status !== 'shipped');
+            } else if (statusFilter === 'shipped') {
+                displayOrders = mergedOrders.filter(o => o.ship_status === 'shipped');
+            }
+
             const tbody = document.getElementById('adminOrderTableBody');
-            if (!mergedOrders.length) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无订单</td></tr>`;
+            if (!displayOrders.length) {
+                const tip = mergedOrders.length === 0 ? '暂无订单' : '没有符合筛选条件的订单';
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>${tip}</td></tr>`;
                 return;
             }
 
             let html = '';
-            mergedOrders.forEach(order => {
+            displayOrders.forEach(order => {
                 const isShipped = order.ship_status === 'shipped';
                 const shipStatusHtml = isShipped ?
                     `<span class="status-tag shipped">已发货</span>` :
@@ -2789,11 +2926,21 @@
         // ---------- 快递单号 ----------
         async function renderTrackingList(force = false) {
             const search = document.getElementById('trackingSearchInput').value.trim();
+            const numberFilterEl = document.getElementById('trackingNumberFilter');
+            const numberFilter = numberFilterEl ? numberFilterEl.value : '';
+
             let orders = await getOrders(force);
             if (search) {
                 orders = orders.filter(o => String(o.id).includes(search) || (o.receiver_phone && o.receiver_phone.includes(search)));
             }
+            // ★ 新增：按快递单号是否已录入筛选
+            if (numberFilter === 'uploaded') {
+                orders = orders.filter(o => hasTrackingNumber(o));
+            } else if (numberFilter === 'missing') {
+                orders = orders.filter(o => !hasTrackingNumber(o));
+            }
             orders.sort((a, b) => b.created_at - a.created_at);
+
             const tbody = document.getElementById('trackingTableBody');
             if (!orders.length) {
                 tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding:30px; color:#bbb;"><i class="fas fa-inbox" style="font-size:28px; display:block; margin-bottom:6px;"></i>暂无订单</td></tr>`;
@@ -2805,7 +2952,7 @@
 
             let totalUserFee = 0, totalActualFee = 0, html = '';
             orders.forEach(order => {
-                const hasTracking = order.tracking_number && order.tracking_number.trim() !== '';
+                const hasTracking = hasTrackingNumber(order);
                 const userFee = order.total_fee || 0;
                 const actualFee = order.actual_shipping_fee || 0;
                 totalUserFee += userFee;
@@ -2878,7 +3025,7 @@
         // ★ 只显示未录入快递单号的订单地址，且复制内容不含CN
         async function renderAddressList(ordersInput) {
             let orders = ordersInput || await getOrders();
-            orders = orders.filter(o => !(o.tracking_number && o.tracking_number.trim() !== ''));
+            orders = orders.filter(o => !hasTrackingNumber(o));
             if (!orders.length) {
                 document.getElementById('addressListContainer').innerHTML = '<div style="color:#999;padding:8px;">暂无待发货地址（已录入单号的地址不再显示）</div>';
                 window._addressList = [];
@@ -3212,9 +3359,12 @@
                     openImageViewer(target.src);
                 }
             });
-            // Esc 关闭大图
+            // Esc 关闭大图 / 修改地址弹窗
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') closeImageViewer();
+                if (e.key === 'Escape') {
+                    closeImageViewer();
+                    closeAddressModal();
+                }
             });
 
             initPackPrices();
